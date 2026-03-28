@@ -24,61 +24,69 @@
         }
 
         #app { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .view { display: none; flex: 1; flex-direction: column; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
+        .view { display: none; flex: 1; flex-direction: column; overflow-y: auto; padding: 15px; padding-bottom: 90px; }
         .view.active { display: flex; }
 
-        .header-title { text-align: center; font-weight: bold; color: var(--text-brown); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .header-title { text-align: center; font-weight: bold; color: var(--text-brown); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* --- UNIT GRID (U1-U30) --- */
-        .unit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 25px; flex-shrink: 0; }
+        /* --- UNIT GRID (TOP OF FLASHCARDS) --- */
+        .unit-grid-scroll { overflow-x: auto; white-space: nowrap; padding-bottom: 10px; margin-bottom: 15px; border-bottom: 1px solid var(--border); }
+        .unit-grid { display: inline-grid; grid-template-rows: repeat(5, auto); grid-auto-flow: column; gap: 6px; }
         .unit-btn { 
-            background: var(--card-bg); border: 1px solid var(--border); padding: 10px 0; 
-            font-size: 0.75em; font-weight: bold; cursor: pointer; text-align: center; color: var(--text-main);
+            background: var(--card-bg); border: 1px solid var(--border); padding: 6px 10px; 
+            font-size: 0.75em; font-weight: bold; cursor: pointer; text-align: center; min-width: 55px;
+            color: var(--text-gray); border-radius: 2px;
         }
         .unit-btn.active { background: var(--text-brown); color: white; border-color: var(--text-brown); }
 
+        /* --- UNIT INFO & STATS --- */
+        .unit-full-title { font-weight: bold; font-size: 0.85em; text-align: center; color: var(--text-brown); margin-bottom: 10px; text-transform: uppercase; }
+        .root-desc-box { background: var(--card-bg); border: 1px solid var(--border); padding: 12px; font-size: 0.85em; color: var(--text-main); line-height: 1.5; margin-bottom: 15px; border-radius: 4px; }
+        
+        .stats-row { display: flex; justify-content: space-between; text-align: center; margin-bottom: 15px; }
+        .stat-box { flex: 1; font-size: 0.75em; color: var(--text-gray); text-transform: uppercase; font-weight: bold; }
+        .stat-val { display: block; font-size: 1.4em; color: var(--text-main); margin-bottom: 2px; }
+
         /* --- FLASHCARDS --- */
-        .pinned-root { text-align: center; font-weight: bold; color: var(--text-brown); font-size: 1.2em; margin-bottom: 15px; text-transform: uppercase; }
-        
         .card-container { width: 100%; max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; }
-        
         .card { 
-            background: var(--card-bg); border: 1px solid var(--border); padding: 50px 20px;
-            text-align: center; cursor: pointer; min-height: 250px; display: flex; flex-direction: column; justify-content: center;
+            background: var(--card-bg); border: 1px solid var(--border); padding: 30px 20px;
+            text-align: center; cursor: pointer; min-height: 300px; display: flex; flex-direction: column; justify-content: center; position: relative; border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
         }
-        .word-title { font-size: 2.4em; font-weight: bold; margin-bottom: 5px; }
-        .phonetic { color: var(--text-gray); font-style: italic; margin-bottom: 20px; }
-        .play-btn { background: transparent; border: 1px solid var(--border); padding: 8px 15px; font-size: 0.8em; color: var(--text-brown); display: inline-flex; align-items: center; gap: 8px; margin: 0 auto; border-radius: 2px; }
+        
+        /* CARD FRONT */
+        .card-counter { position: absolute; top: 15px; right: 15px; font-size: 0.8em; color: var(--text-gray); font-weight: bold; }
+        .word-title { font-size: 2.2em; font-weight: bold; margin-bottom: 5px; }
+        .root-badge { font-size: 1em; font-weight: bold; color: var(--text-brown); margin-bottom: 25px; text-transform: uppercase; }
+        
+        .play-btn { background: transparent; border: 1px solid var(--border); padding: 8px 16px; font-size: 0.8em; font-weight: bold; color: var(--text-brown); display: inline-flex; align-items: center; gap: 8px; margin: 0 auto; border-radius: 20px; }
         .play-icon { width: 0; height: 0; border-top: 5px solid transparent; border-left: 8px solid var(--text-brown); border-bottom: 5px solid transparent; }
+        .tap-hint { position: absolute; bottom: 15px; left: 0; width: 100%; font-size: 0.8em; color: var(--text-gray); }
 
-        /* BACK SIDE DETAILS */
-        .card-back { display: none; text-align: left; margin-top: 25px; border-top: 1px solid var(--border); padding-top: 25px; }
-        .meaning-th { font-size: 1.3em; font-weight: bold; color: var(--green-dark); text-align: center; margin-bottom: 20px; }
-        .info-label { font-size: 0.7em; font-weight: bold; color: var(--text-brown); text-transform: uppercase; margin-bottom: 5px; }
+        /* CARD BACK */
+        .card-back { display: none; text-align: left; margin-top: 10px; }
+        .phonetic { color: var(--text-gray); font-style: italic; text-align: center; margin-bottom: 20px; font-size: 0.9em; }
+        .meaning-th { font-size: 1.2em; font-weight: bold; color: var(--green-dark); text-align: center; margin-bottom: 20px; }
+        .info-label { font-size: 0.7em; font-weight: bold; color: var(--text-brown); text-transform: uppercase; margin-bottom: 4px; }
         .info-txt { font-size: 0.9em; line-height: 1.5; margin-bottom: 15px; }
-        .example-box { background: #f9f9f9; padding: 12px; border-left: 2px solid var(--border); font-style: italic; color: var(--text-gray); font-size: 0.9em; }
+        .example-box { background: #f9f9f9; padding: 12px; border-left: 2px solid var(--border); font-style: italic; color: var(--text-gray); font-size: 0.85em; }
 
-        /* NAVIGATION ARROWS */
-        .card-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-        .nav-arrow { background: transparent; border: 1px solid var(--border); padding: 10px 20px; font-weight: bold; color: var(--text-brown); cursor: pointer; font-size: 1.2em; border-radius: 2px; }
-        .nav-arrow:active { background: #e8e5df; }
-        .card-counter { font-size: 0.85em; font-weight: bold; color: var(--text-gray); }
+        .btn-group { display: none; gap: 10px; margin-top: 20px; }
+        .btn-status { flex: 1; background: transparent; padding: 15px 0; font-weight: bold; cursor: pointer; font-size: 0.85em; text-transform: uppercase; border-radius: 4px; }
+        .btn-learning { border: 1.5px solid var(--red-maroon); color: var(--red-maroon); }
+        .btn-knew { border: 1.5px solid var(--green-dark); color: var(--green-dark); }
 
-        /* ACTION BUTTONS */
-        .btn-group { display: none; gap: 10px; margin-top: 15px; }
-        .btn-status { flex: 1; background: transparent; padding: 15px 0; font-weight: bold; cursor: pointer; font-size: 0.85em; text-transform: uppercase; }
-        .btn-learning { border: 1px solid var(--red-maroon); color: var(--red-maroon); }
-        .btn-knew { border: 1px solid var(--green-dark); color: var(--green-dark); }
-
-        /* --- BROWSE (BLOCKS) --- */
-        .browse-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
-        .word-block { background: var(--card-bg); border: 1px solid var(--border); padding: 15px 10px; text-align: center; font-size: 0.85em; font-weight: 500; cursor: pointer; color: var(--text-main); }
+        /* --- BROWSE --- */
+        .browse-unit-title { font-weight: bold; color: var(--text-brown); font-size: 0.85em; margin: 25px 0 10px; text-transform: uppercase; }
+        .browse-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+        .word-block { background: var(--card-bg); border: 1px solid var(--border); padding: 10px 14px; font-size: 0.9em; font-weight: 500; cursor: pointer; color: var(--text-main); border-radius: 4px; }
 
         /* --- QUIZ --- */
         .quiz-box { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 4px; }
-        .quiz-opt { width: 100%; text-align: left; padding: 15px; border: 1px solid var(--border); background: transparent; margin-bottom: 10px; cursor: pointer; color: var(--text-main); }
-        .quiz-opt.correct { border-color: var(--green-dark); color: var(--green-dark); font-weight: bold; }
-        .quiz-opt.wrong { border-color: var(--red-maroon); color: var(--red-maroon); }
+        .quiz-opt { width: 100%; text-align: left; padding: 15px; border: 1px solid var(--border); background: transparent; margin-bottom: 10px; cursor: pointer; color: var(--text-main); border-radius: 4px; font-size: 0.9em; }
+        .quiz-opt.correct { border-color: var(--green-dark); color: var(--green-dark); font-weight: bold; background: #f0fff0; }
+        .quiz-opt.wrong { border-color: var(--red-maroon); color: var(--red-maroon); background: #fff0f0; }
 
         /* --- NAV --- */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; }
@@ -89,33 +97,46 @@
 <body>
 
 <div id="app">
+
     <div id="view-cards" class="view active">
-        <div class="header-title">Vocabulary Builder</div>
-        <div class="unit-grid" id="card-unit-grid"></div>
-        <div class="pinned-root" id="p-root">ROOT - MEANING</div>
+        <div class="unit-grid-scroll">
+            <div class="unit-grid" id="card-unit-grid"></div>
+        </div>
         
-        <div class="card-container">
+        <div class="unit-full-title" id="u-full-title">UNIT 1 - BENE • AM • BELL • PAC • CRIM • PROB • GRAV • LEV</div>
+        <div class="root-desc-box" id="u-root-desc">Select a word to see its root description.</div>
+        
+        <div class="stats-row">
+            <div class="stat-box"><span class="stat-val" id="st-tot">0</span>total</div>
+            <div class="stat-box"><span class="stat-val" id="st-kno">0</span>know</div>
+            <div class="stat-box"><span class="stat-val" id="st-rev">0</span>review</div>
+            <div class="stat-box"><span class="stat-val" id="st-lft">0</span>left</div>
+        </div>
+
+        <div class="card-container" id="main-card-container">
             <div class="card" onclick="flipCard()">
                 <div id="c-front">
+                    <div class="card-counter" id="c-counter">1/0</div>
                     <div class="word-title" id="c-word">Word</div>
-                    <div class="phonetic" id="c-phonetic">/phonetic/</div>
-                    <div class="play-btn" onclick="event.stopPropagation(); playAudio();"><span class="play-icon"></span> ออกเสียง</div>
+                    <div class="root-badge" id="c-root">ROOT</div>
+                    <div class="play-btn" onclick="event.stopPropagation(); playAudio();">
+                        <span class="play-icon"></span> Pronounce
+                    </div>
+                    <div class="tap-hint">Tap card to reveal</div>
                 </div>
+                
                 <div class="card-back" id="c-back">
+                    <div class="card-counter" id="c-counter-back">1/0</div>
+                    <div class="word-title" id="c-word-back" style="text-align: center; margin-bottom: 0;">Word</div>
+                    <div class="phonetic" id="c-phonetic">/phonetic/</div>
                     <div class="meaning-th" id="c-th">ความหมาย</div>
-                    <div class="info-label">Etymology & Context (EN/TH)</div>
+                    <div class="info-label">Etymology & Context</div>
                     <div class="info-txt" id="c-ety">ที่มาข้อมูล</div>
                     <div class="info-label">Example Sentence</div>
                     <div class="example-box" id="c-ex">ประโยคตัวอย่าง</div>
                 </div>
             </div>
             
-            <div class="card-nav">
-                <button class="nav-arrow" onclick="prevCard()">&#8592;</button>
-                <span class="card-counter" id="card-counter">0 / 0</span>
-                <button class="nav-arrow" onclick="nextCard()">&#8594;</button>
-            </div>
-
             <div class="btn-group" id="c-btns">
                 <button class="btn-status btn-learning" onclick="mark('learning')">still learning</button>
                 <button class="btn-status btn-knew" onclick="mark('know')">knew it</button>
@@ -125,90 +146,170 @@
 
     <div id="view-browse" class="view">
         <div class="header-title">Browse Words</div>
-        <div class="unit-grid" id="browse-unit-grid"></div>
-        <div class="browse-grid" id="browse-content"></div>
+        <div id="browse-content"></div>
     </div>
 
     <div id="view-quiz" class="view">
         <div class="header-title">Unit Quiz</div>
-        <div class="unit-grid" id="quiz-unit-grid" style="margin-bottom: 30px;"></div>
         <div id="quiz-area">
-            <div style="text-align: center; color: var(--text-gray);">Select a Unit above to start Quiz</div>
+            <div style="text-align: center; color: var(--text-gray);">Please select a unit from Flashcards to start Quiz.</div>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('cards')">Cards</div>
+        <div class="nav-item active" onclick="switchTab('cards')">Flashcards</div>
         <div class="nav-item" onclick="switchTab('browse')">Browse</div>
         <div class="nav-item" onclick="switchTab('quiz')">Quiz</div>
     </nav>
 </div>
 
 <script>
-    const vocabData = {
-        "Unit 1": [
-            { id: "u1_1", root: "BENE", rootTh: "ดี", word: "benediction", phonetic: "/ˌbɛnəˈdɪkʃən/", meaning: "การสวดประสาทพร", ety: "EN: bene (good) + dicere (to speak). A blessing at the end of a religious service.\nTH: รากศัพท์แปลว่า 'พูดสิ่งดีๆ' ใช้เรียกบทสวดให้พรตอนจบพิธีในโบสถ์คริสต์", ex: "The bishop finished his benediction and the crowd began to leave." },
-            { id: "u1_2", root: "BENE", rootTh: "ดี", word: "benefactor", phonetic: "/ˈbɛnəˌfæktər/", meaning: "ผู้มีพระคุณ", ety: "EN: bene (good) + facere (to do). One who does good deeds for others.\nTH: ผู้ที่ช่วยเหลือคนอื่น มักเน้นเรื่องการบริจาคเงินให้โรงพยาบาลหรือโรงเรียน", ex: "The school's new library was funded by an anonymous benefactor." },
-            { id: "u1_3", root: "BENE", rootTh: "ดี", word: "beneficiary", phonetic: "/ˌbɛnəˈfɪʃiˌɛri/", meaning: "ผู้รับผลประโยชน์", ety: "EN: One who receives benefits from a will, insurance, or trust.\nTH: คนที่ได้รับเงินหรือทรัพย์สินตามพินัยกรรมหรือจากกรมธรรม์ประกันชีวิต", ex: "She was the sole beneficiary of her father's will." },
-            { id: "u1_4", root: "BENE", rootTh: "ดี", word: "benevolence", phonetic: "/bəˈnɛvələns/", meaning: "ความเมตตา", ety: "EN: bene (good) + velle (to wish). Good will and kindness.\nTH: ความปรารถนาดี นิสัยใจคอที่ชอบช่วยเหลือและเอื้อเฟื้อเผื่อแผ่ต่อเพื่อนมนุษย์", ex: "The charity relies on the benevolence of the public." },
-            { id: "u1_5", root: "AM", rootTh: "ความรัก", word: "amicable", phonetic: "/ˈæmɪkəbəl/", meaning: "เป็นมิตร", ety: "EN: Friendly and without disagreement. Related to amicus (friend).\nTH: ความสัมพันธ์ที่ปรองดอง ไม่มีความขัดแย้ง มักใช้กับการเจรจาหรือการหย่าร้างที่จบลงด้วยดี", ex: "They reached an amicable agreement without going to court." },
-            { id: "u1_6", root: "AM", rootTh: "ความรัก", word: "enamored", phonetic: "/ɪˈnæmərd/", meaning: "หลงรัก", ety: "EN: Filled with love or fascination. From amor (love).\nTH: การตกหลุมรักหรือหลงใหลในบางสิ่งมากๆ เช่น หลงรักวัฒนธรรมต่างชาติ", ex: "He was enamored of the local food and music." },
-            { id: "u1_7", root: "AM", rootTh: "ความรัก", word: "amorous", phonetic: "/ˈæmərəs/", meaning: "แสดงความรัก", ety: "EN: Expressing strong feelings of love, especially sexual attraction.\nTH: การแสดงออกทางความรัก มักใช้สื่อถึงความรักเชิงชู้สาว", ex: "The amorous couple spent the whole evening together." },
-            { id: "u1_8", root: "AM", rootTh: "ความรัก", word: "paramour", phonetic: "/ˈpærəˌmʊr/", meaning: "ชู้รัก", ety: "EN: A secret lover, especially one in an illicit relationship.\nTH: คนรักที่ลักลอบคบกัน มักหมายถึงคนรักที่เป็นความลับหรือผิดศีลธรรม", ex: "The king's paramour exerted great influence over his decisions." },
-            { id: "u1_9", root: "BELL", rootTh: "สงคราม", word: "bellicose", phonetic: "/ˈbɛlɪˌkoʊs/", meaning: "ก้าวร้าว, ชอบก่อสงคราม", ety: "EN: Demonstrating aggression and willingness to fight. From bellum (war).\nTH: นิสัยของคนหรือประเทศที่พร้อมจะมีเรื่องและใช้ความรุนแรง", ex: "His bellicose attitude made everyone in the office nervous." },
-            { id: "u1_10", root: "BELL", rootTh: "สงคราม", word: "belligerent", phonetic: "/bəˈlɪdʒərənt/", meaning: "เป็นปฏิปักษ์, ดุดัน", ety: "EN: Hostile and aggressive. From bellum (war) + gerere (to do).\nTH: อาการที่พร้อมจะสู้ ไม่ยอมใคร หรือหมายถึงประเทศที่อยู่ในภาวะสงคราม", ex: "He was drunk and belligerent when the police arrived." },
-            { id: "u1_11", root: "BELL", rootTh: "สงคราม", word: "rebellion", phonetic: "/rɪˈbɛljən/", meaning: "การกบฏ", ety: "EN: Open opposition toward a person or group in authority.\nTH: การลุกฮือขึ้นต่อต้านอำนาจรัฐหรือผู้มีอำนาจปกครอง", ex: "The government crushed the rebellion within a week." },
-            { id: "u1_12", root: "BELL", rootTh: "สงคราม", word: "casus belli", phonetic: "/ˌkæsəs ˈbɛlaɪ/", meaning: "ชนวนเหตุสงคราม", ety: "EN: An act or situation provoking or justifying war.\nTH: เหตุการณ์หรือข้ออ้างที่ใช้เพื่อประกาศสงครามอย่างเป็นทางการ", ex: "The border crossing was seen as a casus belli by the neighboring country." }
-        ]
+    // ข้อมูลคำอธิบายรากศัพท์ (โชว์ด้านบนการ์ด)
+    const rootDescriptions = {
+        "BENE": "BENE is Latin for \"well.\" A benefit is a good result or effect. Something beneficial produces good results. (รากศัพท์ภาษาละตินแปลว่า 'ดี' หรือ 'สิ่งที่ดี')",
+        "AM": "AM comes from the Latin word amare, \"to love.\" An amiable person is friendly and lovable. (รากศัพท์ภาษาละติน amare แปลว่า 'ความรัก')",
+        "BELL": "BELL comes from the Latin word bellum, \"war.\" A belligerent person is aggressively hostile. (รากศัพท์ภาษาละติน bellum แปลว่า 'สงคราม')",
+        "PAC": "PAC is related to the Latin words for \"agree\" and \"peace.\" To pacify is to soothe or calm. (รากศัพท์ภาษาละตินแปลว่า 'ความสงบ' หรือ 'สันติภาพ')",
+        "CRIM": "CRIM comes from the Latin word for \"fault\" or \"crime,\" or \"accusation.\" (รากศัพท์ภาษาละตินแปลว่า 'ความผิด' หรือ 'การกล่าวหา')",
+        "PROB": "PROB comes from the Latin words for \"prove or proof\" and \"honesty or integrity.\" (รากศัพท์ภาษาละตินแปลว่า 'การพิสูจน์' หรือ 'ความซื่อสัตย์')",
+        "GRAV": "GRAV comes from the Latin word gravis, meaning \"heavy, weighty, serious.\" (รากศัพท์ภาษาละติน gravis แปลว่า 'หนัก' หรือ 'จริงจัง')",
+        "LEV": "LEV comes from the Latin adjective levis, meaning \"light,\" and verb levare, \"to raise.\" (รากศัพท์ภาษาละติน levis แปลว่า 'เบา' หรือ 'ยกขึ้น')"
     };
 
-    for(let i=2; i<=30; i++) { vocabData[`Unit ${i}`] = []; }
+    const vocabData = {
+        "Unit 1": {
+            rootsStr: "BENE . AM . BELL . PAC . CRIM . PROB . GRAV . LEV",
+            words: [
+                { id: "u1_1", root: "BENE", word: "benediction", phonetic: "/ˌbɛnəˈdɪkʃən/", meaning: "การสวดประสาทพร", ety: "EN: bene (good) + dicere (to speak). A blessing at the end of a religious service.\nTH: รากศัพท์แปลว่า 'พูดสิ่งดีๆ' ใช้เรียกบทสวดให้พรตอนจบพิธี", ex: "The bishop finished his benediction and the crowd began to leave." },
+                { id: "u1_2", root: "BENE", word: "benefactor", phonetic: "/ˈbɛnəˌfæktər/", meaning: "ผู้มีพระคุณ", ety: "EN: bene (good) + facere (to do). One who does good deeds for others.\nTH: ผู้ที่ช่วยเหลือคนอื่น มักเน้นเรื่องการบริจาคเงิน", ex: "The school's new library was funded by an anonymous benefactor." },
+                { id: "u1_3", root: "BENE", word: "beneficiary", phonetic: "/ˌbɛnəˈfɪʃiˌɛri/", meaning: "ผู้รับผลประโยชน์", ety: "EN: One who receives benefits from a will, insurance, or trust.\nTH: คนที่ได้รับเงินหรือทรัพย์สินตามพินัยกรรมหรือจากกรมธรรม์", ex: "She was the sole beneficiary of her father's will." },
+                { id: "u1_4", root: "BENE", word: "benevolence", phonetic: "/bəˈnɛvələns/", meaning: "ความเมตตา", ety: "EN: bene (good) + velle (to wish). Good will and kindness.\nTH: ความปรารถนาดี นิสัยใจคอที่ชอบช่วยเหลือผู้อื่น", ex: "The charity relies on the benevolence of the public." },
+                { id: "u1_5", root: "AM", word: "amicable", phonetic: "/ˈæmɪkəbəl/", meaning: "เป็นมิตร", ety: "EN: Friendly and without disagreement. Related to amicus (friend).\nTH: ความสัมพันธ์ที่ปรองดอง มักใช้กับการเจรจาที่จบลงด้วยดี", ex: "They reached an amicable agreement without going to court." },
+                { id: "u1_6", root: "AM", word: "enamored", phonetic: "/ɪˈnæmərd/", meaning: "หลงรัก", ety: "EN: Filled with love or fascination. From amor (love).\nTH: การตกหลุมรักหรือหลงใหลในบางสิ่งมากๆ", ex: "He was enamored of the local food and music." },
+                { id: "u1_7", root: "AM", word: "amorous", phonetic: "/ˈæmərəs/", meaning: "แสดงความรัก", ety: "EN: Expressing strong feelings of love, especially sexual attraction.\nTH: การแสดงออกทางความรัก มักใช้สื่อถึงความรักเชิงชู้สาว", ex: "The amorous couple spent the whole evening together." },
+                { id: "u1_8", root: "AM", word: "paramour", phonetic: "/ˈpærəˌmʊr/", meaning: "ชู้รัก", ety: "EN: A secret lover, especially one in an illicit relationship.\nTH: คนรักที่ลักลอบคบกัน มักหมายถึงคนที่ผิดศีลธรรม", ex: "The king's paramour exerted great influence over his decisions." },
+                { id: "u1_9", root: "BELL", word: "bellicose", phonetic: "/ˈbɛlɪˌkoʊs/", meaning: "ก้าวร้าว, ชอบก่อสงคราม", ety: "EN: Demonstrating aggression and willingness to fight.\nTH: นิสัยของคนหรือประเทศที่พร้อมจะมีเรื่องและใช้ความรุนแรง", ex: "His bellicose attitude made everyone in the office nervous." },
+                { id: "u1_10", root: "BELL", word: "belligerent", phonetic: "/bəˈlɪdʒərənt/", meaning: "เป็นปฏิปักษ์, ดุดัน", ety: "EN: Hostile and aggressive. From bellum (war) + gerere (to do).\nTH: อาการที่พร้อมจะสู้ ไม่ยอมใคร หรือประเทศที่อยู่ในภาวะสงคราม", ex: "He was drunk and belligerent when the police arrived." },
+                { id: "u1_11", root: "BELL", word: "rebellion", phonetic: "/rɪˈbɛljən/", meaning: "การกบฏ", ety: "EN: Open opposition toward a person or group in authority.\nTH: การลุกฮือขึ้นต่อต้านอำนาจรัฐหรือผู้ปกครอง", ex: "The government crushed the rebellion within a week." },
+                { id: "u1_12", root: "BELL", word: "casus belli", phonetic: "/ˌkæsəs ˈbɛlaɪ/", meaning: "ชนวนเหตุสงคราม", ety: "EN: An act or situation provoking or justifying war.\nTH: เหตุการณ์หรือข้ออ้างที่ใช้เพื่อประกาศสงครามอย่างเป็นทางการ", ex: "The border crossing was seen as a casus belli." },
+                { id: "u1_13", root: "PAC", word: "pacify", phonetic: "/ˈpæsəˌfaɪ/", meaning: "ทำให้สงบ", ety: "EN: To soothe anger or agitation.\nTH: ทำให้คนที่โกรธใจเย็นลง หรือยับยั้งการจลาจล", ex: "The government tried to pacify the protesters with promises." },
+                { id: "u1_14", root: "PAC", word: "pacifist", phonetic: "/ˈpæsəfɪst/", meaning: "ผู้รักสันติภาพ", ety: "EN: A person opposed to war or violence.\nTH: คนที่ต่อต้านการใช้ความรุนแรงและสงครามในทุกรูปแบบ", ex: "As a pacifist, he refused to join the army." },
+                { id: "u1_15", root: "PAC", word: "pact", phonetic: "/pækt/", meaning: "ข้อตกลง, สนธิสัญญา", ety: "EN: An agreement between two or more people or groups.\nTH: ข้อตกลงร่วมกันอย่างเป็นทางการระหว่างสองฝ่าย", ex: "The two nations signed a non-aggression pact." },
+                { id: "u1_16", root: "PAC", word: "pace", phonetic: "/ˈpeɪsi/", meaning: "ด้วยความเคารพต่อความเห็นต่าง", ety: "EN: Contrary to the opinion of.\nTH: มักใช้ในภาษาเขียนเพื่อขัดแย้งกับใครบางคนอย่างสุภาพ", ex: "Pace the experts, I believe this plan will fail." },
+                { id: "u1_17", root: "CRIM", word: "criminology", phonetic: "/ˌkrɪməˈnɑlədʒi/", meaning: "อาชญาวิทยา", ety: "EN: The study of crime, criminals, and law enforcement.\nTH: วิชาที่ศึกษาเกี่ยวกับพฤติกรรมอาชญากรและการลงโทษ", ex: "She decided to major in criminology at university." },
+                { id: "u1_18", root: "CRIM", word: "decriminalize", phonetic: "/diˈkrɪmənəlˌaɪz/", meaning: "ทำให้ไม่เป็นความผิดทางอาญา", ety: "EN: To remove or reduce the criminal status of.\nTH: การแก้กฎหมายให้สิ่งที่เคยผิดไม่ต้องได้รับโทษทางอาญา", ex: "There are calls to decriminalize certain minor offenses." },
+                { id: "u1_19", root: "CRIM", word: "incriminate", phonetic: "/ɪnˈkrɪməˌneɪt/", meaning: "ปรักปรำ", ety: "EN: To show evidence of involvement in a crime.\nTH: การหาหลักฐานหรือทำให้ดูเหมือนมีส่วนร่วมในอาชญากรรม", ex: "The missing evidence could incriminate the suspect." },
+                { id: "u1_20", root: "CRIM", word: "recrimination", phonetic: "/rɪˌkrɪməˈneɪʃən/", meaning: "การกล่าวหากลับ", ety: "EN: An accusation in answer to an accusation made against oneself.\nTH: การโต้เถียงที่ต่างฝ่ายต่างสาดข้อกล่าวหาใส่กัน", ex: "The divorce was filled with bitter recriminations." },
+                { id: "u1_21", root: "PROB", word: "approbation", phonetic: "/ˌæprəˈbeɪʃən/", meaning: "การเห็นชอบ, การยกย่อง", ety: "EN: A formal or official act of approving; praise.\nTH: การอนุมัติหรือชื่นชมอย่างเป็นทางการด้วยความพอใจ", ex: "The plan met with official approbation." },
+                { id: "u1_22", root: "PROB", word: "probate", phonetic: "/ˈproʊˌbeɪt/", meaning: "การพิสูจน์พินัยกรรม", ety: "EN: The process of proving in court that a will is valid.\nTH: กระบวนการทางศาลเพื่อยืนยันว่าพินัยกรรมนั้นเป็นของจริง", ex: "The probate process can take several months." },
+                { id: "u1_23", root: "PROB", word: "probity", phonetic: "/ˈproʊbəti/", meaning: "ความซื่อสัตย์สุจริต", ety: "EN: Absolute honesty and uprightness.\nTH: การมีคุณธรรมและความซื่อตรงอย่างแท้จริงในระดับสูง", ex: "Her probity was never questioned during her career." },
+                { id: "u1_24", root: "PROB", word: "reprobate", phonetic: "/ˈrɛprəˌbeɪt/", meaning: "คนเสเพล, คนเลวทราม", ety: "EN: A person of thoroughly bad character.\nTH: คนที่ทำตัวแย่และขาดศีลธรรมอย่างหนักจนคนอื่นไม่คบ", ex: "He was a charming reprobate who always got his way." },
+                { id: "u1_25", root: "GRAV", word: "grave", phonetic: "/greɪv/", meaning: "ร้ายแรง, ขรึม", ety: "EN: Requiring serious thought; serious in appearance.\nTH: สถานการณ์ที่น่าวิตก หรือบุคลิกที่ดูเคร่งเครียดจริงจัง", ex: "The patient is in grave condition." },
+                { id: "u1_26", root: "GRAV", word: "gravitas", phonetic: "/ˈgrævɪˌtɑs/", meaning: "ความน่าเกรงขาม", ety: "EN: Great or very dignified seriousness.\nTH: บุคลิกที่มีความขึงขังดูมีภูมิฐานและมีความเป็นผู้ใหญ่สูง", ex: "The actor brought great gravitas to the role of the king." },
+                { id: "u1_27", root: "GRAV", word: "gravitate", phonetic: "/ˈgrævɪˌteɪt/", meaning: "เอนเอียงไปหา", ety: "EN: To move or be drawn toward something by natural tendency.\nTH: การถูกดึงดูดเข้าไปหาบางสิ่งโดยธรรมชาติเหมือนแรงโน้มถ่วง", ex: "Young people gravitate toward big cities." },
+                { id: "u1_28", root: "GRAV", word: "aggravate", phonetic: "/ˈægrəˌveɪt/", meaning: "ทำให้แย่ลง, กวนประสาท", ety: "EN: To make a problem more serious; to annoy.\nTH: ทำให้อาการบาดเจ็บหรือปัญหาที่มีอยู่แล้วรุนแรงขึ้น", ex: "Scratching will only aggravate the itch." },
+                { id: "u1_29", root: "LEV", word: "alleviate", phonetic: "/əˈliviˌeɪt/", meaning: "บรรเทา", ety: "EN: To lighten, lessen, or relieve suffering.\nTH: ทำให้ความเจ็บปวดหรือปัญหาเบาบางลง", ex: "The new medicine will help alleviate the pain." },
+                { id: "u1_30", root: "LEV", word: "elevation", phonetic: "/ˌɛləˈveɪʃən/", meaning: "ความสูง, การยกขึ้น", ety: "EN: The height of a place; the act of raising someone.\nTH: ระดับความสูงเหนือระดับน้ำทะเล หรือการได้เลื่อนตำแหน่ง", ex: "The city is at an elevation of 2,000 meters." },
+                { id: "u1_31", root: "LEV", word: "cantilever", phonetic: "/ˈkæntəˌlivər/", meaning: "คานยื่น", ety: "EN: A piece of wood or metal that sticks out from a wall.\nTH: โครงสร้างทางวิศวกรรมที่มีคานยื่นออกมาโดยไม่มีเสารับปลาย", ex: "The balcony was supported by a large cantilever." },
+                { id: "u1_32", root: "LEV", word: "levity", phonetic: "/ˈlɛvəti/", meaning: "ความตลกขบขัน (ไม่ถูกกาลเทศะ)", ety: "EN: Lack of appropriate seriousness.\nTH: การเล่นตลกในสถานการณ์ที่ควรจะเคร่งเครียด", ex: "His levity during the funeral was very inappropriate." }
+            ]
+        }
+    };
+
+    for(let i=2; i<=30; i++) { vocabData[`Unit ${i}`] = { rootsStr: "", words: [] }; }
 
     let curUnit = "Unit 1";
     let curIdx = 0;
-    let progress = JSON.parse(localStorage.getItem('mw_v4')) || {};
+    let progress = JSON.parse(localStorage.getItem('mw_v5')) || {};
 
     function switchTab(tab) {
         document.querySelectorAll('.view, .nav-item').forEach(e => e.classList.remove('active'));
         document.getElementById('view-'+tab).classList.add('active');
         const idx = ["cards", "browse", "quiz"].indexOf(tab);
         document.querySelectorAll('.nav-item')[idx].classList.add('active');
-        renderUnitGrid();
+        
+        if(tab === 'cards') renderFlashcardView();
         if(tab === 'browse') renderBrowse();
+        if(tab === 'quiz') startQuiz();
     }
 
-    function renderUnitGrid() {
-        ["card", "browse", "quiz"].forEach(view => {
-            const grid = document.getElementById(`${view}-unit-grid`);
-            if(!grid) return;
-            grid.innerHTML = '';
-            for(let i=1; i<=30; i++) {
-                const btn = document.createElement('div');
-                btn.className = 'unit-btn' + (curUnit === `Unit ${i}` ? ' active' : '');
-                btn.innerText = `U${i}`;
-                btn.onclick = () => { curUnit = `Unit ${i}`; curIdx = 0; renderUnitGrid(); if(view==='card') renderCard(); if(view==='browse') renderBrowse(); if(view==='quiz') startQuiz(); };
-                grid.appendChild(btn);
+    function renderUnitGrid(targetId) {
+        const grid = document.getElementById(targetId);
+        if(!grid) return;
+        grid.innerHTML = '';
+        for(let i=1; i<=30; i++) {
+            const u = `Unit ${i}`;
+            const words = vocabData[u].words;
+            let pct = 0;
+            if(words.length > 0) {
+                const known = words.filter(w => progress[w.id] === 'know').length;
+                pct = Math.round((known / words.length) * 100);
             }
-        });
+            
+            const btn = document.createElement('div');
+            btn.className = 'unit-btn' + (curUnit === u ? ' active' : '');
+            btn.innerHTML = `U${i}<br><span style="font-weight:normal;">${pct}%</span>`;
+            btn.onclick = () => { curUnit = u; curIdx = 0; renderUnitGrid('card-unit-grid'); renderFlashcardView(); };
+            grid.appendChild(btn);
+        }
     }
 
-    function renderCard() {
-        const words = vocabData[curUnit];
+    function updateStats() {
+        const words = vocabData[curUnit].words;
+        if(words.length === 0) {
+            document.getElementById('st-tot').innerText = "0";
+            document.getElementById('st-kno').innerText = "0";
+            document.getElementById('st-rev').innerText = "0";
+            document.getElementById('st-lft').innerText = "0";
+            return;
+        }
+        let know = 0, review = 0, learning = 0;
+        words.forEach(w => {
+            const st = progress[w.id];
+            if(st === 'know') know++;
+            else if(st === 'review') review++;
+            else learning++; // 'learning' or undefined
+        });
+        document.getElementById('st-tot').innerText = words.length;
+        document.getElementById('st-kno').innerText = know;
+        document.getElementById('st-rev').innerText = review;
+        document.getElementById('st-lft').innerText = learning;
+    }
+
+    function renderFlashcardView() {
+        renderUnitGrid('card-unit-grid');
+        updateStats();
+
+        const words = vocabData[curUnit].words;
+        const rootsStr = vocabData[curUnit].rootsStr;
+        
+        document.getElementById('u-full-title').innerText = `${curUnit.toUpperCase()}${rootsStr ? ' - ' + rootsStr : ''}`;
+        
         if(!words.length) { 
-            document.getElementById('p-root').innerText = "NO DATA"; 
-            document.querySelector('.card-container').style.display = 'none'; 
+            document.getElementById('u-root-desc').innerText = "No data available for this unit.";
+            document.getElementById('main-card-container').style.display = 'none'; 
             return; 
         }
-        document.querySelector('.card-container').style.display = 'flex';
+        document.getElementById('main-card-container').style.display = 'flex';
+        
         const d = words[curIdx];
-        document.getElementById('p-root').innerText = `${d.root} - ${d.rootTh}`;
+        
+        // Update Root Description Box
+        const desc = rootDescriptions[d.root] || `${d.root} - Root description not available.`;
+        document.getElementById('u-root-desc').innerText = desc;
+
+        // Front
+        document.getElementById('c-counter').innerText = `${curIdx + 1}/${words.length}`;
         document.getElementById('c-word').innerText = d.word;
+        document.getElementById('c-root').innerText = d.root;
+        
+        // Back
+        document.getElementById('c-counter-back').innerText = `${curIdx + 1}/${words.length}`;
+        document.getElementById('c-word-back').innerText = d.word;
         document.getElementById('c-phonetic').innerText = d.phonetic;
         document.getElementById('c-th').innerText = d.meaning;
         document.getElementById('c-ety').innerText = d.ety;
         document.getElementById('c-ex').innerText = d.ex;
-        
-        document.getElementById('card-counter').innerText = `${curIdx + 1} / ${words.length}`;
         
         document.getElementById('c-back').style.display = 'none';
         document.getElementById('c-btns').style.display = 'none';
@@ -224,7 +325,7 @@
     }
 
     function playAudio() {
-        const words = vocabData[curUnit];
+        const words = vocabData[curUnit].words;
         if(!words.length) return;
         const s = new SpeechSynthesisUtterance(words[curIdx].word);
         s.lang = 'en-US'; 
@@ -232,42 +333,44 @@
     }
 
     function mark(st) {
-        const words = vocabData[curUnit];
+        const words = vocabData[curUnit].words;
         progress[words[curIdx].id] = st;
-        localStorage.setItem('mw_v4', JSON.stringify(progress));
-        nextCard();
-    }
-
-    function prevCard() {
-        const words = vocabData[curUnit];
-        if(!words.length) return;
-        curIdx = (curIdx - 1 + words.length) % words.length;
-        renderCard();
-    }
-
-    function nextCard() {
-        const words = vocabData[curUnit];
-        if(!words.length) return;
+        localStorage.setItem('mw_v5', JSON.stringify(progress));
         curIdx = (curIdx + 1) % words.length;
-        renderCard();
+        renderFlashcardView();
     }
 
     function renderBrowse() {
         const c = document.getElementById('browse-content');
         c.innerHTML = '';
-        if(!vocabData[curUnit].length) { c.innerHTML = '<div style="text-align:center; color:gray;">No Data</div>'; return; }
-        vocabData[curUnit].forEach(w => {
-            const b = document.createElement('div');
-            b.className = 'word-block';
-            b.innerText = w.word;
-            b.onclick = () => { curIdx = vocabData[curUnit].indexOf(w); switchTab('cards'); renderCard(); flipCard(); };
-            c.appendChild(b);
+        
+        Object.keys(vocabData).forEach(u => {
+            const words = vocabData[u].words;
+            const rootsStr = vocabData[u].rootsStr;
+            if(!words.length) return;
+            
+            const title = document.createElement('div');
+            title.className = 'browse-unit-title';
+            title.innerText = `${u} - ${rootsStr}`;
+            c.appendChild(title);
+            
+            const grid = document.createElement('div');
+            grid.className = 'browse-grid';
+            
+            words.forEach(w => {
+                const b = document.createElement('div');
+                b.className = 'word-block';
+                b.innerText = w.word;
+                b.onclick = () => { curUnit = u; curIdx = words.indexOf(w); switchTab('cards'); flipCard(); };
+                grid.appendChild(b);
+            });
+            c.appendChild(grid);
         });
     }
 
     function startQuiz() {
-        const ws = vocabData[curUnit];
-        if(ws.length < 4) { document.getElementById('quiz-area').innerHTML = '<div style="text-align:center; color:gray;">Need 4+ words in this unit to start quiz.</div>'; return; }
+        const ws = vocabData[curUnit].words;
+        if(ws.length < 4) { document.getElementById('quiz-area').innerHTML = '<div class="quiz-box" style="text-align:center;">Need 4+ words in this unit to start quiz.</div>'; return; }
         const pool = [...ws].sort(() => 0.5 - Math.random()).slice(0, 10);
         let qIdx = 0;
         function renderQ() {
@@ -292,7 +395,8 @@
         renderQ();
     }
 
-    renderUnitGrid(); renderCard();
+    // Initialize
+    renderFlashcardView();
 </script>
 </body>
 </html>
