@@ -1,0 +1,21 @@
+{
+  "name": "MW Vocab Builder",
+  "short_name": "Vocab Builder",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f1ea",
+  "theme_color": "#8b7d6b",
+  "description": "Vocabulary Flashcards based on Merriam-Webster Builder.",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/muan/m-w-icons/master/128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/muan/m-w-icons/master/512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
