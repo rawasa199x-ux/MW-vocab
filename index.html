@@ -28,7 +28,6 @@
 
         #app { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         
-        /* เพิ่ม padding-bottom ให้เยอะขึ้น ดันเนื้อหาหนีแถบเบราว์เซอร์ */
         .view { display: none; flex: 1; flex-direction: column; overflow-y: auto; padding: 20px; padding-bottom: 140px; }
         .view.active { display: flex; }
 
@@ -45,20 +44,22 @@
         /* หน้า FLASHCARDS */
         .flashcard-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; }
         
-        /* รากศัพท์อยู่ด้านบนนอกกรอบ */
-        .root-header-box { text-align: center; margin-bottom: 20px; }
-        .root-word { font-size: 1.6em; font-weight: bold; color: var(--text-brown); text-transform: uppercase; margin-bottom: 5px; }
-        .root-desc { color: var(--text-gray); font-size: 0.95em; }
+        /* รากศัพท์ตรึงด้านบน */
+        .pinned-root {
+            position: sticky; top: -20px; background: var(--bg-color); 
+            padding: 10px 0 15px 0; text-align: center; font-weight: bold; 
+            color: var(--text-brown); font-size: 1.3em; z-index: 10;
+            border-bottom: 1px dashed var(--border-color); margin-bottom: 20px; width: 100%;
+        }
 
-        /* กรอบแฟลชการ์ดด้านล่าง */
         .card { 
             background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; 
-            width: 100%; max-width: 400px; padding: 30px 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center;
+            width: 100%; max-width: 400px; padding: 40px 20px 30px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; margin-top: 10px;
         }
         
         .word-title { font-size: 2.2em; font-weight: bold; margin: 0 0 5px 0; color: var(--text-black); }
-        .phonetic { color: var(--text-gray); font-style: italic; margin-bottom: 20px; }
+        .phonetic { color: var(--text-gray); font-style: italic; margin-bottom: 25px; }
         
         .audio-btn { 
             background: transparent; border: 1px solid var(--border-color); border-radius: 20px; 
@@ -66,15 +67,13 @@
         }
         .play-icon { width: 0; height: 0; border-top: 6px solid transparent; border-left: 10px solid var(--text-brown); border-bottom: 6px solid transparent; }
 
-        /* ส่วนความหมาย (ซ่อนไว้ก่อนกดเฉลย) */
-        .card-back-content { display: none; text-align: left; margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 25px; }
+        .card-back-content { display: none; text-align: left; margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 25px; }
         .meaning-th { font-size: 1.3em; font-weight: bold; color: var(--color-green); margin-bottom: 15px; text-align: center; }
         .info-section { margin-bottom: 15px; }
         .info-label { font-size: 0.85em; font-weight: bold; color: var(--text-brown); text-transform: uppercase; margin-bottom: 4px; }
         .info-text { font-size: 0.95em; line-height: 1.5; color: var(--text-black); }
-        .mnemonic-box { background: #fdfdfd; padding: 10px; border-radius: 6px; color: var(--text-gray); border: 1px solid #f0f0f0; }
+        .mnemonic-box { background: #fdfdfd; padding: 12px; border-radius: 6px; color: var(--text-gray); border: 1px solid #f0f0f0; }
 
-        /* ปุ่ม Action */
         .action-container { width: 100%; max-width: 400px; margin: 20px auto 40px auto; text-align: center; }
         .btn-reveal { background: var(--text-gray); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1em; }
         .decision-buttons { display: none; gap: 10px; width: 100%; }
@@ -83,11 +82,19 @@
         .btn-skip { border: 2px solid var(--color-gray); color: var(--color-gray); }
         .btn-know { border: 2px solid var(--color-green); color: var(--color-green); }
 
-        /* หน้า BROWSE & QUIZ */
-        .search-box { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px; background: var(--card-bg); font-size: 1em;}
-        .word-list { display: grid; gap: 10px; }
-        .word-item { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
+        /* หน้า BROWSE ปรับ Search Box */
+        .search-box { 
+            width: 100%; padding: 12px 15px 12px 40px; border: 1px solid var(--border-color); 
+            border-radius: 8px; background-color: var(--card-bg); font-size: 1em; color: var(--text-black); outline: none; margin-bottom: 15px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%238b7d6b" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>');
+            background-repeat: no-repeat; background-position: 12px center;
+        }
+        .search-box:focus { border-color: var(--text-brown); }
         
+        .word-list { display: grid; gap: 10px; }
+        .word-item { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        
+        /* หน้า QUIZ */
         .quiz-container { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; }
         .quiz-question { font-size: 1.1em; line-height: 1.5; margin-bottom: 20px; }
         .quiz-opt { width: 100%; text-align: left; padding: 15px; margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: transparent; cursor: pointer; font-size: 1em; }
@@ -110,13 +117,9 @@
     </div>
 
     <div id="view-cards" class="view">
+        <div class="pinned-root" id="pinned-root">BENE - ดี</div>
+        
         <div class="flashcard-wrapper" id="scroll-target">
-            
-            <div class="root-header-box">
-                <div class="root-word" id="h-root">BENE</div>
-                <div class="root-desc" id="h-root-desc">จากละตินแปลว่า 'ดี' หรือ 'สะดวก'</div>
-            </div>
-
             <div class="card">
                 <h1 class="word-title" id="c-word">benediction</h1>
                 <div class="phonetic" id="c-phonetic">/ˌbɛnəˈdɪkʃən/</div>
@@ -126,7 +129,7 @@
                     <div class="meaning-th" id="c-th-meaning">การสวดประสาทพร</div>
                     <div class="info-section">
                         <div class="info-label">อธิบายรากศัพท์</div>
-                        <div class="info-text" id="c-root-ety">bene (ดี) + dicere (พูด) = พูดสิ่งดีๆ</div>
+                        <div class="info-text" id="c-root-ety">bene(ดี) + dicere(พูด) = พูดสิ่งดีๆ</div>
                     </div>
                     <div class="info-section">
                         <div class="info-label">วิธีจำ / บริบทวัฒนธรรม</div>
@@ -143,7 +146,6 @@
                     <button class="btn-dec btn-know" onclick="markCard('know')">รู้แล้ว</button>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -167,28 +169,48 @@
 </div>
 
 <script>
-    // 💡 โครงสร้างการเติมข้อมูล Unit 1 (จัดให้ครบ BENE, AM, BELL ตามหนังสือ)
+    // ชุดข้อมูล Unit 1 สมบูรณ์ 32 คำ (8 รากศัพท์)
     const vocabData = {
         "Unit 1": [
-            // --- หมวด BENE (4 คำ) ---
-            { id: "u1_1", root: "BENE", rootDesc: "จากละตินแปลว่า 'ดี' หรือ 'สะดวก'", word: "benediction", phonetic: "/ˌbɛnəˈdɪkʃən/", meaningTh: "การสวดประสาทพร", etyTh: "bene (ดี) + dicere (พูด) = พูดสิ่งดีๆ", mnemonic: "มักใช้เรียกบทสวดขอพรตอนท้ายพิธีทางศาสนาคริสต์ เพื่อขอให้พระเจ้าคุ้มครอง", def: "A prayer that asks for God's blessing, especially a prayer that concludes a worship service." },
-            { id: "u1_2", root: "BENE", rootDesc: "จากละตินแปลว่า 'ดี' หรือ 'สะดวก'", word: "benefactor", phonetic: "/ˈbɛnəˌfæktər/", meaningTh: "ผู้มีพระคุณ, ผู้บริจาค", etyTh: "bene (ดี) + facere (ทำ) = ผู้ทำสิ่งดีๆ", mnemonic: "คนที่ให้ความช่วยเหลือทางการเงินแก่องค์กรหรือบุคคลอื่น เช่น คนบริจาคเงินสร้างตึก", def: "Someone who helps another person or group, especially by giving money." },
-            { id: "u1_3", root: "BENE", rootDesc: "จากละตินแปลว่า 'ดี' หรือ 'สะดวก'", word: "beneficiary", phonetic: "/ˌbɛnəˈfɪʃiˌɛri/", meaningTh: "ผู้รับผลประโยชน์", etyTh: "รากศัพท์เดียวกับ benefactor แต่เปลี่ยน suffix เป็นผู้รับ", mnemonic: "คนที่ได้รับประโยชน์โดยตรง เช่น ผู้รับเงินตามกรมธรรม์ประกันชีวิตเมื่อผู้เอาประกันเสียชีวิต", def: "A person or organization that benefits or is expected to benefit from something, especially one that receives money or property when someone dies." },
-            { id: "u1_4", root: "BENE", rootDesc: "จากละตินแปลว่า 'ดี' หรือ 'สะดวก'", word: "benevolence", phonetic: "/bəˈnɛvələns/", meaningTh: "ความเมตตา, ความใจบุญ", etyTh: "bene (ดี) + velle (ปรารถนา) = ความปรารถนาดี", mnemonic: "นิสัยที่ชอบช่วยเหลือผู้อื่น ทำตัวเป็นคนดี มีน้ำใจ", def: "Kindness, generosity." },
-
-            // --- หมวด AM (4 คำ) ---
-            { id: "u1_5", root: "AM", rootDesc: "จากละติน amare แปลว่า 'ความรัก'", word: "amicable", phonetic: "/ˈæmɪkəbəl/", meaningTh: "เป็นมิตร, ปรองดอง", etyTh: "amicus (เพื่อน) = ทำตัวแบบเพื่อน", mnemonic: "ใช้บรรยายการพูดคุยหรือการตกลงที่จบลงด้วยดี ไม่มีเรื่องทะเลาะเบาะแว้ง", def: "Friendly, peaceful." },
-            { id: "u1_6", root: "AM", rootDesc: "จากละติน amare แปลว่า 'ความรัก'", word: "enamored", phonetic: "/ɪˈnæmərd/", meaningTh: "หลงรัก, คลั่งไคล้", etyTh: "en- (ทำให้) + amor (ความรัก) = ตกอยู่ในความรัก", mnemonic: "มักใช้ในรูป 'enamored of/with' แปลว่าหลงใหลในบางสิ่งมากๆ เช่น หลงรักเมืองนี้", def: "Charmed or fascinated; inflamed with love." },
-            { id: "u1_7", root: "AM", rootDesc: "จากละติน amare แปลว่า 'ความรัก'", word: "amorous", phonetic: "/ˈæmərəs/", meaningTh: "มีใจรัก, แสดงความรัก", etyTh: "amor (ความรัก) + -ous (เต็มไปด้วย) = เต็มไปด้วยความรัก", mnemonic: "มักใช้สื่อถึงความรู้สึกหรือการกระทำที่แสดงออกถึงความรักในเชิงชู้สาว", def: "Having or showing strong feelings of attraction or love." },
-            { id: "u1_8", root: "AM", rootDesc: "จากละติน amare แปลว่า 'ความรัก'", word: "paramour", phonetic: "/ˈpærəˌmʊr/", meaningTh: "ชู้รัก", etyTh: "per (ผ่าน/ด้วย) + amor (ความรัก) = ด้วยความรัก", mnemonic: "คนรักที่คบหากันแบบลับๆ มักผิดศีลธรรมหรือผิดกฎหมาย (เช่น มีสามี/ภรรยาอยู่แล้ว)", def: "A lover, often secret, not allowed by law or custom." },
-
-            // --- หมวด BELL (4 คำ) ---
-            { id: "u1_9", root: "BELL", rootDesc: "จากละติน bellum แปลว่า 'สงคราม'", word: "bellicose", phonetic: "/ˈbɛlɪˌkoʊs/", meaningTh: "ชอบก่อสงคราม, ก้าวร้าว", etyTh: "bellum (สงคราม) = เต็มไปด้วยท่าทีสงคราม", mnemonic: "นิสัยของคนหรือประเทศที่พร้อมจะบวก พร้อมจะมีเรื่องตลอดเวลา", def: "Warlike or hostile in manner or temperament." },
-            { id: "u1_10", root: "BELL", rootDesc: "จากละติน bellum แปลว่า 'สงคราม'", word: "belligerent", phonetic: "/bəˈlɪdʒərənt/", meaningTh: "ที่เป็นปฏิปักษ์, ดุดัน", etyTh: "bellum (สงคราม) + gerere (ทำ) = ผู้ทำสงคราม", mnemonic: "อาการหัวฟัดหัวเหวี่ยง ไม่ยอมใคร หรือหมายถึงประเทศที่กำลังอยู่ในภาวะสงครามจริงๆ", def: "Inclined to or exhibiting assertiveness, hostility, or combativeness." },
-            { id: "u1_11", root: "BELL", rootDesc: "จากละติน bellum แปลว่า 'สงคราม'", word: "rebellion", phonetic: "/rɪˈbɛljən/", meaningTh: "การกบฏ", etyTh: "re (กลับ/ต่อต้าน) + bellum (สงคราม) = หันกลับมาทำสงคราม(กับผู้ปกครอง)", mnemonic: "การลุกฮือของประชาชนเพื่อต่อต้านหรือโค่นล้มรัฐบาล", def: "Open defiance and opposition, sometimes armed, to a person or thing in authority." },
-            { id: "u1_12", root: "BELL", rootDesc: "จากละติน bellum แปลว่า 'สงคราม'", word: "casus belli", phonetic: "/ˌkæsəs ˈbɛlaɪ/", meaningTh: "เหตุแห่งสงคราม", etyTh: "casus (เหตุการณ์) + belli (สงคราม) = เหตุการณ์ที่ก่อให้เกิดสงคราม", mnemonic: "ข้ออ้างหรือชนวนเหตุสำคัญที่ทำให้ประเทศหนึ่งประกาศสงครามกับอีกประเทศ", def: "An event or action that justifies or allegedly justifies a war or conflict." }
+            { id: "u1_1", root: "BENE", rootTh: "ดี", word: "benediction", phonetic: "/ˌbɛnəˈdɪkʃən/", meaningTh: "การสวดประสาทพร", etyTh: "bene(ดี) + dicere(พูด) = พูดสิ่งดีๆ", mnemonic: "มักใช้เรียกบทสวดขอพรตอนท้ายพิธีศาสนาคริสต์", def: "A prayer that asks for God's blessing." },
+            { id: "u1_2", root: "BENE", rootTh: "ดี", word: "benefactor", phonetic: "/ˈbɛnəˌfæktər/", meaningTh: "ผู้มีพระคุณ", etyTh: "bene(ดี) + facere(ทำ) = ผู้ทำสิ่งดีๆ", mnemonic: "คนที่ให้ความช่วยเหลือทางการเงินแก่องค์กรหรือบุคคลอื่น", def: "Someone who helps another person or group, especially by giving money." },
+            { id: "u1_3", root: "BENE", rootTh: "ดี", word: "beneficiary", phonetic: "/ˌbɛnəˈfɪʃiˌɛri/", meaningTh: "ผู้รับผลประโยชน์", etyTh: "รากศัพท์เดียวกับ benefactor แต่เป็นฝั่งผู้รับ", mnemonic: "ผู้ได้รับประโยชน์โดยตรง เช่น ผู้รับเงินตามกรมธรรม์ประกันชีวิต", def: "A person or organization that benefits or is expected to benefit from something." },
+            { id: "u1_4", root: "BENE", rootTh: "ดี", word: "benevolence", phonetic: "/bəˈnɛvələns/", meaningTh: "ความเมตตา", etyTh: "bene(ดี) + velle(ปรารถนา) = ความปรารถนาดี", mnemonic: "นิสัยที่ชอบช่วยเหลือผู้อื่น ทำตัวเป็นคนมีน้ำใจ", def: "Kindness, generosity." },
             
-            // 💡 วิธีเพิ่มข้อมูล: ก๊อปปี้ปีกกา {...} ด้านบนมาวางต่อกัน แล้วแก้ข้อมูลตามหนังสือได้เลย
+            { id: "u1_5", root: "AM", rootTh: "ความรัก", word: "amicable", phonetic: "/ˈæmɪkəbəl/", meaningTh: "เป็นมิตร", etyTh: "amicus(เพื่อน) = ทำตัวแบบเพื่อน", mnemonic: "การพูดคุยหรือการตกลงที่จบลงด้วยดี ไม่มีเรื่องทะเลาะเบาะแว้ง", def: "Friendly, peaceful." },
+            { id: "u1_6", root: "AM", rootTh: "ความรัก", word: "enamored", phonetic: "/ɪˈnæmərd/", meaningTh: "หลงรัก, คลั่งไคล้", etyTh: "en-(ทำให้) + amor(ความรัก)", mnemonic: "มักใช้ในรูป 'enamored of/with' แปลว่าหลงใหลในบางสิ่งมากๆ", def: "Charmed or fascinated; inflamed with love." },
+            { id: "u1_7", root: "AM", rootTh: "ความรัก", word: "amorous", phonetic: "/ˈæmərəs/", meaningTh: "มีใจรัก, แสดงความรัก", etyTh: "amor(รัก) + -ous(เต็มไปด้วย)", mnemonic: "ความรู้สึกหรือการกระทำที่แสดงออกถึงความรักในเชิงชู้สาว", def: "Having or showing strong feelings of attraction or love." },
+            { id: "u1_8", root: "AM", rootTh: "ความรัก", word: "paramour", phonetic: "/ˈpærəˌmʊr/", meaningTh: "ชู้รัก", etyTh: "per(ผ่าน) + amor(ความรัก)", mnemonic: "คนรักลับๆ มักผิดศีลธรรมหรือผิดกฎหมาย", def: "A lover, often secret, not allowed by law or custom." },
+            
+            { id: "u1_9", root: "BELL", rootTh: "สงคราม", word: "bellicose", phonetic: "/ˈbɛlɪˌkoʊs/", meaningTh: "ก้าวร้าว, ชอบก่อสงคราม", etyTh: "bellum(สงคราม) = เต็มไปด้วยท่าทีสงคราม", mnemonic: "นิสัยของคนหรือประเทศที่พร้อมจะมีเรื่องตลอดเวลา", def: "Warlike or hostile in manner or temperament." },
+            { id: "u1_10", root: "BELL", rootTh: "สงคราม", word: "belligerent", phonetic: "/bəˈlɪdʒərənt/", meaningTh: "เป็นปฏิปักษ์, ดุดัน", etyTh: "bellum(สงคราม) + gerere(ทำ) = ผู้ทำสงคราม", mnemonic: "อาการหัวฟัดหัวเหวี่ยง ไม่ยอมใคร หรือประเทศที่กำลังอยู่ในภาวะสงคราม", def: "Inclined to or exhibiting assertiveness, hostility, or combativeness." },
+            { id: "u1_11", root: "BELL", rootTh: "สงคราม", word: "rebellion", phonetic: "/rɪˈbɛljən/", meaningTh: "การกบฏ", etyTh: "re-(กลับ/ต่อต้าน) + bellum(สงคราม)", mnemonic: "การลุกฮือของประชาชนเพื่อต่อต้านหรือโค่นล้มรัฐบาล", def: "Open defiance and opposition, sometimes armed, to a person or thing in authority." },
+            { id: "u1_12", root: "BELL", rootTh: "สงคราม", word: "casus belli", phonetic: "/ˌkæsəs ˈbɛlaɪ/", meaningTh: "เหตุแห่งสงคราม", etyTh: "casus(เหตุการณ์) + belli(สงคราม)", mnemonic: "ข้ออ้างหรือชนวนเหตุสำคัญที่ทำให้ประเทศประกาศสงคราม", def: "An event or action that justifies or allegedly justifies a war or conflict." },
+            
+            { id: "u1_13", root: "PAC", rootTh: "สงบ, สันติ", word: "pacify", phonetic: "/ˈpæsəˌfaɪ/", meaningTh: "ทำให้สงบ", etyTh: "pac(สงบ) + ify(ทำให้)", mnemonic: "ทำให้คนโกรธใจเย็นลง หรือยุติการจลาจล", def: "To soothe anger or agitation." },
+            { id: "u1_14", root: "PAC", rootTh: "สงบ, สันติ", word: "pacifist", phonetic: "/ˈpæsəfɪst/", meaningTh: "ผู้รักสันติภาพ", etyTh: "pac(สงบ) + ist(บุคคล)", mnemonic: "คนที่ต่อต้านการใช้ความรุนแรงและสงครามในทุกกรณี", def: "A person opposed to war or violence, especially someone who refuses to bear arms." },
+            { id: "u1_15", root: "PAC", rootTh: "สงบ, สันติ", word: "pact", phonetic: "/pækt/", meaningTh: "ข้อตกลง, สนธิสัญญา", etyTh: "pactum(ตกลงกัน)", mnemonic: "ข้อตกลงร่วมกันเพื่อรักษาสันติภาพระหว่างกลุ่ม", def: "An agreement between two or more people or groups; a treaty." },
+            { id: "u1_16", root: "PAC", rootTh: "สงบ, สันติ", word: "pace", phonetic: "/ˈpeɪsi/", meaningTh: "ด้วยความเคารพต่อ (มักใช้ขัดแย้ง)", etyTh: "pace(ความสงบ)", mnemonic: "ใช้พูดก่อนจะแสดงความเห็นขัดแย้งกับบุคคลใดอย่างสุภาพ", def: "Contrary to the opinion of." },
+            
+            { id: "u1_17", root: "CRIM", rootTh: "ความผิด, กล่าวหา", word: "criminology", phonetic: "/ˌkrɪməˈnɑlədʒi/", meaningTh: "อาชญาวิทยา", etyTh: "crim(อาชญากรรม) + logy(วิชา)", mnemonic: "การศึกษาเกี่ยวกับอาชญากรรม กฎหมาย และการลงโทษ", def: "The study of crime, criminals, law enforcement, and punishment." },
+            { id: "u1_18", root: "CRIM", rootTh: "ความผิด, กล่าวหา", word: "decriminalize", phonetic: "/diˈkrɪmənəlˌaɪz/", meaningTh: "ลดโทษทางอาญา", etyTh: "de-(ถอดถอน) + criminalize(ทำให้เป็นความผิด)", mnemonic: "การแก้กฎหมายไม่ให้การกระทำนั้นเป็นความผิดอาญาอีกต่อไป", def: "To remove or reduce the criminal status of." },
+            { id: "u1_19", root: "CRIM", rootTh: "ความผิด, กล่าวหา", word: "incriminate", phonetic: "/ɪnˈkrɪməˌneɪt/", meaningTh: "ปรักปรำ, ทำให้ดูมีความผิด", etyTh: "in-(เข้าไป) + crim(ข้อกล่าวหา)", mnemonic: "หาหลักฐานหรือให้การปรักปรำผู้อื่นหรือพาตัวเองไปพัวพันความผิด", def: "To show evidence of involvement in a crime or a fault." },
+            { id: "u1_20", root: "CRIM", rootTh: "ความผิด, กล่าวหา", word: "recrimination", phonetic: "/rɪˌkrɪməˈneɪʃən/", meaningTh: "การกล่าวหากลับ", etyTh: "re-(กลับ) + crimination(การกล่าวหา)", mnemonic: "จังหวะที่ A กล่าวหา B แล้ว B กล่าวหา A กลับ (เถียงสาดโคลนใส่กัน)", def: "An accusation in answer to an accusation made against oneself." },
+            
+            { id: "u1_21", root: "PROB", rootTh: "พิสูจน์, ซื่อสัตย์", word: "approbation", phonetic: "/ˌæprəˈbeɪʃən/", meaningTh: "การเห็นชอบ, การชื่นชม", etyTh: "ad-(ต่อ) + probare(เห็นชอบ/พิสูจน์)", mnemonic: "การอนุมัติหรือยกย่องอย่างเป็นทางการ", def: "A formal or official act of approving; praise, usually given with pleasure or enthusiasm." },
+            { id: "u1_22", root: "PROB", rootTh: "พิสูจน์, ซื่อสัตย์", word: "probate", phonetic: "/ˈproʊˌbeɪt/", meaningTh: "การพิสูจน์พินัยกรรม", etyTh: "probare(พิสูจน์)", mnemonic: "กระบวนการทางศาลเพื่อยืนยันว่าพินัยกรรมของผู้ตายเป็นของจริง", def: "The process of proving in court that the will of someone who has died is valid." },
+            { id: "u1_23", root: "PROB", rootTh: "พิสูจน์, ซื่อสัตย์", word: "probity", phonetic: "/ˈproʊbəti/", meaningTh: "ความซื่อสัตย์สุจริต", etyTh: "probus(ซื่อตรง)", mnemonic: "การมีมาตรฐานทางศีลธรรมสูง ไว้ใจได้ร้อยเปอร์เซ็นต์", def: "Absolute honesty and uprightness." },
+            { id: "u1_24", root: "PROB", rootTh: "พิสูจน์, ซื่อสัตย์", word: "reprobate", phonetic: "/ˈrɛprəˌbeɪt/", meaningTh: "คนเลวทราม", etyTh: "re-(ต่อต้าน) + probare(เห็นชอบ) = ไม่เป็นที่ยอมรับ", mnemonic: "คนที่ทำตัวแย่และเสเพลจนเกินเยียวยา", def: "A person of thoroughly bad character." },
+
+            { id: "u1_25", root: "GRAV", rootTh: "หนัก, จริงจัง", word: "grave", phonetic: "/greɪv/", meaningTh: "ร้ายแรง, จริงจัง", etyTh: "gravis(หนัก)", mnemonic: "สถานการณ์ที่น่าเป็นห่วงหรือท่าทีขึงขัง (นอกจากแปลว่าหลุมศพ)", def: "Requiring serious thought or concern; serious and formal in appearance or manner." },
+            { id: "u1_26", root: "GRAV", rootTh: "หนัก, จริงจัง", word: "gravitas", phonetic: "/ˈgrævɪˌtɑs/", meaningTh: "ความน่าเชื่อถือ, ขึงขัง", etyTh: "gravis(หนัก)", mnemonic: "บุคลิกที่ดูน่าเกรงขามและมีความเป็นผู้ใหญ่ (มักใช้กับผู้นำ)", def: "Great or very dignified seriousness." },
+            { id: "u1_27", root: "GRAV", rootTh: "หนัก, จริงจัง", word: "gravitate", phonetic: "/ˈgrævɪˌteɪt/", meaningTh: "เอนเอียงไปทาง, ดึงดูด", etyTh: "gravis(หนัก) -> แรงโน้มถ่วง", mnemonic: "การที่คนเราถูกดึงดูดให้เข้าไปหาบางสิ่งโดยธรรมชาติ", def: "To move or be drawn toward something, especially by natural tendency or as if by an invisible force." },
+            { id: "u1_28", root: "GRAV", rootTh: "หนัก, จริงจัง", word: "aggravate", phonetic: "/ˈægrəˌveɪt/", meaningTh: "ทำให้แย่ลง", etyTh: "ad-(เพิ่ม) + gravis(หนัก) = ทำให้หนักขึ้น", mnemonic: "ทำให้อาการป่วยแย่ลง หรือกวนประสาทให้หงุดหงิดกว่าเดิม", def: "To make (an injury, problem, etc.) more serious or severe; to annoy or bother." },
+
+            { id: "u1_29", root: "LEV", rootTh: "เบา, ยกขึ้น", word: "alleviate", phonetic: "/əˈliviˌeɪt/", meaningTh: "บรรเทา", etyTh: "ad-(สู่) + levis(เบา) = ทำให้เบาลง", mnemonic: "บรรเทาความเจ็บปวดหรือปัญหาให้ลดน้อยลง", def: "To lighten, lessen, or relieve, especially physical or mental suffering." },
+            { id: "u1_30", root: "LEV", rootTh: "เบา, ยกขึ้น", word: "elevation", phonetic: "/ˌɛləˈveɪʃən/", meaningTh: "ความสูง, การยกขึ้น", etyTh: "levare(ยก)", mnemonic: "ระดับความสูงเหนือระดับน้ำทะเล หรือการได้เลื่อนตำแหน่ง", def: "The height of a place; the act or result of lifting or raising someone or something." },
+            { id: "u1_31", root: "LEV", rootTh: "เบา, ยกขึ้น", word: "cantilever", phonetic: "/ˈkæntəˌlivər/", meaningTh: "คานยื่น", etyTh: "canti(มุม) + lever(ยก)", mnemonic: "โครงสร้างที่มีคานยื่นออกไปโดยมีเสารับน้ำหนักแค่ฝั่งเดียว", def: "A long piece of wood, metal, etc., that sticks out from a wall to support something above it." },
+            { id: "u1_32", root: "LEV", rootTh: "เบา, ยกขึ้น", word: "levity", phonetic: "/ˈlɛvəti/", meaningTh: "ความเบาสมอง", etyTh: "levis(เบา)", mnemonic: "การพูดหรือทำตัวตลกขบขันในสถานการณ์ที่ควรจะจริงจัง", def: "Lack of appropriate seriousness." }
         ]
     };
 
@@ -197,7 +219,7 @@
     let quizQuestions = [];
     let currentQuizIndex = 0;
     
-    let progressData = JSON.parse(localStorage.getItem('mw_vocab_progress_2')) || {};
+    let progressData = JSON.parse(localStorage.getItem('mw_vocab_progress_3')) || {};
 
     function switchView(viewName) {
         document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
@@ -246,8 +268,7 @@
         }
         
         if (!found) {
-            document.getElementById('h-root').innerText = "🎉 จบหมวดแล้ว";
-            document.getElementById('h-root-desc').innerText = "คุณจำศัพท์หมวดนี้ได้ครบแล้ว";
+            document.getElementById('pinned-root').innerText = "🎉 จบหมวดแล้ว";
             document.querySelector('.card').style.display = 'none';
             document.getElementById('btn-reveal').style.display = 'none';
             document.getElementById('decision-area').style.display = 'none';
@@ -256,24 +277,21 @@
 
         const data = unitWords[currentCardIndex];
         
-        // เซ็ตค่าหน้าการ์ด
+        // เซ็ตรากศัพท์ที่ตรึงไว้ด้านบน
+        document.getElementById('pinned-root').innerText = `${data.root} - ${data.rootTh}`;
+        
         document.querySelector('.card').style.display = 'block';
-        document.getElementById('h-root').innerText = data.root;
-        document.getElementById('h-root-desc').innerText = data.rootDesc;
         document.getElementById('c-word').innerText = data.word;
         document.getElementById('c-phonetic').innerText = data.phonetic;
         
-        // เซ็ตค่าหลังการ์ด
         document.getElementById('c-th-meaning').innerText = data.meaningTh;
         document.getElementById('c-root-ety').innerText = data.etyTh;
         document.getElementById('c-mnemonic').innerText = data.mnemonic;
 
-        // ซ่อนหลังการ์ด โชว์ปุ่มเฉลย
         document.getElementById('card-back-content').style.display = 'none';
         document.getElementById('btn-reveal').style.display = 'block';
         document.getElementById('decision-area').style.display = 'none';
         
-        // รีเซ็ต Scroll
         document.getElementById('view-cards').scrollTop = 0;
     }
 
@@ -281,7 +299,6 @@
         document.getElementById('card-back-content').style.display = 'block';
         document.getElementById('btn-reveal').style.display = 'none';
         document.getElementById('decision-area').style.display = 'flex';
-        // เลื่อนหน้าจอลงมาให้เห็นปุ่มตัดสินใจ
         document.getElementById('view-cards').scrollTo({ top: 300, behavior: 'smooth' });
         playAudio();
     }
@@ -296,7 +313,7 @@
     function markCard(status) {
         const wordId = vocabData[currentUnit][currentCardIndex].id;
         progressData[wordId] = status;
-        localStorage.setItem('mw_vocab_progress_2', JSON.stringify(progressData));
+        localStorage.setItem('mw_vocab_progress_3', JSON.stringify(progressData));
         currentCardIndex++;
         renderCard();
     }
@@ -334,7 +351,7 @@
     function startQuiz() {
         const unitWords = vocabData[currentUnit];
         if (!unitWords || unitWords.length < 4) {
-            document.getElementById('quiz-area').innerHTML = '<div style="text-align:center;">คำศัพท์ยังไม่พอให้ทำควิซ (ต้องมี 4 คำขึ้นไป)</div>';
+            document.getElementById('quiz-area').innerHTML = '<div style="text-align:center;">คำศัพท์ยังไม่พอให้ทำควิซ</div>';
             return;
         }
 
