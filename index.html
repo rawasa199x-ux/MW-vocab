@@ -4,67 +4,316 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MW Vocab Builder</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#f4f1ea">
     <style>
         :root {
             --bg-color: #f4f1ea;
             --card-bg: #ffffff;
-            --text-black: #1c1c1c;
+            --text-main: #1c1c1c;
             --text-gray: #666666;
             --text-brown: #8b7d6b;
-            --border-color: #d1cfc8;
-            --color-maroon: #800000;
-            --color-gray: #666666;
-            --color-green: #008000;
+            --border: #d1cfc8;
+            --red-maroon: #800000;
+            --green-dark: #008000;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background-color: var(--bg-color); color: var(--text-black);
+            background-color: var(--bg-color); color: var(--text-main);
             margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
 
         #app { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         
-        .view { display: none; flex: 1; flex-direction: column; overflow-y: auto; padding: 20px; padding-bottom: 140px; }
+        .view { display: none; flex: 1; flex-direction: column; overflow-y: auto; padding: 20px; padding-bottom: 120px; }
         .view.active { display: flex; }
 
-        .page-header { text-align: center; font-size: 1.2em; font-weight: bold; color: var(--text-brown); margin-bottom: 20px; flex-shrink: 0; }
+        .page-header { text-align: center; font-size: 1.1em; font-weight: bold; color: var(--text-brown); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* หน้า UNIT */
-        .unit-list { display: grid; gap: 15px; }
-        .unit-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; cursor: pointer; }
-        .unit-title { font-weight: bold; margin-bottom: 8px; }
-        .progress-container { display: flex; align-items: center; gap: 10px; color: var(--text-gray); font-size: 0.9em; }
-        .progress-bar-bg { flex: 1; height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; background: var(--color-green); width: 0%; transition: width 0.3s; }
-
-        /* หน้า FLASHCARDS */
-        .flashcard-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; }
-        
-        /* รากศัพท์ตรึงด้านบน */
+        /* --- FLASHCARDS VIEW --- */
         .pinned-root {
             position: sticky; top: -20px; background: var(--bg-color); 
-            padding: 10px 0 15px 0; text-align: center; font-weight: bold; 
-            color: var(--text-brown); font-size: 1.3em; z-index: 10;
-            border-bottom: 1px dashed var(--border-color); margin-bottom: 20px; width: 100%;
+            padding: 15px 0; text-align: center; font-weight: bold; 
+            color: var(--text-brown); font-size: 1.2em; z-index: 10;
+            border-bottom: 1px solid var(--border); margin-bottom: 20px; width: 100%;
         }
 
+        .flashcard-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        
         .card { 
-            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; 
-            width: 100%; max-width: 400px; padding: 40px 20px 30px 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; margin-top: 10px;
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; 
+            width: 100%; max-width: 400px; padding: 50px 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02); text-align: center; cursor: pointer;
+            min-height: 300px; display: flex; flex-direction: column; justify-content: center;
         }
         
-        .word-title { font-size: 2.2em; font-weight: bold; margin: 0 0 5px 0; color: var(--text-black); }
-        .phonetic { color: var(--text-gray); font-style: italic; margin-bottom: 25px; }
+        .word-display { font-size: 2.5em; font-weight: bold; margin-bottom: 10px; color: var(--text-main); }
+        .phonetic-display { color: var(--text-gray); font-size: 1.1em; font-style: italic; margin-bottom: 25px; }
         
-        .audio-btn { 
-            background: transparent; border: 1px solid var(--border-color); border-radius: 20px; 
-            padding: 8px 15px; color: var(--text-brown); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.9em;
+        .play-btn { 
+            background: transparent; border: 1px solid var(--border); border-radius: 20px; 
+            padding: 8px 18px; color: var(--text-brown); font-size: 0.85em;
+            display: inline-flex; align-items: center; gap: 8px; margin: 0 auto;
         }
+        .play-triangle { width: 0; height: 0; border-top: 5px solid transparent; border-left: 8px solid var(--text-brown); border-bottom: 5px solid transparent; }
+
+        .card-detail { display: none; text-align: left; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 25px; }
+        .meaning-th { font-size: 1.4em; font-weight: bold; color: var(--green-dark); margin-bottom: 20px; text-align: center; }
+        .label { font-size: 0.75em; font-weight: bold; color: var(--text-brown); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
+        .content-text { font-size: 0.95em; line-height: 1.6; color: var(--text-main); margin-bottom: 15px; }
+        .context-box { background: #f9f9f9; padding: 12px; border: 1px solid #eee; border-radius: 4px; font-size: 0.9em; color: var(--text-gray); }
+
+        .action-area { width: 100%; max-width: 400px; margin: 30px auto 0; display: none; gap: 15px; }
+        .btn-status { 
+            flex: 1; background: transparent; padding: 16px 0; border-radius: 4px; 
+            font-weight: bold; cursor: pointer; font-size: 0.9em; text-transform: uppercase;
+        }
+        .btn-learning { border: 1px solid var(--red-maroon); color: var(--red-maroon); }
+        .btn-knew { border: 1px solid var(--green-dark); color: var(--green-dark); }
+
+        /* --- BROWSE VIEW --- */
+        .search-container { position: relative; margin-bottom: 20px; }
+        .search-input { 
+            width: 100%; padding: 12px 15px 12px 35px; border: 1px solid var(--border); 
+            border-radius: 4px; background: var(--card-bg); font-size: 1em; outline: none;
+        }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; border: 2px solid var(--text-brown); border-radius: 50%; }
+        .search-icon::after { content: ''; position: absolute; width: 6px; height: 2px; background: var(--text-brown); bottom: -4px; right: -4px; transform: rotate(45deg); }
+
+        .unit-group { margin-bottom: 25px; }
+        .unit-header { font-weight: bold; color: var(--text-brown); font-size: 0.9em; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .root-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+        .root-tag { font-size: 0.75em; font-weight: bold; color: var(--text-gray); border: 1px solid var(--border); padding: 2px 6px; border-radius: 2px; }
+        .word-item { 
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 4px; 
+            padding: 12px 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* --- QUIZ/UNIT SELECTION --- */
+        .quiz-grid { display: grid; gap: 12px; }
+        .unit-select-box { 
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 4px; 
+            padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+        }
+        .unit-label { font-weight: bold; font-size: 1.1em; }
+        .unit-progress { color: var(--text-gray); font-size: 0.9em; }
+
+        /* --- BOTTOM NAV --- */
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; 
+            background: var(--card-bg); border-top: 1px solid var(--border); 
+            display: flex; padding-bottom: env(safe-area-inset-bottom); z-index: 100;
+        }
+        .nav-item { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-gray); font-size: 0.85em; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-item.active { color: var(--text-brown); font-weight: bold; background: #fcfbf9; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div id="view-units" class="view active">
+        <div class="page-header">Select Unit</div>
+        <div class="quiz-grid" id="unit-grid"></div>
+    </div>
+
+    <div id="view-cards" class="view">
+        <div class="pinned-root" id="pinned-root">ROOT - MEANING</div>
+        <div class="flashcard-wrapper">
+            <div class="card" onclick="flipCard()">
+                <div id="card-front">
+                    <div class="word-display" id="c-word">Word</div>
+                    <div class="phonetic-display" id="c-phonetic">/phonetic/</div>
+                    <div class="play-btn" onclick="event.stopPropagation(); playAudio();">
+                        <span class="play-triangle"></span> ออกเสียง
+                    </div>
+                </div>
+                <div class="card-detail" id="card-back">
+                    <div class="meaning-th" id="c-meaning-th">ความหมายไทย</div>
+                    <div class="label">ที่มาและการวิเคราะห์</div>
+                    <div class="content-text" id="c-root-ety">คำอธิบายรากศัพท์</div>
+                    <div class="label">บริบทและตัวอย่าง</div>
+                    <div class="content-text context-box" id="c-context">บริบททางวัฒนธรรมและตัวอย่างประโยค</div>
+                </div>
+            </div>
+            <div class="action-area" id="action-area">
+                <button class="btn-status btn-learning" onclick="markWord('learning')">still learning</button>
+                <button class="btn-status btn-knew" onclick="markWord('know')">knew it</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-browse" class="view">
+        <div class="page-header">Browse Words</div>
+        <div class="search-container">
+            <div class="search-icon"></div>
+            <input type="text" class="search-input" placeholder="Search..." oninput="filterWords(this.value)">
+        </div>
+        <div id="browse-container"></div>
+    </div>
+
+    <div id="view-quiz" class="view">
+        <div class="page-header" id="quiz-title">Quiz</div>
+        <div id="quiz-content"></div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchView('units')">Units</div>
+        <div class="nav-item" onclick="switchView('cards')">Cards</div>
+        <div class="nav-item" onclick="switchView('browse')">Browse</div>
+        <div class="nav-item" onclick="switchView('quiz')">Quiz</div>
+    </nav>
+</div>
+
+<script>
+    // ข้อมูล Unit 1 ครบทั้ง 32 คำ
+    const vocabData = {
+        "Unit 1": {
+            roots: ["BENE", "AM", "BELL", "PAC", "CRIM", "PROB", "GRAV", "LEV"],
+            words: [
+                { id: "u1_1", root: "BENE", rootTh: "ดี", word: "benediction", phonetic: "/ˌbɛnəˈdɪkʃən/", meaningTh: "การสวดประสาทพร", etyTh: "bene(ดี) + dicere(พูด) = การกล่าวสิ่งดีๆ", context: "มักใช้ในทางศาสนา หมายถึงบทสวดขอพรตอนท้ายพิธี" },
+                { id: "u1_2", root: "BENE", rootTh: "ดี", word: "benefactor", phonetic: "/ˈbɛnəˌfæktər/", meaningTh: "ผู้มีพระคุณ, ผู้บริจาค", etyTh: "bene(ดี) + facere(ทำ) = คนที่ทำสิ่งดีๆ ให้", context: "คนที่ให้ความช่วยเหลือทางการเงินแก่องค์กรหรือบุคคลอื่น" },
+                { id: "u1_3", root: "BENE", rootTh: "ดี", word: "beneficiary", phonetic: "/ˌbɛnəˈfɪʃiˌɛri/", meaningTh: "ผู้รับผลประโยชน์", etyTh: "รากเดียวกับ benefactor แต่เปลี่ยนมุมเป็นผู้ได้รับ", context: "ผู้ที่มีสิทธิ์รับเงินหรือทรัพย์สินตามพินัยกรรมหรือประกัน" },
+                { id: "u1_4", root: "BENE", rootTh: "ดี", word: "benevolence", phonetic: "/bəˈnɛvələns/", meaningTh: "ความเมตตา, ความใจบุญ", etyTh: "bene(ดี) + velle(ปรารถนา) = ความปรารถนาดี", context: "ลักษณะนิสัยที่ชอบช่วยเหลือผู้อื่น มีน้ำใจโอบอ้อมอารี" },
+                { id: "u1_5", root: "AM", rootTh: "ความรัก", word: "amicable", phonetic: "/ˈæmɪkəbəl/", meaningTh: "เป็นมิตร, ปรองดอง", etyTh: "amicus(เพื่อน) = ทำตัวแบบเพื่อน", context: "ใช้บรรยายการตกลงหรือความสัมพันธ์ที่จบลงด้วยดีไม่มีความขัดแย้ง" },
+                { id: "u1_6", root: "AM", rootTh: "ความรัก", word: "enamored", phonetic: "/ɪˈnæmərd/", meaningTh: "หลงรัก, คลั่งไคล้", etyTh: "en-(ทำให้) + amor(ความรัก) = ทำให้ตกหลุมรัก", context: "ใช้ในรูป enamored of/with หมายถึงหลงใหลในสิ่งใดสิ่งหนึ่งมากๆ" },
+                { id: "u1_7", root: "AM", rootTh: "ความรัก", word: "amorous", phonetic: "/ˈæmərəs/", meaningTh: "แสดงความรัก (เชิงชู้สาว)", etyTh: "amor(รัก) + -ous(เต็มไปด้วย)", context: "เน้นการแสดงออกทางความรู้สึกที่รุนแรงในเชิงชู้สาว" },
+                { id: "u1_8", root: "AM", rootTh: "ความรัก", word: "paramour", phonetic: "/ˈpærəˌmʊr/", meaningTh: "ชู้รัก", etyTh: "per(ผ่าน) + amor(ความรัก) = ลักลอบรัก", context: "คนรักที่เป็นความลับ มักเป็นการคบหาที่ผิดศีลธรรมหรือกฎหมาย" },
+                { id: "u1_9", root: "BELL", rootTh: "สงคราม", word: "bellicose", phonetic: "/ˈbɛlɪˌkoʊs/", meaningTh: "ก้าวร้าว, ชอบก่อสงคราม", etyTh: "bellum(สงคราม) = มีท่าทีแบบสงคราม", context: "ใช้บรรยายประเทศหรือคนที่ชอบใช้ความรุนแรงและหาเรื่อง" },
+                { id: "u1_10", root: "BELL", rootTh: "สงคราม", word: "belligerent", phonetic: "/bəˈlɪdʒərənt/", meaningTh: "เป็นปฏิปักษ์, ดุดัน", etyTh: "bellum(สงคราม) + gerere(ทำ) = ผู้ทำสงคราม", context: "อาการที่พร้อมจะสู้หรือมีท่าทีเป็นศัตรูอย่างเห็นได้ชัด" },
+                { id: "u1_11", root: "BELL", rootTh: "สงคราม", word: "rebellion", phonetic: "/rɪˈbɛljən/", meaningTh: "การกบฏ", etyTh: "re-(กลับ/ต้าน) + bellum(สงคราม)", context: "การลุกฮือขึ้นต่อต้านอำนาจรัฐหรือผู้มีอำนาจปกครอง" },
+                { id: "u1_12", root: "BELL", rootTh: "สงคราม", word: "casus belli", phonetic: "/ˌkæsัส ˈbɛlaɪ/", meaningTh: "ชนวนเหตุสงคราม", etyTh: "casus(เหตุการณ์) + belli(สงคราม)", context: "เหตุการณ์หรือข้ออ้างที่ใช้เพื่อประกาศสงครามอย่างเป็นทางการ" },
+                { id: "u1_13", root: "PAC", rootTh: "สงบ, สันติ", word: "pacify", phonetic: "/ˈpæsəˌfaɪ/", meaningTh: "ทำให้สงบ", etyTh: "pac(สงบ) + ify(ทำให้)", context: "ทำให้คนที่โกรธใจเย็นลง หรือยับยั้งการจลาจล" },
+                { id: "u1_14", root: "PAC", rootTh: "สงบ, สันติ", word: "pacifist", phonetic: "/ˈpæsəfɪst/", meaningTh: "ผู้รักสันติภาพ", etyTh: "pac(สงบ) + ist(บุคคล)", context: "คนที่ต่อต้านการใช้ความรุนแรงและสงครามในทุกรูปแบบ" },
+                { id: "u1_15", root: "PAC", rootTh: "สงบ, สันติ", word: "pact", phonetic: "/pækt/", meaningTh: "ข้อตกลง, สนธิสัญญา", etyTh: "pactum(ตกลง)", context: "ข้อตกลงร่วมกันอย่างเป็นทางการระหว่างสองฝ่ายเพื่อความสงบ" },
+                { id: "u1_16", root: "PAC", rootTh: "สงบ, สันติ", word: "pace", phonetic: "/ˈpeɪsi/", meaningTh: "ด้วยความเคารพต่อความเห็นต่าง", etyTh: "pace(ความสงบ)", context: "มักใช้ในภาษาเขียนเพื่อขัดแย้งกับใครบางคนอย่างสุภาพ" },
+                { id: "u1_17", root: "CRIM", rootTh: "ความผิด, ข้อกล่าวหา", word: "criminology", phonetic: "/ˌkrɪməˈnɑlədʒi/", meaningTh: "อาชญาวิทยา", etyTh: "crim(ผิด) + logy(วิชา)", context: "วิชาที่ศึกษาเกี่ยวกับพฤติกรรมอาชญากรและการลงโทษ" },
+                { id: "u1_18", root: "CRIM", rootTh: "ความผิด, ข้อกล่าวหา", word: "decriminalize", phonetic: "/diˈkrɪmənəlˌaɪz/", meaningTh: "ทำให้ไม่เป็นความผิดทางอาญา", etyTh: "de-(ถอด) + crim(ผิด)", context: "การแก้กฎหมายให้สิ่งที่เคยผิดไม่ต้องได้รับโทษทางอาญาอีกต่อไป" },
+                { id: "u1_19", root: "CRIM", rootTh: "ความผิด, ข้อกล่าวหา", word: "incriminate", phonetic: "/ɪnˈkrɪməˌneɪt/", meaningTh: "ปรักปรำ, ทำให้ดูผิด", etyTh: "in-(เข้า) + crim(ผิด)", context: "การหาหลักฐานหรือทำให้ใครคนหนึ่งดูเหมือนมีส่วนร่วมในอาชญากรรม" },
+                { id: "u1_20", root: "CRIM", rootTh: "ความผิด, ข้อกล่าวหา", word: "recrimination", phonetic: "/rɪˌkrɪməˈneɪʃən/", meaningTh: "การกล่าวหากลับ", etyTh: "re-(กลับ) + crim(ผิด)", context: "การโต้เถียงที่ต่างฝ่ายต่างสาดข้อกล่าวหาใส่กันไปมา" },
+                { id: "u1_21", root: "PROB", rootTh: "พิสูจน์, ซื่อสัตย์", word: "approbation", phonetic: "/ˌæprəˈbeɪʃən/", meaningTh: "การเห็นชอบ, การยกย่อง", etyTh: "ad-(ต่อ) + prob(พิสูจน์)", context: "การอนุมัติหรือชื่นชมอย่างเป็นทางการด้วยความพอใจ" },
+                { id: "u1_22", root: "PROB", rootTh: "พิสูจน์, ซื่อสัตย์", word: "probate", phonetic: "/ˈproʊˌbeɪt/", meaningTh: "การพิสูจน์พินัยกรรม", etyTh: "probare(พิสูจน์)", context: "กระบวนการทางศาลเพื่อยืนยันว่าพินัยกรรมนั้นเป็นของจริง" },
+                { id: "u1_23", root: "PROB", rootTh: "พิสูจน์, ซื่อสัตย์", word: "probity", phonetic: "/ˈproʊbəti/", meaningTh: "ความซื่อสัตย์สุจริต", etyTh: "probus(ตรง)", context: "การมีคุณธรรมและความซื่อตรงอย่างแท้จริงในระดับสูง" },
+                { id: "u1_24", root: "PROB", rootTh: "พิสูจน์, ซื่อสัตย์", word: "reprobate", phonetic: "/ˈrɛprəˌbeɪt/", meaningTh: "คนเสเพล, คนเลวทราม", etyTh: "re-(ต้าน) + prob(ดี) = ไม่เป็นที่ยอมรับ", context: "คนที่ทำตัวแย่และขาดศีลธรรมอย่างหนักจนคนอื่นไม่คบหา" },
+                { id: "u1_25", root: "GRAV", rootTh: "หนัก, จริงจัง", word: "grave", phonetic: "/greɪv/", meaningTh: "ร้ายแรง, ขรึม", etyTh: "gravis(หนัก)", context: "สถานการณ์ที่น่าวิตก หรือบุคลิกที่ดูเคร่งเครียดจริงจัง" },
+                { id: "u1_26", root: "GRAV", rootTh: "หนัก, จริงจัง", word: "gravitas", phonetic: "/ˈgrævɪˌtɑs/", meaningTh: "ความน่าเกรงขาม", etyTh: "gravis(หนัก)", context: "บุคลิกที่มีความขึงขังดูมีภูมิฐานและมีความเป็นผู้ใหญ่สูง" },
+                { id: "u1_27", root: "GRAV", rootTh: "หนัก, จริงจัง", word: "gravitate", phonetic: "/ˈgrævɪˌteɪt/", meaningTh: "เอนเอียงไปหา", etyTh: "gravis -> gravity", context: "การถูกดึงดูดเข้าไปหาบางสิ่งโดยธรรมชาติเหมือนแรงโน้มถ่วง" },
+                { id: "u1_28", root: "GRAV", rootTh: "หนัก, จริงจัง", word: "aggravate", phonetic: "/ˈægrəˌveɪt/", meaningTh: "ทำให้แย่ลง, กวนประสาท", etyTh: "ad-(เพิ่ม) + grav(หนัก)", context: "ทำให้อาการบาดเจ็บหรือปัญหาที่มีอยู่แล้วรุนแรงขึ้นกว่าเดิม" },
+                { id: "u1_29", root: "LEV", rootTh: "เบา, ยกขึ้น", word: "alleviate", phonetic: "/əˈliviˌeɪt/", meaningTh: "บรรเทา", etyTh: "ad-(ไปสู่) + levis(เบา)", context: "ทำให้ความเจ็บปวดหรือปัญหาเบาบางลงแต่ยังไม่หายขาด" },
+                { id: "u1_30", root: "LEV", rootTh: "เบา, ยกขึ้น", word: "elevation", phonetic: "/ˌɛləˈveɪʃən/", meaningTh: "ความสูง, การยกขึ้น", etyTh: "levare(ยก)", context: "ระดับความสูงเหนือระดับน้ำทะเล หรือการได้เลื่อนตำแหน่งงาน" },
+                { id: "u1_31", root: "LEV", rootTh: "เบา, ยกขึ้น", word: "cantilever", phonetic: "/ˈkæntəˌlivər/", meaningTh: "คานยื่น", etyTh: "canti(มุม) + lever(ยก)", context: "โครงสร้างทางวิศวกรรมที่มีคานยื่นออกมาโดยไม่มีเสารับปลาย" },
+                { id: "u1_32", root: "LEV", rootTh: "เบา, ยกขึ้น", word: "levity", phonetic: "/ˈlɛvəti/", meaningTh: "ความตลกขบขัน (ไม่ถูกกาลเทศะ)", etyTh: "levis(เบา)", context: "การเล่นตลกในสถานการณ์ที่ควรจะเคร่งเครียดหรือให้เกียรติ" }
+            ]
+        }
+    };
+
+    // ใส่ Unit อื่นๆ แบบว่างไว้ (30 Units)
+    for(let i=2; i<=30; i++) { vocabData[`Unit ${i}`] = { roots: [], words: [] }; }
+
+    let currentUnit = "Unit 1";
+    let currentCardIndex = 0;
+    let progress = JSON.parse(localStorage.getItem('mw_pwa_progress')) || {};
+
+    function switchView(view) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById(`view-${view}`).classList.add('active');
+        
+        // Find index of view to set active nav
+        const navs = ["units", "cards", "browse", "quiz"];
+        document.querySelectorAll('.nav-item')[navs.indexOf(view)].classList.add('active');
+
+        if(view === 'units') renderUnits();
+        if(view === 'cards') renderCard();
+        if(view === 'browse') renderBrowse();
+    }
+
+    function renderUnits() {
+        const grid = document.getElementById('unit-grid');
+        grid.innerHTML = '';
+        Object.keys(vocabData).forEach(u => {
+            const unitWords = vocabData[u].words;
+            const known = unitWords.filter(w => progress[w.id] === 'know').length;
+            const pct = unitWords.length > 0 ? Math.round((known / unitWords.length) * 100) : 0;
+            
+            const box = document.createElement('div');
+            box.className = 'unit-select-box';
+            box.onclick = () => { currentUnit = u; currentCardIndex = 0; switchView('cards'); };
+            box.innerHTML = `<span class="unit-label">U${u.split(' ')[1]}</span><span class="unit-progress">${pct}%</span>`;
+            grid.appendChild(box);
+        });
+    }
+
+    function renderCard() {
+        const words = vocabData[currentUnit].words;
+        if(!words.length) { document.getElementById('view-cards').innerHTML = '<div class="page-header">ไม่มีข้อมูลใน Unit นี้</div>'; return; }
+        
+        const data = words[currentCardIndex];
+        document.getElementById('pinned-root').innerText = `${data.root} - ${data.rootTh}`;
+        document.getElementById('c-word').innerText = data.word;
+        document.getElementById('c-phonetic').innerText = data.phonetic;
+        document.getElementById('c-meaning-th').innerText = data.meaningTh;
+        document.getElementById('c-root-ety').innerText = data.etyTh;
+        document.getElementById('c-context').innerText = data.context;
+
+        // Reset display
+        document.getElementById('card-back').style.display = 'none';
+        document.getElementById('card-front').style.display = 'block';
+        document.getElementById('action-area').style.display = 'none';
+    }
+
+    function flipCard() {
+        document.getElementById('card-front').style.display = 'none';
+        document.getElementById('card-back').style.display = 'block';
+        document.getElementById('action-area').style.display = 'flex';
+        playAudio();
+    }
+
+    function markWord(status) {
+        const words = vocabData[currentUnit].words;
+        progress[words[currentCardIndex].id] = status;
+        localStorage.setItem('mw_pwa_progress', JSON.stringify(progress));
+        currentCardIndex = (currentCardIndex + 1) % words.length;
+        renderCard();
+    }
+
+    function playAudio() {
+        const word = vocabData[currentUnit].words[currentCardIndex].word;
+        const speech = new SpeechSynthesisUtterance(word);
+        speech.lang = 'en-US';
+        speechSynthesis.speak(speech);
+    }
+
+    function renderBrowse() {
+        const container = document.getElementById('browse-container');
+        container.innerHTML = '';
+        Object.keys(vocabData).forEach(u => {
+            if(!vocabData[u].words.length) return;
+            const group = document.createElement('div');
+            group.className = 'unit-group';
+            group.innerHTML = `<div class="unit-header">${u}</div><div class="root-tags">${vocabData[u].roots.map(r => `<span class="root-tag">${r}</span>`).join('')}</div>`;
+            
+            vocabData[u].words.forEach(w => {
+                const item = document.createElement('div');
+                item.className = 'word-item';
+                item.onclick = () => { currentUnit = u; currentCardIndex = vocabData[u].words.indexOf(w); switchView('cards'); flipCard(); };
+                item.innerHTML = `<span>${w.word}</span><span style="color:var(--text-gray); font-size:0.85em;">${w.meaningTh}</span>`;
+                group.appendChild(item);
+            });
+            container.appendChild(group);
+        });
+    }
+
+    function filterWords(val) {
+        const items = document.querySelectorAll('.word-item');
+        items.forEach(i => {
+            i.style.display = i.innerText.toLowerCase().includes(val.toLowerCase()) ? 'flex' : 'none';
+        });
+    }
+
+    renderUnits();
+</script>
+</body>
+</html>        }
         .play-icon { width: 0; height: 0; border-top: 6px solid transparent; border-left: 10px solid var(--text-brown); border-bottom: 6px solid transparent; }
 
         .card-back-content { display: none; text-align: left; margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 25px; }
