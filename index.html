@@ -29,122 +29,35 @@
 
         .header-title { text-align: center; font-weight: bold; color: var(--text-brown); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* --- UNIT GRID --- */
-        .unit-grid-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
-        .unit-btn { 
-            background: var(--card-bg); border: 1px solid var(--border); padding: 6px 8px; 
-            font-size: 0.75em; cursor: pointer; text-align: center; min-width: 45px;
-            color: var(--text-gray); line-height: 1.2; border-radius: 8px;
+       /* --- UNIT GRID & BROWSE (แก้ไขให้เป็น 4 คอลัมน์สวยๆ) --- */
+        .unit-grid-container, .browse-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 8px; 
+            margin-bottom: 20px; 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 15px; 
+        }
+        .unit-btn, .word-block { 
+            background: var(--card-bg); border: 1px solid var(--border); 
+            aspect-ratio: 1/1; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 0.75em; cursor: pointer; border-radius: 8px; color: var(--text-gray);
+            text-align: center;
         }
         .unit-btn.active { background: var(--text-brown); color: white; border-color: var(--text-brown); font-weight: bold; }
-        .unit-btn span { display: block; font-weight: normal; font-size: 0.85em; margin-top: 2px; }
+        .unit-btn span { display: block; font-weight: normal; font-size: 0.8em; margin-top: 2px; }
 
-        /* --- UNIT INFO & STATS --- */
-        .unit-full-title { font-weight: bold; font-size: 0.85em; text-align: center; color: var(--text-brown); margin-bottom: 10px; text-transform: uppercase; }
-        .root-desc-box { background: var(--card-bg); border: 1px solid var(--border); padding: 10px; font-size: 0.8em; color: var(--text-main); line-height: 1.5; margin-bottom: 15px; text-align: center; border-radius: 8px; }
-        
-        .stats-row { display: flex; justify-content: space-between; text-align: center; margin-bottom: 15px; max-width: 300px; margin-left: auto; margin-right: auto; width: 100%; }
-        .stat-box { flex: 1; font-size: 0.7em; color: var(--text-gray); text-transform: uppercase; }
-        .stat-val { display: block; font-size: 1.4em; color: var(--text-main); margin-bottom: 2px; font-weight: bold; }
-
-        /* --- FLASHCARDS --- */
-        .card-container { width: 100%; max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; }
-        .card { 
-            background: var(--card-bg); border: 1px solid var(--border); padding: 30px 20px;
-            text-align: center; cursor: pointer; min-height: 320px; display: flex; flex-direction: column; justify-content: center; position: relative;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02); border-radius: 16px;
+        /* --- QUIZ STYLES (สีพาสเทลตามที่คุณต้องการ) --- */
+        .quiz-choice-btn {
+            padding: 16px; font-size: 1em; background-color: #ffffff; border: 1px solid var(--border);
+            border-radius: 12px; cursor: pointer; transition: 0.2s; text-align: left; width: 100%; margin-bottom: 10px;
         }
-        
-        .card-counter { position: absolute; top: 15px; right: 15px; font-size: 0.75em; color: var(--text-gray); font-weight: bold; }
-        .word-title { font-size: 2.2em; font-weight: bold; margin-bottom: 5px; }
-        .phonetic { color: var(--text-gray); font-style: italic; margin-bottom: 20px; font-size: 0.95em; }
-        .root-badge { font-size: 0.9em; font-weight: bold; color: var(--text-brown); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .play-btn { background: transparent; border: 1px solid var(--border); padding: 8px 16px; font-size: 0.75em; font-weight: bold; color: var(--text-brown); display: inline-flex; align-items: center; gap: 8px; margin: 0 auto; border-radius: 20px; }
-        .play-icon { width: 0; height: 0; border-top: 5px solid transparent; border-left: 8px solid var(--text-brown); border-bottom: 5px solid transparent; }
-        .tap-hint { position: absolute; bottom: 15px; left: 0; width: 100%; font-size: 0.75em; color: var(--text-gray); }
+        .quiz-choice-btn.correct { background-color: #a8e6cf !important; color: #1d8348 !important; border-color: #82e0aa !important; font-weight: bold; }
+        .quiz-choice-btn.wrong { background-color: #ff6b6b !important; color: white !important; border-color: #ee5253 !important; }
 
-        /* CARD BACK */
-        .card-back { display: none; text-align: left; margin-top: 10px; width: 100%; }
-        .meaning-th { font-size: 1.2em; font-weight: bold; color: var(--green-dark); text-align: center; margin-bottom: 20px; }
-        .info-label { font-size: 0.65em; font-weight: bold; color: var(--text-brown); text-transform: uppercase; margin-bottom: 4px; }
-        .info-txt { font-size: 0.85em; line-height: 1.5; margin-bottom: 12px; }
-        .syn-text { color: var(--text-brown); font-weight: 500; }
-        .example-box { background: #f9f9f9; padding: 12px; border-left: 2px solid var(--border); font-style: italic; color: var(--text-gray); font-size: 0.8em; border-radius: 0 8px 8px 0; }
-
-        /* ARROWS & BUTTONS */
-        .nav-arrows { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
-        .nav-arrow { background: var(--card-bg); border: 1px solid var(--border); padding: 10px 25px; font-weight: bold; color: var(--text-brown); cursor: pointer; font-size: 1.1em; border-radius: 8px; }
-        .nav-arrow:disabled { opacity: 0.3; cursor: default; }
-        
-        .btn-group { display: none; gap: 10px; margin-top: 20px; }
-        .btn-status { flex: 1; background: transparent; padding: 14px 0; font-weight: bold; cursor: pointer; font-size: 0.8em; text-transform: uppercase; border-radius: 8px; }
-        .btn-learning { border: 1.5px solid var(--red-maroon); color: var(--red-maroon); }
-        .btn-knew { border: 1.5px solid var(--green-dark); color: var(--green-dark); }
-
-        /* --- BROWSE --- */
-        .browse-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .word-block { background: var(--card-bg); border: 1px solid var(--border); padding: 10px 14px; font-size: 0.8em; font-weight: 500; cursor: pointer; color: var(--text-main); border-radius: 8px; }
-
-        /* --- QUIZ --- */
-        .quiz-container { width: 100%; max-width: 500px; margin: 0 auto; }
-        .quiz-root-filter { display: flex; overflow-x: auto; gap: 6px; padding-bottom: 10px; margin-bottom: 20px; scrollbar-width: none; }
-        .quiz-root-filter::-webkit-scrollbar { display: none; }
-        .root-filter-btn { background: var(--card-bg); border: 1px solid var(--border); padding: 6px 12px; font-size: 0.75em; border-radius: 20px; color: var(--text-gray); cursor: pointer; font-weight: bold; flex-shrink: 0; }
-        .root-filter-btn.active { background: var(--text-brown); color: white; border-color: var(--text-brown); }
-        
-        .quiz-question-box { font-size: 1.1em; line-height: 1.5; margin-bottom: 25px; color: var(--text-main); text-align: center; font-weight: bold; }
-        .quiz-opt { width: 100%; text-align: left; padding: 15px 18px; border: 1px solid var(--border); background: var(--card-bg); margin-bottom: 10px; cursor: pointer; color: var(--text-main); font-size: 0.85em; border-radius: 12px; line-height: 1.4; word-wrap: break-word; }
-        .quiz-opt.selected { border-color: var(--text-brown); border-width: 2px; font-weight: bold; background: #fcfbf9; }
-        
-        .btn-submit-quiz { background: var(--text-brown); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 0.9em; text-transform: uppercase; margin-top: 10px; }
-
-        /* --- NAV --- */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; }
-        .nav-item { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-gray); font-size: 0.75em; font-weight: bold; text-transform: uppercase; cursor: pointer; }
-        .nav-item.active { color: var(--text-brown); background: #fcfbf9; }
-
-        
-    /* --- QUIZ STYLES (สีพาสเทล + แก้ปีกกาเกิน) --- */
-    .quiz-choice-btn {
-        padding: 15px;
-        font-size: 16px;
-        background-color: #ffffff;
-        border: 2px solid #bdc3c7;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.2s;
-        text-align: left;
-        width: 100%;
-        margin-bottom: 10px;
-    }
-    .quiz-choice-btn:hover {
-        background-color: #ecf0f1;
-        border-color: #95a5a6;
-    }
-    /* ถูก: สีเขียวพาสเทล */
-    .quiz-choice-btn.correct {
-        background-color: #a8e6cf !important;
-        color: #1d8348 !important;
-        border-color: #82e0aa !important;
-        font-weight: bold;
-    }
-    /* ผิด: สีแดงพาสเทล */
-    .quiz-choice-btn.wrong {
-        background-color: #ff6b6b !important;
-        color: white !important;
-        border-color: #ee5253 !important;
-    }
-
-    /* จัดระเบียบหน้าสรุปผล */
-    .quiz-summary-box {
-        text-align: center;
-        padding: 40px 20px;
-        background-color: white;
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        margin-top: 20px;
-    }
+        .nav-arrow { background: transparent !important; border: none !important; color: var(--text-brown); cursor: pointer; font-size: 3em; font-weight: 100; opacity: 0.4; transition: 0.2s; }
+        .nav-arrow:hover { opacity: 1; }
     </style>
 </head>
 <body>
@@ -210,8 +123,10 @@
     <div id="view-quiz" class="view">
         <div class="unit-grid-container" id="quiz-unit-grid"></div>
         
-        <div class="quiz-container" id="quiz-area">
-            <div style="text-align: center; color: var(--text-gray); font-size: 0.85em;">Select a unit above to start Quiz.</div>
+        <div id="quiz-area">
+            <div style="text-align: center; color: var(--text-gray); padding: 40px; border: 2px dashed var(--border); border-radius:15px; margin-top:20px;">
+                เลือก Unit ด้านบนเพื่อเริ่มทำ Quiz ครับ
+            </div>
         </div>
     </div>
 
@@ -1841,50 +1756,46 @@
   
     
 
-    // === 1. ตัวแปรควบคุมระบบ (ประกาศครั้งเดียว ห้ามซ้ำ) ===
-    let curUnit = "Unit 1";
-    let curIdx = 0;
+  // === 1. ตัวแปรควบคุมระบบ ===
+    let curUnit = "Unit 1", curIdx = 0;
     let progress = JSON.parse(localStorage.getItem('mw_v11')) || {};
+    let quizPool = [], currentQuizWord = null, quizScore = 0, quizTotal = 0, quizLimit = 10, isQuizAnswered = false, currentQuizMode = 'ALL';
 
-    let quizPool = [];
-    let currentQuizWord = null;
-    let quizScore = 0;
-    let quizTotal = 0;
-    let quizLimit = 10;
-    let isQuizAnswered = false;
-    let quizFilter = 'ALL';
-    let isGlobalMode = false;
-
-    // === 2. ระบบนำทาง (Tabs) ===
+    // === 2. ระบบสลับแท็บ (ห้ามหาย! ถ้าหายจะกดเมนูข้างล่างไม่ได้) ===
     function switchTab(tab) {
         document.querySelectorAll('.view, .nav-item').forEach(e => e.classList.remove('active'));
         document.getElementById('view-' + tab).classList.add('active');
         const items = document.querySelectorAll('.nav-item');
-        if (tab === 'cards') items[0].classList.add('active');
-        if (tab === 'browse') items[1].classList.add('active');
-        if (tab === 'quiz') items[2].classList.add('active');
-        
-        if (tab === 'cards') renderFlashcardView();
-        if (tab === 'browse') renderBrowse();
-        if (tab === 'quiz') renderQuizInit();
+        if (tab === 'cards') { items[0].classList.add('active'); renderFlashcardView(); }
+        if (tab === 'browse') { items[1].classList.add('active'); renderBrowse(); }
+        if (tab === 'quiz') { items[2].classList.add('active'); renderQuizInit(); }
     }
 
-    // === 3. ระบบ Flashcards ===
+    // === 3. ระบบ Flashcards & Unit Grid ===
     function renderUnitGrids() {
         ["card", "browse", "quiz"].forEach(prefix => {
             const grid = document.getElementById(prefix + "-unit-grid");
             if (!grid) return; grid.innerHTML = '';
+            
+            // หน้าควิซจะมีปุ่มพิเศษ "ALL UNITS"
+            if(prefix === 'quiz') {
+                const allBtn = document.createElement('div');
+                allBtn.className = 'unit-btn' + (currentQuizMode === 'GLOBAL' ? ' active' : '');
+                allBtn.style.gridColumn = "span 2"; allBtn.style.aspectRatio = "auto";
+                allBtn.innerHTML = "🔥 ALL 30 UNITS";
+                allBtn.onclick = () => prepareQuiz('GLOBAL');
+                grid.appendChild(allBtn);
+            }
+
             for (let i = 1; i <= 30; i++) {
                 const u = "Unit " + i;
                 const btn = document.createElement('div');
                 btn.className = 'unit-btn' + (curUnit === u ? ' active' : '');
-                btn.innerHTML = `U${i}`;
+                btn.innerText = "U" + i;
                 btn.onclick = () => { 
                     curUnit = u; curIdx = 0; 
-                    renderUnitGrids(); 
-                    if(prefix === 'card') renderFlashcardView(); 
-                    if(prefix === 'browse') renderBrowse();
-                    if(prefix === 'quiz') renderQuizInit();
+                    if(prefix === 'quiz') prepareQuiz(u);
+                    else { renderUnitGrids(); if(prefix==='card') renderFlashcardView(); if(prefix==='browse') renderBrowse(); }
                 };
                 grid.appendChild(btn);
             }
@@ -1894,10 +1805,9 @@
     function renderFlashcardView() {
         renderUnitGrids();
         const unit = vocabData[curUnit];
-        if (!unit || !unit.words.length) return;
+        if (!unit) return;
         const d = unit.words[curIdx];
         document.getElementById('u-full-title').innerText = curUnit;
-        document.getElementById('u-root-desc').innerText = rootDescriptions[d.root] || d.root;
         document.getElementById('c-counter').innerText = (curIdx + 1) + " / " + unit.words.length;
         document.getElementById('c-word').innerText = d.word;
         document.getElementById('c-phonetic').innerText = d.phonetic || "";
@@ -1908,63 +1818,41 @@
         flipToFront();
     }
 
-    function flipToBack() { document.getElementById('c-front').style.display = 'none'; document.getElementById('c-back').style.display = 'block'; }
-    function flipToFront() { document.getElementById('c-back').style.display = 'none'; document.getElementById('c-front').style.display = 'block'; }
+    function flipCard() {
+        const f = document.getElementById('card-front'), b = document.getElementById('card-back');
+        if (f.style.display === 'none') flipToFront(); else flipToBack();
+    }
+    function flipToBack() { document.getElementById('card-front').style.display='none'; document.getElementById('card-back').style.display='block'; }
+    function flipToFront() { document.getElementById('card-back').style.display='none'; document.getElementById('card-front').style.display='block'; }
     function nextCard() { curIdx = (curIdx + 1) % vocabData[curUnit].words.length; renderFlashcardView(); }
     function prevCard() { curIdx = (curIdx - 1 + vocabData[curUnit].words.length) % vocabData[curUnit].words.length; renderFlashcardView(); }
-    function playAudio() { const s = new SpeechSynthesisUtterance(vocabData[curUnit].words[curIdx].word); s.lang = 'en-US'; speechSynthesis.speak(s); }
-    function mark(st) { progress[vocabData[curUnit].words[curIdx].id] = st; localStorage.setItem('mw_v11', JSON.stringify(progress)); nextCard(); }
 
-    // === 4. ระบบ QUIZ (แก้ใหม่ทั้งหมด: 10 ข้อจบ + สรุปคะแนน) ===
+    // === 4. ระบบ Quiz (10 ข้อจบ + สรุปคะแนน) ===
     function renderQuizInit() {
         renderUnitGrids();
-        const qa = document.getElementById('quiz-area');
-        const unitData = vocabData[curUnit];
-
-        let html = `
-            <div class="quiz-root-filter">
-                <button class="root-filter-btn ${quizFilter === 'ALL' ? 'active' : ''}" onclick="setQuizFilter('ALL')">ALL WORDS</button>`;
-        unitData.roots.forEach(r => {
-            html += `<button class="root-filter-btn ${quizFilter === r ? 'active' : ''}" onclick="setQuizFilter('${r}')">${r}</button>`;
-        });
-        html += `</div>
-            <div style="text-align:center; margin-top:30px; display:flex; flex-direction:column; gap:10px;">
-                <button class="btn-submit-quiz" onclick="startQuizLogic(false)">เริ่มควิซ (${curUnit} - ${quizFilter})</button>
-                <button class="btn-submit-quiz" style="background-color:#2c3e50;" onclick="startQuizLogic(true)">🔥 เริ่มควิซรวม 30 ยูนิต</button>
-            </div>`;
-        qa.innerHTML = html;
+        document.getElementById('quiz-area').innerHTML = `<div style="text-align:center; padding:40px; color:gray; border:2px dashed #ccc; border-radius:12px; margin-top:20px;">เลือกยูนิตด้านบนเพื่อเริ่มควิซครับ</div>`;
     }
 
-    function setQuizFilter(f) { quizFilter = f; renderQuizInit(); }
-
-    function startQuizLogic(global) {
-        isGlobalMode = global;
+    function prepareQuiz(mode) {
+        currentQuizMode = mode;
         quizPool = [];
-        if (global) {
-            for (let u in vocabData) quizPool = quizPool.concat(vocabData[u].words);
-        } else {
-            let ws = vocabData[curUnit].words;
-            quizPool = (quizFilter === 'ALL') ? [...ws] : ws.filter(w => w.root === quizFilter);
-        }
+        let distractorsPool = [];
+        for (let u in vocabData) distractorsPool = distractorsPool.concat(vocabData[u].words);
 
-        if(quizPool.length < 4) { alert('ศัพท์ไม่พอทำควิซ (ต้องมี 4 คำขึ้นไป)'); return; }
+        if (mode === 'GLOBAL') quizPool = [...distractorsPool];
+        else quizPool = [...vocabData[mode].words];
 
         quizPool.sort(() => Math.random() - 0.5);
         quizLimit = Math.min(quizPool.length, 10);
         quizScore = 0; quizTotal = 0;
-        showNextQuestion();
+        
+        startNextQuizQuestion(distractorsPool);
     }
 
-    function showNextQuestion() {
-        const qa = document.getElementById('quiz-area');
+    function startNextQuizQuestion(fullPool) {
+        const area = document.getElementById('quiz-area');
         if (quizTotal >= quizLimit) {
-            qa.innerHTML = `
-                <div class="quiz-summary-box">
-                    <h2 style="color:var(--text-brown);">สรุปผลคะแนน</h2>
-                    <div style="font-size:4.5em; font-weight:bold; margin:20px 0;">${quizScore} / ${quizLimit}</div>
-                    <button class="btn-submit-quiz" onclick="startQuizLogic(${isGlobalMode})">&#8635; วนกลับมาทำซ้ำ</button>
-                    <button class="btn-submit-quiz" onclick="renderQuizInit()" style="background-color:var(--text-gray); margin-top:10px;">&#10094; กลับหน้าเลือกควิซ</button>
-                </div>`;
+            showQuizSummary();
             return;
         }
 
@@ -1972,45 +1860,52 @@
         currentQuizWord = quizPool[quizTotal];
 
         let choices = [currentQuizWord];
-        let allWords = isGlobalMode ? quizPool : vocabData[curUnit].words;
         while (choices.length < 4) {
-            let r = allWords[Math.floor(Math.random() * allWords.length)];
+            let r = fullPool[Math.floor(Math.random() * fullPool.length)];
             if (!choices.find(c => c.id === r.id)) choices.push(r);
         }
         choices.sort(() => Math.random() - 0.5);
 
-        let html = `
+        area.innerHTML = `
             <div style="background:white; padding:20px; border-radius:12px; border:1px solid var(--border);">
-                <div style="display:flex; justify-content:space-between; font-size:0.8em; font-weight:bold; color:var(--text-gray); margin-bottom:15px;">
-                    <span>📍 ${isGlobalMode ? 'รวม 30 ยูนิต' : curUnit}</span>
-                    <span>ข้อที่ ${quizTotal + 1} / ${quizLimit}</span>
-                </div>
-                <div style="text-align:center; margin-bottom:20px;">
-                    <h1 style="font-size:2.2em; margin:0;">${currentQuizWord.word}</h1>
-                </div>
-                <div id="quiz-options"></div>
-                <button id="next-q-btn" onclick="showNextQuestion()" style="display:none; width:100%; margin-top:15px; padding:15px; background:#3498db; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">ข้อต่อไป &#10095;</button>
+                <div style="color:var(--text-brown); font-weight:bold; font-size:0.8em; margin-bottom:10px;">📍 ${currentQuizMode} | ข้อที่ ${quizTotal + 1}/${quizLimit}</div>
+                <h1 style="font-size:2.2em; text-align:center; margin-bottom:20px;">${currentQuizWord.word}</h1>
+                <div id="q-options"></div>
+                <button id="q-next" onclick="startNextQuizQuestion(JSON.parse('${JSON.stringify(fullPool).replace(/'/g, "\\'")}'))" style="display:none; width:100%; margin-top:15px; padding:15px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:bold;">NEXT ›</button>
             </div>`;
-        qa.innerHTML = html;
 
-        choices.forEach(opt => {
+        choices.forEach(c => {
             const btn = document.createElement('button');
             btn.className = 'quiz-choice-btn';
-            btn.innerText = opt.meaning;
+            btn.innerText = c.meaning;
             btn.onclick = () => {
-                if (isQuizAnswered) return;
+                if(isQuizAnswered) return;
                 isQuizAnswered = true; quizTotal++;
-                if (opt.id === currentQuizWord.id) { quizScore++; btn.classList.add('correct'); }
-                else { btn.classList.add('wrong'); }
-                document.getElementById('next-q-btn').style.display = 'block';
+                if(c.id === currentQuizWord.id) { quizScore++; btn.classList.add('correct'); }
+                else { 
+                    btn.classList.add('wrong');
+                    document.querySelectorAll('.quiz-choice-btn').forEach(b => {
+                        if(b.innerText === currentQuizWord.meaning) b.classList.add('correct');
+                    });
+                }
+                document.getElementById('q-next').style.display = 'block';
             };
-            document.getElementById('quiz-options').appendChild(btn);
+            document.getElementById('q-options').appendChild(btn);
         });
     }
 
+    function showQuizSummary() {
+        document.getElementById('quiz-area').innerHTML = `
+            <div style="text-align:center; padding:40px; background:white; border-radius:15px; border:1px solid var(--border); margin-top:20px;">
+                <h2 style="color:var(--text-brown);">สรุปผลคะแนน</h2>
+                <div style="font-size:4.5em; font-weight:bold; margin:20px 0;">${quizScore} / ${quizLimit}</div>
+                <button onclick="prepareQuiz('${currentQuizMode}')" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">&#8635; วนกลับมาทำใหม่</button>
+                <button onclick="renderQuizInit()" style="width:100%; padding:10px; background:none; color:gray; border:none; cursor:pointer; margin-top:10px;">&#10094; กลับไปหน้าเลือกยูนิต</button>
+            </div>`;
+    }
+
     function renderBrowse() {
-        const c = document.getElementById('browse-content');
-        c.innerHTML = '';
+        renderUnitGrids(); const c = document.getElementById('browse-content'); c.innerHTML = '';
         vocabData[curUnit].words.forEach(w => {
             const b = document.createElement('div');
             b.className = 'word-block'; b.innerText = w.word;
@@ -2019,8 +1914,7 @@
         });
     }
 
-    // เริ่มต้นแอป
-    renderFlashcardView();
+    window.onload = () => { renderFlashcardView(); };
 </script>
 </body>
 </html>
