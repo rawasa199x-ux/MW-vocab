@@ -2136,7 +2136,7 @@
            qa.innerHTML = `
     <div class="quiz-container" style="text-align:center; padding: 40px 20px;">
         <h1 style="color:var(--green-dark); margin-bottom: 10px;">Quiz Complete!</h1>
-        <p style="font-size:1.5em; margin:20px 0;">คะแนน: ${score}/${totalQuestions}</p>
+     <p style="font-size:1.5em; margin:20px 0;">คะแนน: ${score}/${quizPool.length}</p>
         <button class="btn-submit-quiz" onclick="resetQuiz()">เริ่มใหม่</button>
         <button class="btn-submit-quiz" style="margin-top:10px; background:#666;" onclick="renderQuizInit()">กลับเมนู</button>
     </div>
@@ -2229,60 +2229,36 @@ function startQuiz() {
     });
 }
 
-function checkQuizAnswer(selectedId, correctId, btnElement) {
-    const isCorrect = (selectedId === correctId);
-    const allBtns = document.querySelectorAll('.quiz-opt');
-    
-    // ปิดการกดปุ่มทั้งหมด
-    allBtns.forEach(btn => {
-        btn.style.pointerEvents = 'none';
-        // ไฮไลต์คำตอบที่ถูก
-        if (btn.textContent.trim() === document.querySelector('.quiz-opt').textContent.trim()) {
-            // หาปุ่มที่เป็นคำตอบถูก
-        }
-    });
-    
-    // เพิ่มคะแนน
+// ตรวจคำตอบ
+function checkAnswer(btnElement, isCorrect) {
+    if (isAnswered) return; // ห้ามกดซ้ำ
+    isAnswered = true;
     totalQuestions++;
+
+    const allBtns = document.querySelectorAll('.quiz-choice-btn');
+    
     if (isCorrect) {
         score++;
-        btnElement.style.backgroundColor = 'var(--green-dark)';
-        btnElement.style.color = 'white';
-        btnElement.style.borderColor = 'var(--green-dark)';
+        btnElement.classList.add('correct');
     } else {
-        btnElement.style.backgroundColor = 'var(--red-maroon)';
-        btnElement.style.color = 'white';
-        btnElement.style.borderColor = 'var(--red-maroon)';
-        
-        // แสดงคำตอบที่ถูก
+        btnElement.classList.add('wrong');
+        // ไฮไลต์ข้อที่ถูกให้ดูด้วย
         allBtns.forEach(btn => {
-            const btnText = btn.textContent.trim();
-            const correctChoice = vocabData[Object.keys(vocabData).find(u => 
-                vocabData[u].words.find(w => w.id === correctId)
-            )].words.find(w => w.id === correctId);
-            
-            if (btnText === correctChoice.meaning) {
-                btn.style.backgroundColor = 'var(--green-dark)';
-                btn.style.color = 'white';
-                btn.style.borderColor = 'var(--green-dark)';
+            if (btn.innerText.includes(currentQuizWord.meaning)) {
+                btn.classList.add('correct');
             }
         });
     }
-    
-    // อัพเดทคะแนน
-    document.getElementById('quiz-score-display').textContent = `${score}/${totalQuestions}`;
-    
-    // แสดงปุ่มข้อถัดไป
-    document.getElementById('next-quiz-btn').style.display = 'block';
+
+    document.getElementById('quiz-score').innerText = `คะแนน: ${score} / ${totalQuestions}`;
+    document.getElementById('next-btn').style.display = 'block';
 }
 function continueQuiz() {
     renderQuiz();
 }
 
-function resetQuiz() {
-    score = 0;
-    totalQuestions = 0;
-    renderQuiz();
+function continueQuiz() {
+    startQuiz(); // เปลี่ยนจาก renderQuiz()
 }
 </script>
 </body>
