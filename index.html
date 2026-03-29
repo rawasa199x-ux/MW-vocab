@@ -181,8 +181,8 @@
 </div>
 
 <script>
-    // 1. แก้ไขส่วนคำอธิบายรากศัพท์เป็นภาษาอังกฤษล้วน
-    const rootDescriptions = {
+   const rootDescriptions = {
+        // Unit 1
         "BENE": "BENE is Latin for 'well.' A benefit is a good result or effect. Something beneficial produces good results.",
         "AM": "AM comes from the Latin word amare, 'to love.' An amiable person is friendly and lovable.",
         "BELL": "BELL comes from the Latin word bellum, 'war.' A belligerent person is aggressively hostile.",
@@ -191,6 +191,8 @@
         "PROB": "PROB comes from the Latin words for 'prove' or 'proof' and 'honesty' or 'integrity.'",
         "GRAV": "GRAV comes from the Latin word gravis, meaning 'heavy, weighty, serious.'",
         "LEV": "LEV comes from the Latin adjective levis, meaning 'light,' and the verb levare, 'to raise.'",
+
+        // Unit 2
         "MANIA": "MANIA in Latin means 'madness.' It can refer to a mental illness or to an excessive enthusiasm.",
         "PSYCH": "PSYCH comes from the Greek word psyche, meaning 'breath, life, soul.'",
         "CEPT": "CEPT comes from the Latin verb capere, meaning 'take' or 'seize.'",
@@ -199,6 +201,8 @@
         "TRACT": "TRACT comes from trahere, the Latin verb meaning 'drag' or 'draw.'",
         "DUC/DUCT": "DUC/DUCT comes from the Latin verb ducere, meaning 'to lead.'",
         "SEQU": "SEQU comes from the Latin verb sequi, meaning 'to follow.'",
+
+        // Unit 3
         "ANIM": "ANIM comes from the Latin anima, meaning 'breath' or 'soul.' It can also refer to 'spirit.'",
         "FIG": "FIG comes from a Latin verb meaning 'to shape or mold' and 'to fashion.'",
         "ANN/ENN": "ANN/ENN comes from the Latin word annus, meaning 'year.'",
@@ -207,6 +211,10 @@
         "TANG/TACT": "TANG/TACT comes from the Latin verb tangere, meaning 'to touch.'",
         "CODI/CODE": "CODI/CODE comes from the Latin codex, meaning 'a trunk of a tree' or 'a book.'",
         "SIGN": "SIGN comes from the Latin signum, meaning 'mark' or 'sign.'",
+        "QUART": "QUART comes from the Latin word quartus, meaning 'fourth.'",
+        "TETR": "TETR comes from the Greek word for 'four.'",
+
+        // Unit 4
         "CORD": "CORD comes from the Latin word for 'heart.'",
         "CUR": "CUR comes from the Latin verb currere, meaning 'to run.'",
         "FAC": "FAC comes from the Latin verb facere, meaning 'to make' or 'to do.'",
@@ -215,6 +223,8 @@
         "PEND": "PEND comes from the Latin verb pendere, meaning 'to hang' or 'to weigh.'",
         "POST": "POST comes from the Latin prefix meaning 'after' or 'behind.'",
         "TRANS": "TRANS comes from the Latin prefix meaning 'through,' 'across,' or 'beyond.'",
+
+        // Unit 5
         "PHON": "PHON is a Greek root meaning 'sound,' 'voice,' or 'speech.'",
         "BIBLI": "BIBLI comes from the Greek word for 'book.'",
         "CANON": "CANON comes from the Greek kanon, meaning 'a reed' or 'a measuring stick.'",
@@ -223,6 +233,8 @@
         "SCI": "SCI comes from the Latin verb scire, 'to know.'",
         "VIC": "VIC comes from the Latin noun vicis, meaning 'change,' 'stead,' or 'place.'",
         "SERV": "SERV comes from the Latin servus, 'slave' and servire, 'to serve.'",
+
+        // Unit 6
         "TERR": "TERR comes from the Latin terra, 'earth.'",
         "TRUD": "TRUD comes from the Latin verb trudere, 'to push' or 'to thrust.'",
         "VAC": "VAC comes from the Latin verb vacare, 'to be empty.'",
@@ -231,27 +243,32 @@
         "VOL": "VOL comes from the Latin verb velle, 'to will' or 'to wish.'",
         "PHAN": "PHAN comes from the Greek verb phainein, 'to appear' or 'to show.'",
         "THEO": "THEO comes from the Greek word theos, 'god.'",
-        "MYTH": "These words are derived from characters and stories in Greek and Roman Mythology and History."
+
         // Unit 7
         "UMBR": "UMBR comes from the Latin umbra, meaning 'shadow'.",
         "VEST": "VEST comes from the Latin vestis, meaning 'garment' or 'clothing'.",
+        "THE/THEO": "THE/THEO comes from the Greek word theos, meaning 'god'.",
         "ICON": "ICON comes from the Greek eikon, meaning 'image' or 'likeness'.",
         "PAN": "PAN comes from the Greek root meaning 'all'.",
         "CHRON": "CHRON comes from the Greek chronos, meaning 'time'.",
         "ANIMA": "ANIMA comes from the Latin anima, meaning 'breath' or 'soul'.",
         "ARCH": "ARCH comes from the Greek archein, meaning 'to begin' or 'to rule'.",
+
         // Unit 8
         "PHOS/PHOT": "PHOS/PHOT comes from the Greek phos, meaning 'light'.",
         "LUC": "LUC comes from the Latin lux, meaning 'light'.",
-        "MORP": "MORP comes from the Greek morphe, meaning 'shape'.",
+        "MORP": "MORP comes from the Greek morphē, meaning 'shape'.",
         "SPEC": "SPEC comes from the Latin specere, meaning 'to look at' or 'to see'.",
         "HER/HES": "HER/HES comes from the Latin haerere, meaning 'to stick'.",
         "FUS": "FUS comes from the Latin fundere, meaning 'to pour'.",
-        "GNI/GNO": "GNI/GNO comes from the Latin cognoscere and Greek gignōskein, meaning 'to know'.",
+        "GNI/GNO": "GNI/GNO comes from the Latin and Greek roots meaning 'to know'.",
         "PON/POS": "PON/POS comes from the Latin ponere, meaning 'to put' or 'to place'.",
+
+        // Recurring Myth Section
+        "MYTH": "These words are derived from characters and stories in Greek and Roman Mythology and History."
     };
 
-    // 2. แก้ไขฟังก์ชันการแสดงผลให้ดึง Description มาโชว์
+    // 2. ฟังก์ชันแสดงผลหน้า Flashcards
     function renderFlashcardView() {
         renderUnitGrids();
         updateStats();
@@ -270,17 +287,17 @@
         
         const d = words[curIdx];
         
-        // จุดที่แก้ไข: ดึงข้อมูลจาก rootDescriptions ตาม root ของคำศัพท์นั้นๆ
+        // ดึง Description ภาษาอังกฤษยาวๆ มาโชว์
         const fullDescription = rootDescriptions[d.root] || d.root;
         document.getElementById('u-root-desc').innerText = fullDescription;
 
-        // ส่วนที่เหลือคงเดิม...
+        // ข้อมูลหน้าการ์ด (Front)
         document.getElementById('c-counter').innerText = `${curIdx + 1}/${words.length}`;
         document.getElementById('c-word').innerText = d.word;
-        document.getElementById('c-phonetic').innerText = d.phonetic;
+        document.getElementById('c-phonetic').innerText = d.phonetic || "";
         document.getElementById('c-root').innerText = d.root;
         
-        // Back
+        // ข้อมูลหลังการ์ด (Back)
         document.getElementById('c-counter-back').innerText = `${curIdx + 1}/${words.length}`;
         document.getElementById('c-word-back').innerText = d.word;
         document.getElementById('c-th').innerText = d.meaning;
