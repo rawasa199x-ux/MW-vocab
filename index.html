@@ -71,44 +71,58 @@
         .info-txt { font-size: 0.85em; line-height: 1.5; margin-bottom: 12px; }
         .syn-text { color: var(--text-brown); font-weight: 500; }
         .example-box { background: #f9f9f9; padding: 12px; border-left: 2px solid var(--border); font-style: italic; color: var(--text-gray); font-size: 0.8em; border-radius: 0 8px 8px 0; }
-
-       /* --- ARROWS & BUTTONS (Minimalist Version) --- */
-.nav-arrows { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-top: 25px; 
-    padding: 0 20px; /* เพิ่มระยะห่างจากขอบการ์ดนิดนึง */
-}
-
-.nav-arrow { 
-    background: transparent; /* โปร่งใส ไม่ต้องมีพื้นหลังสี่เหลี่ยม */
-    border: none; /* เอาเส้นขอบออก */
-    padding: 10px; 
-    color: var(--text-brown); 
-    cursor: pointer; 
-    font-size: 2.5em; /* ขนาดใหญ่ขึ้นเพื่อให้กดง่าย */
-    font-weight: 100; /* เส้นบางลง (ถ้าฟอนต์รองรับ) */
-    line-height: 1;
-    transition: all 0.2s ease;
-    opacity: 0.6; /* จางลงนิดนึงให้ดูไม่หนักเกินไป */
-}
-
-.nav-arrow:hover { 
-    opacity: 1; 
-    transform: scale(1.1); /* ขยายขึ้นนิดนึงตอนชี้ */
-}
-
-.nav-arrow:disabled { 
-    opacity: 0.1; 
-    cursor: default; 
-}
         
+        /* --- ARROWS & BUTTONS (Minimalist & Clean) --- */
+        .nav-arrows { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-top: 25px; 
+            padding: 0 10px;
+        }
+
+        .nav-arrow { 
+            background: transparent !important; /* โปร่งใส */
+            border: none !important; /* ไม่มีขอบสี่เหลี่ยม */
+            color: var(--text-brown); 
+            cursor: pointer; 
+            font-size: 2.5em; /* ขนาดใหญ่ให้กดง่าย */
+            font-weight: 200; /* เส้นบาง */
+            line-height: 1;
+            transition: all 0.2s ease;
+            opacity: 0.5; /* จางลงแบบมินิมอล */
+        }
+
+        .nav-arrow:hover { 
+            opacity: 1; 
+            transform: scale(1.1); /* ขยายเล็กน้อยตอนแตะ */
+        }
+
+        .nav-arrow:disabled { 
+            opacity: 0.1; 
+            cursor: default; 
+        }
+
+        /* --- STATUS BUTTONS (still learning / knew it) --- */
         .btn-group { display: none; gap: 10px; margin-top: 20px; }
-        .btn-status { flex: 1; background: transparent; padding: 14px 0; font-weight: bold; cursor: pointer; font-size: 0.8em; text-transform: uppercase; border-radius: 8px; }
+        
+        .btn-status { 
+            flex: 1; 
+            background: transparent; 
+            padding: 14px 0; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 0.8em; 
+            text-transform: uppercase; 
+            border-radius: 12px; /* มนขึ้นนิดนึงให้ดูทันสมัย */
+            transition: 0.2s;
+        }
+
         .btn-learning { border: 1.5px solid var(--red-maroon); color: var(--red-maroon); }
         .btn-knew { border: 1.5px solid var(--green-dark); color: var(--green-dark); }
-
+        
+        /* เพิ่ม Effect ตอนกดปุ่ม status */
+        .btn-status:active { transform: scale(0.98); opacity: 0.7; }
         /* --- BROWSE --- */
         .browse-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
         .word-block { background: var(--card-bg); border: 1px solid var(--border); padding: 10px 14px; font-size: 0.8em; font-weight: 500; cursor: pointer; color: var(--text-main); border-radius: 8px; }
@@ -205,9 +219,9 @@
             </div>
             
             <div class="nav-arrows">
-                <button class="nav-arrow" onclick="prevCard()">‹</button>
-                <button class="nav-arrow" onclick="nextCard()">›</button>
-            </div>
+    <button class="nav-arrow" onclick="prevCard()">‹</button>
+    <button class="nav-arrow" onclick="nextCard()">›</button>
+</div>
 
             <div class="btn-group" id="c-btns">
                 <button class="btn-status btn-learning" onclick="mark('learning')">still learning</button>
