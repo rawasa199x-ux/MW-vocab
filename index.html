@@ -175,9 +175,9 @@
             </div>
             
             <div class="nav-arrows">
-                <button class="nav-arrow" onclick="prevCard()">&#8592;</button>
-                <button class="nav-arrow" onclick="nextCard()">&#8594;</button>
-            </div>
+    <button class="nav-arrow" onclick="event.stopPropagation(); prevCard()">&#10094;</button>
+    <button class="nav-arrow" onclick="event.stopPropagation(); nextCard()">&#10095;</button>
+           </div>
 
             <div class="btn-group" id="c-btns">
                 <button class="btn-status btn-learning" onclick="mark('learning')">still learning</button>
@@ -1989,105 +1989,96 @@
             grid.appendChild(b);
         });
         c.appendChild(grid);
-    }
-
-    // === QUIZ SYSTEM (ใหม่: มีลิมิต 10 ข้อ) ===
+    }// === QUIZ SYSTEM ===
     let quizPool = [];
     let currentQuizWord = null;
     let quizScore = 0;
     let quizTotal = 0;
-    let isQuizAnswered = false;
     let quizLimit = 10;
-    let currentQuizMode = 'ALL';
+    let isQuizAnswered = false;
+    let quizFilter = 'ALL';
+    let isGlobalMode = false;
 
     function renderQuizInit() {
-        renderUnitGrids(); // ใช้ฟังก์ชันวาด Grid ของคุณ
+        renderUnitGrids();
         const qa = document.getElementById('quiz-area');
         const unitData = vocabData[curUnit];
 
         if(!unitData || unitData.words.length === 0) {
-            qa.innerHTML = '<div style="text-align:center; color:gray; font-size:0.85em;">No data available for this unit.</div>';
+            qa.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:0.85em;">No data available for this unit.</div>';
             return;
         }
 
-        // --- สร้างปุ่มตัวเลือก (Quiz Filter) ---
+        // สร้างปุ่มกรอง Root ย่อยของยูนิตนั้น
         let filterHtml = `<div class="quiz-root-filter">
-            <button class="root-filter-btn active" onclick="prepareQuizMode('ALL')">ALL WORDS (10 Qs)</button>`;
+            <button class="root-filter-btn ${quizFilter === 'ALL' ? 'active' : ''}" onclick="setQuizFilter('ALL')">ALL WORDS</button>`;
         
         if (unitData.roots) {
             unitData.roots.forEach(r => {
-                filterHtml += `<button class="root-filter-btn" onclick="prepareQuizMode('${r}')">${r} (10 Qs)</button>`;
+                filterHtml += `<button class="root-filter-btn ${quizFilter === r ? 'active' : ''}" onclick="setQuizFilter('${r}')">${r}</button>`;
             });
         }
         filterHtml += `</div>`;
 
-        // --- ปุ่มเข้าสู่โหมดควิซรวม 30 ยูนิต (ของคุณ) ---
+        // ปุ่มเริ่มทำควิซ
         filterHtml += `
-            <div style="text-align: center; margin: 20px;">
-                <button onclick="prepareQuizMode('GLOBAL')" style="padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                    เข้าสู่โหมดควิซคำศัพท์รวม 30 ยูนิต (Quiz Mode)
-                </button>
+            <div style="text-align:center; margin-top:20px; display:flex; flex-direction:column; gap:10px;">
+                <button class="btn-submit-quiz" onclick="startQuizMode(false)">เริ่มทำควิซ (เฉพาะ ${curUnit} - ${quizFilter})</button>
+                <button class="btn-submit-quiz" style="background-color: #2c3e50;" onclick="startQuizMode(true)">🔥 เริ่มทำควิซรวม 30 ยูนิต</button>
             </div>
-            <div id="quiz-question-box-container"></div>
         `;
-        
         qa.innerHTML = filterHtml;
     }
-    // เตรียมข้อมูลและเริ่มควิซ
-    function prepareQuizMode(mode) {
-        currentQuizMode = mode;
+
+    function setQuizFilter(f) {
+        quizFilter = f;
+        renderQuizInit();
+    }
+
+    function startQuizMode(global) {
+        isGlobalMode = global;
         quizPool = [];
         
-        // ล้างสีปุ่ม Filter ด้านบน
-        document.querySelectorAll('.root-filter-btn').forEach(btn => btn.classList.remove('active'));
-
-        if (mode === 'GLOBAL') {
-            // ดึงหมด 30 ยูนิต
+        if (global) {
             for (const unit in vocabData) {
                 if (vocabData[unit].words) quizPool = quizPool.concat(vocabData[unit].words);
             }
-        } else if (mode === 'ALL') {
-            // ดึงหมดเฉพาะยูนิตที่เลือกอยู่
-            quizPool = [...vocabData[curUnit].words];
         } else {
-            // ดึงเฉพาะ Root ที่เลือกในยูนิตปัจจุบัน
-            quizPool = vocabData[curUnit].words.filter(w => w.root === mode);
+            let ws = vocabData[curUnit].words;
+            if (quizFilter !== 'ALL') {
+                ws = ws.filter(w => w.root === quizFilter);
+            }
+            quizPool = [...ws];
         }
 
         if(quizPool.length < 4) { 
-            alert('Need more words to run this mode (At least 4).'); 
+            alert('คำศัพท์ในหมวดนี้มีน้อยกว่า 4 คำ ไม่พอทำควิซครับ'); 
             return; 
         }
 
-        // สลับคำศัพท์และตั้งค่าจำนวนข้อ (10 ข้อ หรือน้อยกว่าถ้าศัพท์ไม่ถึง)
+        // สุ่มคำศัพท์และจำกัดแค่ 10 ข้อ
         quizPool.sort(() => Math.random() - 0.5);
         quizLimit = Math.min(quizPool.length, 10);
         quizScore = 0;
         quizTotal = 0;
         
-        startQuizQuestion();
+        renderQuizQuestion();
     }
 
-    // เริ่มถามทีละข้อ
-    function startQuizQuestion() {
-        const qContainer = document.getElementById('quiz-question-box-container');
+    function renderQuizQuestion() {
+        const qa = document.getElementById('quiz-area');
         
-        // ถ้าทำครบแล้ว ให้ไปหน้าสรุปคะแนน
         if (quizTotal >= quizLimit) {
-            showQuizSummary(qContainer);
+            showQuizSummary();
             return;
         }
 
         isQuizAnswered = false;
         currentQuizWord = quizPool[quizTotal];
 
-        // สุ่มตัวเลือก 4 ช้อยส์
+        // สุ่มช้อยส์
         let choices = [currentQuizWord];
-        let allWords = vocabData[curUnit].words;
-        if (currentQuizMode === 'GLOBAL') {
-             allWords = [];
-             for (const unit in vocabData) allWords = allWords.concat(vocabData[unit].words);
-        }
+        let allWords = isGlobalMode ? quizPool : vocabData[curUnit].words;
 
         while (choices.length < 4) {
             let r = allWords[Math.floor(Math.random() * allWords.length)];
@@ -2095,21 +2086,21 @@
         }
         choices.sort(() => Math.random() - 0.5);
 
-        // วาดหน้าจอคำถาม (ตามดีไซน์เดิมของคุณ เพิ่มแค่ข้อที่เท่าไหร่)
-        let html = `
-            <div id="quiz-container" style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9; text-align: center;">
-                <h2>Quiz: ทดสอบความจำ</h2>
-                <div style="display: flex; justify-content: space-between; font-weight: bold; color: #333; margin-bottom: 10px;">
-                    <span>คะแนน: ${quizScore}</span>
-                    <span>📍 ${currentQuizMode === 'GLOBAL' ? 'รวม 30 ยูนิต' : curUnit} (ข้อที่ ${quizTotal + 1}/${quizLimit})</span>
-                </div>
-                
-                <div id="quiz-question-box" style="margin: 20px 0; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <h1 id="quiz-word" style="font-size: 32px; margin: 0; color: #2c3e50;">${currentQuizWord.word}</h1>
-                    <p id="quiz-phonetic" style="color: #7f8c8d; margin-top: 5px;">${currentQuizWord.phonetic || ''}</p>
-                </div>
+        let modeText = isGlobalMode ? "รวม 30 ยูนิต" : `${curUnit} (${quizFilter})`;
 
-                <div id="quiz-choices" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+        // วาดหน้าจอควิซ
+        let html = `
+            <div style="margin-bottom: 10px; display: flex; justify-content: space-between; font-size: 0.85em; color: var(--text-gray); font-weight: bold;">
+                <span>📍 ${modeText}</span>
+                <span>ข้อที่ ${quizTotal + 1} / ${quizLimit}</span>
+            </div>
+            
+            <div class="quiz-question-box" style="background-color: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px;">
+                <h1 style="font-size: 2.2em; margin: 0 0 5px 0; color: var(--text-main);">${currentQuizWord.word}</h1>
+                <div style="color: var(--text-gray); font-style: italic;">${currentQuizWord.phonetic || ''}</div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
         `;
 
         choices.forEach(opt => {
@@ -2117,16 +2108,16 @@
         });
 
         html += `
-                </div>
-                <button onclick="startQuizQuestion()" id="next-btn" style="display: none; margin-top: 20px; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%;">
-                    ข้อต่อไป ➔
-                </button>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                <span style="font-weight: bold; color: var(--green-dark);">คะแนน: ${quizScore} / ${quizLimit}</span>
+                <button onclick="renderQuizQuestion()" id="next-btn" style="display: none; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">ข้อต่อไป &#10095;</button>
             </div>
         `;
         
-        qContainer.innerHTML = html;
+        qa.innerHTML = html;
     }
-    // ตรวจคำตอบ (ดึง CSS จากไฟล์ของคุณ)
+
     function checkQuizAnswer(btnElement, selectedId) {
         if (isQuizAnswered) return;
         isQuizAnswered = true;
@@ -2140,7 +2131,6 @@
             btnElement.classList.add('correct');
         } else {
             btnElement.classList.add('wrong');
-            // ไฮไลต์ข้อถูก
             allBtns.forEach(b => {
                 if (b.innerText.includes(currentQuizWord.meaning)) {
                     b.classList.add('correct');
@@ -2148,26 +2138,30 @@
             });
         }
 
-        // อัปเดตคะแนน
-        const scoreDisplay = document.querySelector('#quiz-container > div > span:first-child');
-        if (scoreDisplay) scoreDisplay.innerText = `คะแนน: ${quizScore}`;
+        const scoreDisplay = document.querySelector('#quiz-area span[style*="var(--green-dark)"]');
+        if (scoreDisplay) scoreDisplay.innerText = `คะแนน: ${quizScore} / ${quizLimit}`;
         
         document.getElementById('next-btn').style.display = 'block';
     }
 
-    // หน้าสรุปคะแนน
-    function showQuizSummary(container) {
-        container.innerHTML = `
-            <div id="quiz-container" style="max-width: 600px; margin: 0 auto; padding: 40px 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9; text-align: center;">
-                <h2 style="color: var(--text-brown);">สรุปผลคะแนน (${currentQuizMode === 'GLOBAL' ? 'รวม 30 ยูนิต' : curUnit})</h2>
-                <div style="font-size: 4em; font-weight: bold; margin: 20px 0; color: var(--text-main);">${quizScore} / ${quizLimit}</div>
+    function showQuizSummary() {
+        const qa = document.getElementById('quiz-area');
+        let modeText = isGlobalMode ? "รวม 30 ยูนิต" : `${curUnit} (${quizFilter})`;
+        
+        qa.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px; background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;">
+                <h2 style="color: var(--text-brown); margin-top: 0;">สรุปผลคะแนน</h2>
+                <p style="color: var(--text-gray);">${modeText}</p>
+                <div style="font-size: 4em; font-weight: bold; color: var(--text-main); margin: 20px 0;">${quizScore} / ${quizLimit}</div>
                 
-                <button onclick="prepareQuizMode('${currentQuizMode}')" style="padding: 15px; width: 100%; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px;">
-                    🔄 วนกลับมาทำซ้ำโหมดเดิม
-                </button>
+                <button class="btn-submit-quiz" onclick="startQuizMode(${isGlobalMode})" style="margin-top: 20px;">&#8635; วนกลับมาทำซ้ำ</button>
+<button class="btn-submit-quiz" onclick="renderQuizInit()" style="background-color: var(--text-gray); margin-top: 10px;">&#10094; กลับไปหน้าเลือกควิซ</button>
             </div>
         `;
     }
+
+    // Init
+    renderFlashcardView();
 </script>
 </body>
 </html>
