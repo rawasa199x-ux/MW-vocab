@@ -30,7 +30,7 @@
         .header-title { text-align: center; font-weight: bold; color: var(--text-brown); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
 
         /* --- UNIT GRID --- */
-        .unit-grid-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        .unit-grid-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
         .unit-btn { 
             background: var(--card-bg); border: 1px solid var(--border); padding: 6px 8px; 
             font-size: 0.75em; cursor: pointer; text-align: center; min-width: 45px;
@@ -93,7 +93,7 @@
         .root-filter-btn { background: var(--card-bg); border: 1px solid var(--border); padding: 6px 12px; font-size: 0.75em; border-radius: 20px; color: var(--text-gray); cursor: pointer; font-weight: bold; flex-shrink: 0; }
         .root-filter-btn.active { background: var(--text-brown); color: white; border-color: var(--text-brown); }
         
-        .quiz-question-box { font-size: 1.2em; line-height: 1.5; margin-bottom: 25px; color: var(--text-main); text-align: center; font-weight: bold; }
+        .quiz-question-box { font-size: 1.1em; line-height: 1.5; margin-bottom: 25px; color: var(--text-main); text-align: center; font-weight: bold; }
         .quiz-opt { width: 100%; text-align: left; padding: 15px 18px; border: 1px solid var(--border); background: var(--card-bg); margin-bottom: 10px; cursor: pointer; color: var(--text-main); font-size: 0.85em; border-radius: 12px; line-height: 1.4; word-wrap: break-word; }
         .quiz-opt.selected { border-color: var(--text-brown); border-width: 2px; font-weight: bold; background: #fcfbf9; }
         
@@ -189,7 +189,16 @@
         "CRIM": "CRIM comes from the Latin word for \"fault\" or \"crime.\"",
         "PROB": "PROB comes from the Latin words for \"prove\" and \"honesty.\"",
         "GRAV": "GRAV comes from the Latin word gravis, meaning \"heavy, serious.\"",
-        "LEV": "LEV comes from the Latin word levis, meaning \"light.\""
+        "LEV": "LEV comes from the Latin word levis, meaning \"light.\"",
+        "MANIA": "MANIA in Latin means \"madness.\" It can refer to a mental illness or excessive enthusiasm.",
+        "PSYCH": "PSYCH comes from the Greek word psyche, meaning \"breath, life, soul.\"",
+        "CEPT": "CEPT comes from the Latin verb meaning \"take, seize.\"",
+        "FIN": "FIN comes from the Latin word for \"end\" or \"boundary.\"",
+        "JECT": "JECT comes from jacere, the Latin verb meaning \"throw\" or \"hurl.\"",
+        "TRACT": "TRACT comes from trahere, the Latin verb meaning \"drag or draw.\"",
+        "DUC/DUCT": "DUC/DUCT comes from the Latin verb ducere, meaning \"to lead.\"",
+        "SEQU": "SEQU comes from the Latin verb sequi, meaning \"to follow.\"",
+        "MYTH": "Words derived from Greek and Roman Mythology and History."
     };
 
     const vocabData = {
@@ -197,7 +206,7 @@
             roots: ["BENE", "AM", "BELL", "PAC", "CRIM", "PROB", "GRAV", "LEV"],
             rootsStr: "BENE • AM • BELL • PAC • CRIM • PROB • GRAV • LEV",
             words: [
-                { id: "u1_1", root: "BENE", word: "benediction", def: "A prayer that asks for God's blessing, especially a prayer that concludes a worship service.", phonetic: "/ˌbɛnəˈdɪkʃən/", meaning: "การสวดประสาทพร", syn: "blessing, prayer, sanction", ety: "EN: bene (good) + dicere (to speak).", ex: "The bishop finished his benediction and the crowd began to leave." },
+                { id: "u1_1", root: "BENE", word: "benediction", def: "A prayer that asks for God's blessing.", phonetic: "/ˌbɛnəˈdɪkʃən/", meaning: "การสวดประสาทพร", syn: "blessing, prayer, sanction", ety: "EN: bene (good) + dicere (to speak).", ex: "The bishop finished his benediction and the crowd began to leave." },
                 { id: "u1_2", root: "BENE", word: "benefactor", def: "Someone who helps another person or group, especially by giving money.", phonetic: "/ˈbɛnəˌfæktər/", meaning: "ผู้มีพระคุณ", syn: "donor, patron, sponsor", ety: "EN: bene (good) + facere (to do).", ex: "The school's new library was funded by an anonymous benefactor." },
                 { id: "u1_3", root: "BENE", word: "beneficiary", def: "A person or organization that benefits or is expected to benefit from something.", phonetic: "/ˌbɛnəˈfɪʃiˌɛri/", meaning: "ผู้รับผลประโยชน์", syn: "recipient, heir, inheritor", ety: "EN: One who receives benefits from a will or trust.", ex: "She was the sole beneficiary of her father's will." },
                 { id: "u1_4", root: "BENE", word: "benevolence", def: "Kindness, generosity.", phonetic: "/bəˈnɛvələns/", meaning: "ความเมตตา", syn: "kindness, compassion, generosity", ety: "EN: bene (good) + velle (to wish).", ex: "The charity relies on the benevolence of the public." },
@@ -207,10 +216,10 @@
                 { id: "u1_8", root: "AM", word: "paramour", def: "A lover, often secret, not allowed by law or custom.", phonetic: "/ˈpærəˌmʊr/", meaning: "ชู้รัก", syn: "lover, mistress, beau", ety: "EN: A secret lover.", ex: "The king's paramour exerted great influence." },
                 { id: "u1_9", root: "BELL", word: "bellicose", def: "Warlike or hostile in manner or temperament.", phonetic: "/ˈbɛlɪˌkoʊs/", meaning: "ก้าวร้าว", syn: "aggressive, combative, warlike", ety: "EN: Demonstrating aggression and willingness to fight.", ex: "His bellicose attitude made everyone nervous." },
                 { id: "u1_10", root: "BELL", word: "belligerent", def: "Inclined to or exhibiting assertiveness, hostility, or combativeness.", phonetic: "/bəˈlɪdʒərənt/", meaning: "ดุดัน, เป็นปฏิปักษ์", syn: "hostile, antagonistic, pugnacious", ety: "EN: Hostile and aggressive.", ex: "He was drunk and belligerent when the police arrived." },
-                { id: "u1_11", root: "BELL", word: "rebellion", def: "Open defiance and opposition, sometimes armed, to a person or thing in authority.", phonetic: "/rɪˈbɛljən/", meaning: "การกบฏ", syn: "uprising, revolt, mutiny", ety: "EN: Open opposition toward authority.", ex: "The government crushed the rebellion." },
+                { id: "u1_11", root: "BELL", word: "rebellion", def: "Open defiance and opposition to a person or thing in authority.", phonetic: "/rɪˈbɛljən/", meaning: "การกบฏ", syn: "uprising, revolt, mutiny", ety: "EN: Open opposition toward authority.", ex: "The government crushed the rebellion." },
                 { id: "u1_12", root: "BELL", word: "casus belli", def: "An event or action that justifies or allegedly justifies a war or conflict.", phonetic: "/ˌkæsəs ˈbɛlaɪ/", meaning: "ชนวนเหตุสงคราม", syn: "cause for war, provocation, pretext", ety: "EN: An act provoking or justifying war.", ex: "The border crossing was seen as a casus belli." },
                 { id: "u1_13", root: "PAC", word: "pacify", def: "To soothe anger or agitation.", phonetic: "/ˈpæsəˌfaɪ/", meaning: "ทำให้สงบ", syn: "calm, soothe, appease", ety: "EN: To soothe anger or agitation.", ex: "The government tried to pacify the protesters." },
-                { id: "u1_14", root: "PAC", word: "pacifist", def: "A person opposed to war or violence, especially someone who refuses to bear arms.", phonetic: "/ˈpæsəfɪst/", meaning: "ผู้รักสันติภาพ", syn: "peacemaker, dove, anti-militarist", ety: "EN: A person opposed to war or violence.", ex: "As a pacifist, he refused to join the army." },
+                { id: "u1_14", root: "PAC", word: "pacifist", def: "A person opposed to war or violence.", phonetic: "/ˈpæsəfɪst/", meaning: "ผู้รักสันติภาพ", syn: "peacemaker, dove, anti-militarist", ety: "EN: A person opposed to war or violence.", ex: "As a pacifist, he refused to join the army." },
                 { id: "u1_15", root: "PAC", word: "pact", def: "An agreement between two or more people or groups; a treaty.", phonetic: "/pækt/", meaning: "สนธิสัญญา", syn: "treaty, agreement, accord", ety: "EN: An agreement between groups.", ex: "The two nations signed a non-aggression pact." },
                 { id: "u1_16", root: "PAC", word: "pace", def: "Contrary to the opinion of.", phonetic: "/ˈpeɪsi/", meaning: "ด้วยความเคารพต่อ...", syn: "with due respect to, contrary to", ety: "EN: Contrary to the opinion of.", ex: "Pace the experts, I believe this plan will fail." },
                 { id: "u1_17", root: "CRIM", word: "criminology", def: "The study of crime, criminals, law enforcement, and punishment.", phonetic: "/ˌkrɪməˈnɑlədʒi/", meaning: "อาชญาวิทยา", syn: "study of crime, criminal justice", ety: "EN: The study of crime and law enforcement.", ex: "She decided to major in criminology." },
@@ -230,14 +239,69 @@
                 { id: "u1_31", root: "LEV", word: "cantilever", def: "A long piece that sticks out from a wall to support something.", phonetic: "/ˈkæntəˌlivər/", meaning: "คานยื่น", syn: "bracket, overhang, projecting beam", ety: "EN: A piece that sticks out from a wall to support.", ex: "The balcony was supported by a cantilever." },
                 { id: "u1_32", root: "LEV", word: "levity", def: "Lack of appropriate seriousness.", phonetic: "/ˈlɛvəti/", meaning: "ความเบาสมอง", syn: "frivolity, lightheartedness, flippancy", ety: "EN: Lack of appropriate seriousness.", ex: "His levity during the funeral was inappropriate." }
             ]
+        },
+        "Unit 2": {
+            roots: ["MANIA", "PSYCH", "CEPT", "FIN", "JECT", "TRACT", "DUC/DUCT", "SEQU", "MYTH"],
+            rootsStr: "MANIA • PSYCH • CEPT • FIN • JECT • TRACT • DUC/DUCT • SEQU",
+            words: [
+                { id: "u2_1", root: "MANIA", word: "kleptomania", def: "A mental illness in which a person has a strong desire to steal things.", phonetic: "/ˌklep-tə-ˈmā-nē-ə/", meaning: "โรคชอบหยิบฉวย", syn: "compulsion to steal", ety: "EN: kleptein (to steal) + mania (madness).", ex: "Kleptomania leads its sufferers to steal items of little value." },
+                { id: "u2_2", root: "MANIA", word: "dipsomaniac", def: "A person with an extreme and uncontrollable desire for alcohol.", phonetic: "/ˌdip-sə-ˈmā-nē-ˌak/", meaning: "คนติดเหล้าอย่างหนัก", syn: "alcoholic, drunkard", ety: "EN: dipsa (thirst) + mania.", ex: "She didn't like the word alcoholic, and liked dipsomaniac even less." },
+                { id: "u2_3", root: "MANIA", word: "megalomaniac", def: "A mental disorder marked by feelings of great personal power and importance.", phonetic: "/ˌme-gə-lō-ˈmā-nē-ˌak/", meaning: "คนที่หลงผิดว่าตัวเองยิ่งใหญ่", syn: "egomaniac, grandstander", ety: "EN: megalo (large) + mania.", ex: "The voters finally realized they had elected a megalomaniac." },
+                { id: "u2_4", root: "MANIA", word: "egomaniac", def: "Someone who is extremely self-centered and ignores the problems and concerns of others.", phonetic: "/ˌē-gō-ˈmā-nē-ˌak/", meaning: "คนที่หลงตัวเองอย่างหนัก", syn: "narcissist, self-seeker", ety: "EN: ego (I) + mania.", ex: "He's a completely unimpressive person, but that doesn't keep him from being an egomaniac." },
+                
+                { id: "u2_5", root: "PSYCH", word: "psyche", def: "Soul, personality, mind.", phonetic: "/ˈsī-kē/", meaning: "จิตใจ, วิญญาณ", syn: "soul, spirit, mind", ety: "EN: psyche (breath, life, soul).", ex: "Analysts are constantly trying to understand the nation's psyche." },
+                { id: "u2_6", root: "PSYCH", word: "psychedelic", def: "Of or relating to a drug that produces abnormal and often extreme mental effects such as hallucinations.", phonetic: "/ˌsī-kə-ˈde-lik/", meaning: "(ยา) ที่ทำให้เกิดอาการหลอนประสาท", syn: "hallucinogenic, mind-altering", ety: "EN: psyche (mind) + deloun (to make visible).", ex: "In her only psychedelic experience, she watched with horror as the walls began crawling." },
+                { id: "u2_7", root: "PSYCH", word: "psychosomatic", def: "Caused by mental or emotional problems rather than by physical illness.", phonetic: "/ˌsī-kō-sə-ˈma-tik/", meaning: "(อาการป่วย) ที่เกิดจากความเครียดหรือจิตใจ", syn: "psychological, subjective", ety: "EN: psyche (mind) + soma (body).", ex: "Her doctor assumed her stomach problems were psychosomatic." },
+                { id: "u2_8", root: "PSYCH", word: "psychotherapist", def: "One who treats mental or emotional disorder or related bodily ills by psychological means.", phonetic: "/ˌsī-kō-ˈther-ə-pist/", meaning: "นักจิตบำบัด", syn: "analyst, counselor, shrink", ety: "EN: psyche (mind) + therapeuein (to treat).", ex: "It's his sessions with the psychotherapist that he really values." },
+                
+                { id: "u2_9", root: "CEPT", word: "reception", def: "The act of receiving, or a social gathering where guests are formally welcomed.", phonetic: "/ri-ˈsep-shən/", meaning: "การต้อนรับ, งานเลี้ยงต้อนรับ", syn: "gathering, party, greeting", ety: "EN: re (back) + capere (to take).", ex: "The reception of her plan by the board of directors was enthusiastic." },
+                { id: "u2_10", root: "CEPT", word: "intercept", def: "To stop, seize, or interrupt (something or someone) before arrival.", phonetic: "/ˌin-tər-ˈsept/", meaning: "สกัดกั้น, ดักจับ", syn: "block, catch, cut off", ety: "EN: inter (between) + capere (to take).", ex: "The explosives had been intercepted by police just before being loaded onto the jet." },
+                { id: "u2_11", root: "CEPT", word: "perceptible", def: "Noticeable or able to be felt by the senses.", phonetic: "/pər-ˈsep-tə-bəl/", meaning: "สามารถรับรู้ได้ (ด้วยประสาทสัมผัส)", syn: "noticeable, detectable, observable", ety: "EN: per (through) + capere (to take).", ex: "Her change in attitude toward him was barely perceptible." },
+                { id: "u2_12", root: "CEPT", word: "susceptible", def: "Open to some influence; responsive.", phonetic: "/sə-ˈsep-tə-bəl/", meaning: "อ่อนแอต่อ, หวั่นไหวได้ง่าย", syn: "vulnerable, prone, sensitive", ety: "EN: sub (up/under) + capere (to take).", ex: "Small children are often susceptible to nightmares." },
+
+                { id: "u2_13", root: "FIN", word: "confine", def: "To keep (someone or something) within limits; to hold in a location.", phonetic: "/kən-ˈfīn/", meaning: "จำกัดบริเวณ, กักขัง", syn: "restrict, enclose, imprison", ety: "EN: con (together) + finis (end/boundary).", ex: "He confined his remarks to a few hints that sales had slipped." },
+                { id: "u2_14", root: "FIN", word: "definitive", def: "Authoritative and final; specifying perfectly or precisely.", phonetic: "/di-ˈfi-nə-tiv/", meaning: "ข้อสรุปที่ชัดเจน, ท้ายสุด", syn: "absolute, ultimate, conclusive", ety: "EN: de (completely) + finis (end/boundary).", ex: "The team's research provided a definitive description of the virus." },
+                { id: "u2_15", root: "FIN", word: "finite", def: "Having definite limits.", phonetic: "/ˈfī-ˌnīt/", meaning: "มีขอบเขตจำกัด, มีที่สิ้นสุด", syn: "limited, bounded, restricted", ety: "EN: finis (end/boundary).", ex: "Her ambitions were infinite, but her wealth was finite." },
+                { id: "u2_16", root: "FIN", word: "infinitesimal", def: "Extremely or immeasurably small.", phonetic: "/in-ˌfi-nə-ˈte-sə-məl/", meaning: "เล็กน้อยมากจนแทบจะวัดไม่ได้", syn: "microscopic, tiny, minute", ety: "EN: in (not) + finis (end).", ex: "He saw an odd pattern of changes so infinitesimal that they hadn't been noticed." },
+
+                { id: "u2_17", root: "JECT", word: "interject", def: "To interrupt a conversation with a comment or remark.", phonetic: "/ˌin-tər-ˈjekt/", meaning: "พูดสอด, พูดแทรก", syn: "interrupt, insert, throw in", ety: "EN: inter (between) + jacere (to throw).", ex: "Every so often he would interject a crude comment." },
+                { id: "u2_18", root: "JECT", word: "conjecture", def: "To guess.", phonetic: "/kən-ˈjek-chər/", meaning: "คาดเดา, อนุมาน", syn: "guess, speculate, surmise", ety: "EN: con (together) + jacere (to throw).", ex: "They conjectured that he had met his end in the Andes." },
+                { id: "u2_19", root: "JECT", word: "projection", def: "An estimate of what might happen in the future based on what is happening now.", phonetic: "/prə-ˈjek-shən/", meaning: "การคาดคะเน (อนาคต)", syn: "forecast, prediction, estimate", ety: "EN: pro (forward) + jacere (to throw).", ex: "The president has been hearing different deficit projections all week." },
+                { id: "u2_20", root: "JECT", word: "trajectory", def: "The curved path that an object makes in space, or that a thrown object follows.", phonetic: "/trə-ˈjek-t(ə-)rē/", meaning: "วิถีโค้ง, เส้นทาง", syn: "path, course, route", ety: "EN: trans (across) + jacere (to throw).", ex: "The trajectory of the bullet seemed incredible." },
+
+                { id: "u2_21", root: "TRACT", word: "traction", def: "The friction that allows a moving thing to move over a surface without slipping.", phonetic: "/ˈtrak-shən/", meaning: "แรงยึดเกาะ, แรงเสียดทาน", syn: "grip, friction, adhesion", ety: "EN: trahere (to draw, pull).", ex: "The spinning wheels were getting no traction on the ice." },
+                { id: "u2_22", root: "TRACT", word: "retract", def: "To pull back (something) into something larger, or to take back (something said).", phonetic: "/ri-ˈtrakt/", meaning: "หดกลับ, ถอนคำพูด", syn: "withdraw, pull back, revoke", ety: "EN: re (back) + trahere (to draw).", ex: "She was forced to retract her comment about her opponent." },
+                { id: "u2_23", root: "TRACT", word: "protracted", def: "Drawn out, continued, or extended.", phonetic: "/prō-ˈtrak-təd/", meaning: "ยืดเยื้อ, ยาวนาน", syn: "extended, prolonged, drawn-out", ety: "EN: pro (forward) + trahere (to draw).", ex: "No one was looking forward to a protracted struggle for custody." },
+                { id: "u2_24", root: "TRACT", word: "intractable", def: "Not easily handled, led, taught, or controlled.", phonetic: "/in-ˈtrak-tə-bəl/", meaning: "ดื้อรั้น, ควบคุมยาก", syn: "stubborn, unmanageable, obstinate", ety: "EN: in (not) + trahere (to draw).", ex: "The prison situation is intractable, and likely to get worse." },
+
+                { id: "u2_25", root: "DUC/DUCT", word: "conducive", def: "Tending to promote, encourage, or assist; helpful.", phonetic: "/kən-ˈdü-siv/", meaning: "เอื้ออำนวย, นำไปสู่", syn: "helpful, favorable, beneficial", ety: "EN: con (together) + ducere (to lead).", ex: "The noisy environment was not conducive to studying." },
+                { id: "u2_26", root: "DUC/DUCT", word: "deduction", def: "Subtraction, or the reaching of a conclusion by reasoning.", phonetic: "/di-ˈdək-shən/", meaning: "การหักออก, การอนุมาน", syn: "subtraction, reasoning, conclusion", ety: "EN: de (down, away) + ducere (to lead).", ex: "Holmes was famous for his brilliant process of deduction." },
+                { id: "u2_27", root: "DUC/DUCT", word: "induce", def: "To persuade, influence, or bring about.", phonetic: "/in-ˈdüs/", meaning: "ชักจูง, กระตุ้นให้เกิด", syn: "cause, generate, persuade", ety: "EN: in (into) + ducere (to lead).", ex: "Nothing could induce her to marry him." },
+                { id: "u2_28", root: "DUC/DUCT", word: "seduction", def: "The act of persuading someone to do something they might not normally do.", phonetic: "/si-ˈdək-shən/", meaning: "การล่อลวง, การยั่วยวน", syn: "temptation, lure, enticement", ety: "EN: se (aside) + ducere (to lead).", ex: "The public isn't aware of the company's seduction of Congress." },
+
+                { id: "u2_29", root: "SEQU", word: "sequential", def: "Arranged in an order or series; following in a series.", phonetic: "/si-ˈkwen-chəl/", meaning: "ตามลำดับ, ต่อเนื่องกัน", syn: "consecutive, successive, chronological", ety: "EN: sequi (to follow).", ex: "The teacher asked them to put the historical events in sequential order." },
+                { id: "u2_30", root: "SEQU", word: "subsequent", def: "Following in time, order, or place.", phonetic: "/ˈsəb-si-kwənt/", meaning: "ซึ่งตามมา, ภายหลัง", syn: "following, later, ensuing", ety: "EN: sub (close up/under) + sequi (to follow).", ex: "Her initial test was negative, but subsequent tests found the virus." },
+                { id: "u2_31", root: "SEQU", word: "consequential", def: "Resulting, or important.", phonetic: "/ˌkän-sə-ˈkwen-chəl/", meaning: "เป็นผลที่ตามมา, สำคัญ", syn: "important, significant, resulting", ety: "EN: con (together) + sequi (to follow).", ex: "The loss of the ship was a highly consequential event for the navy." },
+                { id: "u2_32", root: "SEQU", word: "non sequitur", def: "A statement that does not follow logically from anything previously said.", phonetic: "/ˌnän-ˈse-kwə-tər/", meaning: "ข้อความที่ไม่ต่อเนื่องหรือไม่สมเหตุสมผล", syn: "absurdity, illogicality", ety: "EN: non (not) + sequitur (it follows).", ex: "His sudden remark about the weather was a complete non sequitur." },
+
+                { id: "u2_33", root: "MYTH", word: "Apollonian", def: "Harmonious, ordered, rational, calm.", phonetic: "/ˌa-pə-ˈlō-nē-ən/", meaning: "สงบ, มีเหตุผล, มีระเบียบ", syn: "rational, balanced, orderly", ety: "EN: From Apollo, Greek god of light, music, and reason.", ex: "The classical architecture of the building was purely Apollonian." },
+                { id: "u2_34", root: "MYTH", word: "bacchanalian", def: "Frenzied, orgiastic, often involving drunken revelry.", phonetic: "/ˌba-kə-ˈnāl-yən/", meaning: "เมามายและสนุกสนานอย่างสุดเหวี่ยง", syn: "riotous, drunken, orgiastic", ety: "EN: From Bacchus (or Dionysus), Roman god of wine.", ex: "By 2:00 a.m. the party was a scene of bacchanalian frenzy." },
+                { id: "u2_35", root: "MYTH", word: "delphic", def: "Unclear, ambiguous, or confusing.", phonetic: "/ˈdel-fik/", meaning: "คลุมเครือ, ตีความได้หลายอย่าง", syn: "cryptic, obscure, ambiguous", ety: "EN: From the Oracle of Delphi, whose prophecies were confusing.", ex: "The president gave a delphic answer that left everyone puzzled." },
+                { id: "u2_36", root: "MYTH", word: "Dionysian", def: "Frenzied, delirious, or irrational.", phonetic: "/ˌdī-ə-ˈni-zhən/", meaning: "ขาดสติ, ป่าเถื่อน", syn: "wild, irrational, orgiastic", ety: "EN: From Dionysus, Greek god of wine and ecstasy.", ex: "The rock concert had a wild, Dionysian energy." },
+                { id: "u2_37", root: "MYTH", word: "jovial", def: "Jolly, good-natured.", phonetic: "/ˈjō-vē-əl/", meaning: "เริงร่า, เบิกบาน, อารมณ์ดี", syn: "cheerful, merry, jolly", ety: "EN: From Jove (Jupiter), whose influence made people happy.", ex: "He was a jovial host who made everyone feel welcome." },
+                { id: "u2_38", root: "MYTH", word: "mercurial", def: "Subject to rapid and unpredictable changes of mood.", phonetic: "/mər-ˈkyu̇r-ē-əl/", meaning: "เปลี่ยนแปลงอารมณ์อย่างรวดเร็ว", syn: "unpredictable, volatile, erratic", ety: "EN: From Mercury, the fast-moving Roman messenger god.", ex: "Her only excuse for her behavior was her well-known mercurial temper." },
+                { id: "u2_39", root: "MYTH", word: "Olympian", def: "Lofty, superior, and detached.", phonetic: "/ə-ˈlim-pē-ən/", meaning: "ยิ่งใหญ่, สูงส่ง, วางตัวอยู่เหนือผู้อื่น", syn: "lofty, majestic, godlike", ety: "EN: From Mount Olympus, home of the Greek gods.", ex: "He spoke to the younger lawyers in Olympian tones." },
+                { id: "u2_40", root: "MYTH", word: "venereal", def: "Having to do with sexual intercourse or diseases transmitted by it.", phonetic: "/və-ˈnir-ē-əl/", meaning: "เกี่ยวกับกามโรค หรือเพศสัมพันธ์", syn: "sexually transmitted", ety: "EN: From Venus, Roman goddess of love.", ex: "In the 19th century, venereal diseases killed some of the greatest figures." }
+            ]
         }
     };
 
-    for(let i=2; i<=30; i++) { vocabData[`Unit ${i}`] = { roots: [], rootsStr: "", words: [] }; }
+    // จำลอง 30 Units (3-30)
+    for(let i=3; i<=30; i++) { vocabData[`Unit ${i}`] = { roots: [], rootsStr: "", words: [] }; }
 
     let curUnit = "Unit 1";
     let curIdx = 0;
-    let progress = JSON.parse(localStorage.getItem('mw_v10')) || {};
+    let progress = JSON.parse(localStorage.getItem('mw_v11')) || {};
 
     let quizPool = [];
     let userAnswers = {};
@@ -371,7 +435,7 @@
     function mark(st) {
         const words = vocabData[curUnit].words;
         progress[words[curIdx].id] = st;
-        localStorage.setItem('mw_v10', JSON.stringify(progress));
+        localStorage.setItem('mw_v11', JSON.stringify(progress));
         nextCard();
     }
 
@@ -445,12 +509,9 @@
 
         let numQuestions = quizFilter === 'ALL' ? 10 : ws.length;
         
-        // ถ้าเป็น ALL สุ่ม 10 ข้อ, ถ้าเป็น Root เฉพาะ เอา 4 คำนั้นมาเรียงแบบสุ่ม
         quizPool = [...ws].sort(() => 0.5 - Math.random()).slice(0, numQuestions);
         
-        // สร้างตัวเลือก
         quizPool.forEach(q => {
-            // ดึงเฉพาะคำใน unit นั้นมาเป็นตัวหลอก เพื่อป้องกันข้อซ้ำ
             let allUnitWords = vocabData[curUnit].words;
             let distractors = allUnitWords.filter(w => w.id !== q.id).sort(() => 0.5 - Math.random()).slice(0, 3);
             q.options = [q, ...distractors].sort(() => 0.5 - Math.random());
@@ -520,7 +581,6 @@
                 </div>
             `;
         } else {
-            // ถ้าผิด บังคับทำใหม่
             startQuiz();
         }
     }
