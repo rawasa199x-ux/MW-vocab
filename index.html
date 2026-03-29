@@ -1828,27 +1828,156 @@
 
   
     
-
+// ==========================================
+    // ระบบ Navigation แท็บ (ของคุณเดิม)
+    // ==========================================
     let curUnit = "Unit 1";
     let curIdx = 0;
     let progress = JSON.parse(localStorage.getItem('mw_v11')) || {};
-
-    let quizPool = [];
-    let userAnswers = {};
-    let quizIdx = 0;
-    let quizFilter = 'ALL';
 
     function switchTab(tab) {
         document.querySelectorAll('.view, .nav-item').forEach(e => e.classList.remove('active'));
         document.getElementById('view-'+tab).classList.add('active');
         const idx = ["cards", "browse", "quiz"].indexOf(tab);
-        document.querySelectorAll('.nav-item')[idx].classList.add('active');
+        if(idx >= 0) document.querySelectorAll('.nav-item')[idx].classList.add('active');
         
         if(tab === 'cards') renderFlashcardView();
-        if(tab === 'browse') renderBrowse();
+        // if(tab === 'browse') renderBrowse(); // (ถ้ามีฟังก์ชันนี้เปิดไว้ตามเดิม)
         if(tab === 'quiz') renderQuizInit();
     }
 
+    // ==========================================
+    // ระบบ Quiz อัจฉริยะ (อัปเดตใหม่)
+    // ==========================================
+    let quizPool = [];
+    let currentQuizWord = null;
+    let quizScore = 0;
+    let quizTotal = 0;
+    let isQuizAnswered = false;
+
+    // สร้างหน้าจอควิซเมื่อกดแท็บ Quiz
+    function renderQuizInit() {
+        const quizTab = document.getElementById('view-quiz');
+        
+        // สร้าง Dropdown ให้เลือกยูนิตอัตโนมัติ (Unit 1 - 30)
+        let optionsHTML = `<option value="ALL">รวมทุกยูนิต (Unit 1 - 30)</option>`;
+        for(let i=1; i<=30; i++) {
+            optionsHTML += `<option value="Unit ${i}">เฉพาะ Unit ${i}</option>`;
+        }
+
+        quizTab.innerHTML = `
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px; text-align: center;">
+                <h2>Quiz: ทดสอบความจำ</h2>
+                
+                <div style="margin-bottom: 20px;">
+                    <select id="quiz-unit-select" onchange="changeQuizMode(this.value)" style="padding: 8px; font-size: 16px; border-radius: 5px;">
+                        ${optionsHTML}
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <span id="quiz-score-display" style="font-weight: bold; color: #333; font-size: 18px; margin-right: 15px;">คะแนน: 0 / 0</span>
+                    <button onclick="restartQuiz()" style="padding: 6px 12px; background-color: #f39c12; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        เริ่มทำใหม่ (Restart)
+                    </button>
+                </div>
+                
+                <div style="margin: 20px 0; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <h1 id="quiz-word" style="font-size: 32px; margin: 0; color: #2c3e50;">Word</h1>
+                    <p id="quiz-phonetic" style="color: #7f8c8d; margin-top: 5px;"></p>
+                </div>
+
+                <div id="quiz-choices" style="display: grid; grid-template-columns: 1fr; gap: 10px;"></div>
+
+                <button onclick="startQuiz()" id="quiz-next-btn" style="display: none; margin-top: 20px; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px;">
+                    ข้อต่อไป ➔
+                </button>
+            </div>
+        `;
+        
+        changeQuizMode('ALL'); // เริ่มต้นด้วยควิซรวม
+    }
+
+    // เมื่อเปลี่ยนตัวเลือกใน Dropdown
+    function changeQuizMode(mode) {
+        quizPool = [];
+        if (mode === 'ALL') {
+            for (const unit in vocabData) {
+                if (vocabData[unit].words) quizPool = quizPool.concat(vocabData[unit].words);
+            }
+        } else {
+            if (vocabData[mode] && vocabData[mode].words) quizPool = vocabData[mode].words;
+        }
+        restartQuiz();
+    }
+
+    // รีเซ็ตคะแนน
+    function restartQuiz() {
+        quizScore = 0;
+        quizTotal = 0;
+        document.getElementById('quiz-score-display').innerText = `คะแนน: ${quizScore} / ${quizTotal}`;
+        startQuiz();
+    }
+
+    // เริ่มสุ่มคำถามข้อใหม่
+    function startQuiz() {
+        if (quizPool.length < 4) {
+            document.getElementById('quiz-word').innerText = "คำศัพท์ไม่พอทำควิซ";
+            document.getElementById('quiz-choices').innerHTML = "";
+            return;
+        }
+        
+        isQuizAnswered = false;
+        document.getElementById('quiz-next-btn').style.display = 'none';
+
+        // สุ่มคำถาม
+        const correctIdx = Math.floor(Math.random() * quizPool.length);
+        currentQuizWord = quizPool[correctIdx];
+
+        document.getElementById('quiz-word').innerText = currentQuizWord.word;
+        document.getElementById('quiz-phonetic').innerText = currentQuizWord.phonetic || '';
+
+        // สุ่มช้อยส์หลอก
+        let choices = [currentQuizWord];
+        while (choices.length < 4) {
+            let randomWord = quizPool[Math.floor(Math.random() * quizPool.length)];
+            if (!choices.includes(randomWord)) choices.push(randomWord);
+        }
+
+        choices.sort(() => Math.random() - 0.5);
+
+        // วาดปุ่มช้อยส์
+        const choicesContainer = document.getElementById('quiz-choices');
+        choicesContainer.innerHTML = '';
+        choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.className = 'quiz-choice-btn';
+            btn.innerText = `${choice.meaning} (${choice.syn || '-'})`; 
+            btn.onclick = () => checkQuizAnswer(btn, choice.id === currentQuizWord.id);
+            choicesContainer.appendChild(btn);
+        });
+    }
+
+    // ตรวจคำตอบ
+    function checkQuizAnswer(selectedBtn, isCorrect) {
+        if (isQuizAnswered) return;
+        isQuizAnswered = true;
+        quizTotal++;
+
+        const allBtns = document.querySelectorAll('.quiz-choice-btn');
+        if (isCorrect) {
+            quizScore++;
+            selectedBtn.classList.add('correct');
+        } else {
+            selectedBtn.classList.add('wrong');
+            allBtns.forEach(btn => {
+                if (btn.innerText.includes(currentQuizWord.meaning)) btn.classList.add('correct');
+            });
+        }
+
+        document.getElementById('quiz-score-display').innerText = `คะแนน: ${quizScore} / ${quizTotal}`;
+        document.getElementById('quiz-next-btn').style.display = 'block';
+    }
     function renderUnitGrids() {
         ["card", "browse", "quiz"].forEach(prefix => {
             const grid = document.getElementById(`${prefix}-unit-grid`);
@@ -2014,34 +2143,7 @@
         filterHtml += `</div>`;
 
         filterHtml += `
-          <div style="text-align: center; margin: 20px;">
-    <button onclick="toggleQuizMode()" style="padding: 10px 20px; font-size: 16px; background-color: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer;">
-        เข้าสู่โหมดควิซคำศัพท์รวม (Quiz Mode)
-    </button>
-</div>
-
-<div id="quiz-container" style="display: none; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9; text-align: center;">
-    <h2>Quiz: ทดสอบความจำ</h2>
-    
-    <div style="margin-bottom: 15px;">
-        <span id="quiz-score" style="font-weight: bold; color: #333; font-size: 18px; margin-right: 15px;">คะแนน: 0 / 0</span>
-        <button onclick="restartQuiz()" style="padding: 6px 12px; background-color: #f39c12; color: white; border: none; border-radius: 5px; cursor: pointer;">
-            เริ่มทำใหม่ (Restart)
-        </button>
-    </div>
-    
-    <div id="quiz-question-box" style="margin: 20px 0; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-        <h1 id="quiz-word" style="font-size: 32px; margin: 0; color: #2c3e50;">Word</h1>
-        <p id="quiz-phonetic" style="color: #7f8c8d; margin-top: 5px;"></p>
-    </div>
-
-    <div id="quiz-choices" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
-        </div>
-
-    <button onclick="nextQuestion()" id="next-btn" style="display: none; margin-top: 20px; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%;">
-        ข้อต่อไป ➔
-    </button>
-</div>
+          
         `;
         qa.innerHTML = filterHtml;
     }
@@ -2076,12 +2178,49 @@
         quizIdx = 0;
         renderQuizQuestion();
     }
-// รีเซ็ตคะแนนและเริ่มทำควิซชุดใหม่
-function restartQuiz() {
-    score = 0;
-    totalQuestions = 0;
-    document.getElementById('quiz-score').innerText = `คะแนน: ${score} / ${totalQuestions}`;
-    startQuiz(); // โค้ดใน startQuiz() มีระบบสลับช้อยส์ (Shuffle) อัตโนมัติทุกครั้งที่เรียกใช้งานอยู่แล้วครับ
+// เพิ่มตัวแปรเก็บสถานะโหมดควิซ
+let currentQuizMode = 'ALL';
+
+// ฟังก์ชันสลับโหมด (รับค่าพารามิเตอร์ว่าจะเป็น ALL หรือชื่อ Unit)
+function toggleQuizMode(mode = 'ALL') {
+    currentQuizMode = mode;
+    const flashcardView = document.getElementById('main-card-container'); // ปรับให้ตรงกับกล่องแฟลชการ์ดของคุณ
+    const quizView = document.getElementById('quiz-container');
+    
+    if (quizView.style.display === 'none') {
+        if(flashcardView) flashcardView.style.display = 'none';
+        quizView.style.display = 'block';
+        
+        // เปลี่ยนหัวข้อให้รู้ว่ากำลังทำควิซอะไรอยู่
+        const titleElement = document.querySelector('#quiz-container h2');
+        if(titleElement) {
+            titleElement.innerText = mode === 'ALL' ? "Quiz: ทดสอบคำศัพท์รวม 30 ยูนิต" : `Quiz: ทบทวนคำศัพท์ ${mode}`;
+        }
+        
+        prepareQuizPool(mode);
+        restartQuiz();
+    } else {
+        quizView.style.display = 'none';
+        if(flashcardView) flashcardView.style.display = 'flex'; // หรือ block ตามที่คุณตั้งไว้
+    }
+}
+
+// ฟังก์ชันเตรียมคำศัพท์เข้าตะกร้าควิซ
+function prepareQuizPool(mode) {
+    allWordsPool = [];
+    if (mode === 'ALL') {
+        // ดึงจากทุกยูนิต
+        for (const unit in vocabData) {
+            if (vocabData[unit].words && vocabData[unit].words.length > 0) {
+                allWordsPool = allWordsPool.concat(vocabData[unit].words);
+            }
+        }
+    } else {
+        // ดึงเฉพาะยูนิตที่เลือก
+        if (vocabData[mode] && vocabData[mode].words) {
+            allWordsPool = vocabData[mode].words;
+        }
+    }
 }
     function renderQuizQuestion() {
         const q = quizPool[quizIdx];
@@ -2154,29 +2293,46 @@ let currentQuizWord = null;
 let score = 0;
 let totalQuestions = 0;
 let isAnswered = false;
+let currentQuizMode = 'ALL'; // เพิ่มตัวแปรเก็บสถานะโหมดควิซ
 
-// ฟังก์ชันสลับโหมดแสดงผลระหว่าง Flashcard กับ Quiz
-function toggleQuizMode() {
-    const flashcardView = document.getElementById('main-card-container'); // ปรับ id ให้ตรงกับกล่องแฟลชการ์ดของคุณ
+// ฟังก์ชันสลับโหมด (รับค่าพารามิเตอร์ว่าจะเป็น ALL หรือชื่อ Unit)
+function toggleQuizMode(mode = 'ALL') {
+    currentQuizMode = mode;
+    const flashcardView = document.getElementById('main-card-container'); // ปรับให้ตรงกับกล่องแฟลชการ์ดของคุณ
     const quizView = document.getElementById('quiz-container');
     
     if (quizView.style.display === 'none') {
         if(flashcardView) flashcardView.style.display = 'none';
         quizView.style.display = 'block';
-        prepareQuizPool();
-        startQuiz();
+        
+        // เปลี่ยนหัวข้อให้รู้ว่ากำลังทำควิซอะไรอยู่
+        const titleElement = document.querySelector('#quiz-container h2');
+        if(titleElement) {
+            titleElement.innerText = mode === 'ALL' ? "Quiz: ทดสอบคำศัพท์รวม 30 ยูนิต" : `Quiz: ทบทวนคำศัพท์ ${mode}`;
+        }
+        
+        prepareQuizPool(mode);
+        restartQuiz();
     } else {
         quizView.style.display = 'none';
-        if(flashcardView) flashcardView.style.display = 'flex';
+        if(flashcardView) flashcardView.style.display = 'flex'; // หรือ block ตามที่คุณตั้งไว้
     }
 }
 
-// รวบรวมคำศัพท์ทั้งหมดจาก Unit 1-30 มาไว้ในตะกร้าเดียว
-function prepareQuizPool() {
+// ฟังก์ชันเตรียมคำศัพท์เข้าตะกร้าควิซ
+function prepareQuizPool(mode) {
     allWordsPool = [];
-    for (const unit in vocabData) {
-        if (vocabData[unit].words && vocabData[unit].words.length > 0) {
-            allWordsPool = allWordsPool.concat(vocabData[unit].words);
+    if (mode === 'ALL') {
+        // ดึงจากทุกยูนิต
+        for (const unit in vocabData) {
+            if (vocabData[unit].words && vocabData[unit].words.length > 0) {
+                allWordsPool = allWordsPool.concat(vocabData[unit].words);
+            }
+        }
+    } else {
+        // ดึงเฉพาะยูนิตที่เลือก
+        if (vocabData[mode] && vocabData[mode].words) {
+            allWordsPool = vocabData[mode].words;
         }
     }
 }
