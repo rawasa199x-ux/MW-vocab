@@ -104,6 +104,7 @@
         .nav-item { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-gray); font-size: 0.75em; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .nav-item.active { color: var(--text-brown); background: #fcfbf9; }
 
+        
     .quiz-choice-btn {
     padding: 15px;
     font-size: 16px;
@@ -128,6 +129,7 @@
     color: white;
     border-color: #c0392b;
 }
+
     </style>
 </head>
 <body>
@@ -2012,6 +2014,28 @@
             <div style="text-align:center; margin-top:30px;">
                 <button class="btn-submit-quiz" style="width: auto; padding: 15px 40px;" onclick="startQuiz()">START QUIZ</button>
             </div>
+            <div style="text-align: center; margin: 20px;">
+    <button onclick="toggleQuizMode()" style="padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        เข้าสู่โหมดควิซคำศัพท์รวม (Quiz Mode)
+    </button>
+</div>
+
+<div id="quiz-container" style="display: none; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9; text-align: center;">
+    <h2>Quiz: ทดสอบความจำ</h2>
+    <p id="quiz-score" style="font-weight: bold; color: #333;">คะแนน: 0 / 0</p>
+    
+    <div id="quiz-question-box" style="margin: 20px 0; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <h1 id="quiz-word" style="font-size: 32px; margin: 0; color: #2c3e50;">Word</h1>
+        <p id="quiz-phonetic" style="color: #7f8c8d; margin-top: 5px;"></p>
+    </div>
+
+    <div id="quiz-choices" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+        </div>
+
+    <button onclick="nextQuestion()" id="next-btn" style="display: none; margin-top: 20px; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%;">
+        ข้อต่อไป ➔
+    </button>
+</div>
         `;
         qa.innerHTML = filterHtml;
     }
@@ -2112,30 +2136,7 @@
 
     // Init
     renderFlashcardView();
-
-<div style="text-align: center; margin: 20px;">
-    <button onclick="toggleQuizMode()" style="padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
-        เข้าสู่โหมดควิซคำศัพท์รวม (Quiz Mode)
-    </button>
-</div>
-
-<div id="quiz-container" style="display: none; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9; text-align: center;">
-    <h2>Quiz: ทดสอบความจำ</h2>
-    <p id="quiz-score" style="font-weight: bold; color: #333;">คะแนน: 0 / 0</p>
-    
-    <div id="quiz-question-box" style="margin: 20px 0; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-        <h1 id="quiz-word" style="font-size: 32px; margin: 0; color: #2c3e50;">Word</h1>
-        <p id="quiz-phonetic" style="color: #7f8c8d; margin-top: 5px;"></p>
-    </div>
-
-    <div id="quiz-choices" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
-        </div>
-
-    <button onclick="nextQuestion()" id="next-btn" style="display: none; margin-top: 20px; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%;">
-        ข้อต่อไป ➔
-    </button>
-</div>
-    // ตัวแปรสำหรับควิซ
+// ตัวแปรสำหรับควิซ
 let allWordsPool = [];
 let currentQuizWord = null;
 let score = 0;
@@ -2243,6 +2244,7 @@ function checkAnswer(selectedBtn, isCorrect) {
 function nextQuestion() {
     startQuiz();
 }
+    
 </script>
 </body>
 </html>
