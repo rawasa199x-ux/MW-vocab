@@ -182,25 +182,69 @@
 
 <script>
     const rootDescriptions = {
-        "BENE": "BENE is Latin for \"well.\" A benefit is a good result or effect.",
-        "AM": "AM comes from the Latin word amare, \"to love.\"",
-        "BELL": "BELL comes from the Latin word bellum, \"war.\"",
-        "PAC": "PAC is related to the Latin words for \"agree\" and \"peace.\"",
-        "CRIM": "CRIM comes from the Latin word for \"fault\" or \"crime.\"",
-        "PROB": "PROB comes from the Latin words for \"prove\" and \"honesty.\"",
-        "GRAV": "GRAV comes from the Latin word gravis, meaning \"heavy, serious.\"",
-        "LEV": "LEV comes from the Latin word levis, meaning \"light.\"",
-        "MANIA": "MANIA in Latin means \"madness.\" It can refer to a mental illness or excessive enthusiasm.",
-        "PSYCH": "PSYCH comes from the Greek word psyche, meaning \"breath, life, soul.\"",
-        "CEPT": "CEPT comes from the Latin verb meaning \"take, seize.\"",
-        "FIN": "FIN comes from the Latin word for \"end\" or \"boundary.\"",
-        "JECT": "JECT comes from jacere, the Latin verb meaning \"throw\" or \"hurl.\"",
-        "TRACT": "TRACT comes from trahere, the Latin verb meaning \"drag or draw.\"",
-        "DUC/DUCT": "DUC/DUCT comes from the Latin verb ducere, meaning \"to lead.\"",
-        "SEQU": "SEQU comes from the Latin verb sequi, meaning \"to follow.\"",
-        "MYTH": "Words derived from Greek and Roman Mythology and History."
-    };
+        // Unit 1
+        "BENE": "BENE is Latin for 'well.' A benefit is a good result or effect. Something beneficial produces good results.",
+        "AM": "AM comes from the Latin word amare, 'to love.' An amiable person is friendly and lovable.",
+        "BELL": "BELL comes from the Latin word bellum, 'war.' A belligerent person is aggressively hostile.",
+        "PAC": "PAC is related to the Latin words for 'agree' and 'peace.' To pacify is to soothe or calm.",
+        "CRIM": "CRIM comes from the Latin word for 'fault' or 'crime' or 'accusation.'",
+        "PROB": "PROB comes from the Latin words for 'prove' or 'proof' and 'honesty' or 'integrity.'",
+        "GRAV": "GRAV comes from the Latin word gravis, meaning 'heavy, weighty, serious.'",
+        "LEV": "LEV comes from the Latin adjective levis, meaning 'light,' and the verb levare, 'to raise.'",
 
+        // Unit 2
+        "MANIA": "MANIA in Latin means 'madness.' It can refer to a mental illness or to an excessive enthusiasm.",
+        "PSYCH": "PSYCH comes from the Greek word psyche, meaning 'breath, life, soul.'",
+        "CEPT": "CEPT comes from the Latin verb capere, meaning 'take' or 'seize.'",
+        "FIN": "FIN comes from the Latin word for 'end' or 'boundary.'",
+        "JECT": "JECT comes from jacere, the Latin verb meaning 'throw' or 'hurl.'",
+        "TRACT": "TRACT comes from trahere, the Latin verb meaning 'drag' or 'draw.'",
+        "DUC/DUCT": "DUC/DUCT comes from the Latin verb ducere, meaning 'to lead.'",
+        "SEQU": "SEQU comes from the Latin verb sequi, meaning 'to follow.'",
+
+        // Unit 3
+        "ANIM": "ANIM comes from the Latin anima, meaning 'breath' or 'soul.' It can also refer to 'spirit.'",
+        "FIG": "FIG comes from a Latin verb meaning 'to shape or mold' and 'to fashion.'",
+        "ANN/ENN": "ANN/ENN comes from the Latin word annus, meaning 'year.'",
+        "EV": "EV comes from the Latin word aevum, meaning 'age' or 'lifetime.'",
+        "CORP": "CORP comes from corpus, the Latin word for 'body.'",
+        "TANG/TACT": "TANG/TACT comes from the Latin verb tangere, meaning 'to touch.'",
+        "CODI/CODE": "CODI/CODE comes from the Latin codex, meaning 'a trunk of a tree' or 'a book.'",
+        "SIGN": "SIGN comes from the Latin signum, meaning 'mark' or 'sign.'",
+
+        // Unit 4
+        "CORD": "CORD comes from the Latin word for 'heart.'",
+        "CUR": "CUR comes from the Latin verb currere, meaning 'to run.'",
+        "FAC": "FAC comes from the Latin verb facere, meaning 'to make' or 'to do.'",
+        "PLIC": "PLIC comes from the Latin verb plicare, 'to fold.'",
+        "COGN": "COGN comes from the Latin verb cognoscere, meaning 'to know.'",
+        "PEND": "PEND comes from the Latin verb pendere, meaning 'to hang' or 'to weigh.'",
+        "POST": "POST comes from the Latin prefix meaning 'after' or 'behind.'",
+        "TRANS": "TRANS comes from the Latin prefix meaning 'through,' 'across,' or 'beyond.'",
+
+        // Unit 5
+        "PHON": "PHON is a Greek root meaning 'sound,' 'voice,' or 'speech.'",
+        "BIBLI": "BIBLI comes from the Greek word for 'book.'",
+        "CANON": "CANON comes from the Greek kanon, meaning 'a reed' or 'a measuring stick.'",
+        "CAPIT": "CAPIT comes from the Latin word caput, meaning 'head.'",
+        "ANTHROP": "ANTHROP comes from the Greek word for 'human being.'",
+        "SCI": "SCI comes from the Latin verb scire, 'to know.'",
+        "VIC": "VIC comes from the Latin noun vicis, meaning 'change,' 'stead,' or 'place.'",
+        "SERV": "SERV comes from the Latin servus, 'slave' and servire, 'to serve.'",
+
+        // Unit 6
+        "TERR": "TERR comes from the Latin terra, 'earth.'",
+        "TRUD": "TRUD comes from the Latin verb trudere, 'to push' or 'to thrust.'",
+        "VAC": "VAC comes from the Latin verb vacare, 'to be empty.'",
+        "VEN/VENT": "VEN/VENT comes from the Latin verb venire, 'to come.'",
+        "VOC": "VOC comes from the Latin vox, 'voice,' and vocare, 'to call.'",
+        "VOL": "VOL comes from the Latin verb velle, 'to will' or 'to wish.'",
+        "PHAN": "PHAN comes from the Greek verb phainein, 'to appear' or 'to show.'",
+        "THEO": "THEO comes from the Greek word theos, 'god.'",
+
+        // Mythology Sections
+        "MYTH": "These words are derived from characters and stories in Greek and Roman Mythology and History."
+    };
     const vocabData = {
         "Unit 1": {
             roots: ["BENE", "AM", "BELL", "PAC", "CRIM", "PROB", "GRAV", "LEV"],
