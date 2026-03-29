@@ -6,96 +6,198 @@
     <title>MW Vocab Builder</title>
     <style>
         :root {
-            --bg-color: #f4f1ea; --card-bg: #ffffff; --text-main: #1c1c1c;
-            --text-gray: #666666; --text-brown: #8b7d6b; --border: #d1cfc8;
-            --red-pastel: #ff6b6b; --green-pastel: #a8e6cf; --primary: #2c3e50;
+            --bg-color: #f4f1ea;
+            --card-bg: #ffffff;
+            --text-main: #1c1c1c;
+            --text-gray: #666666;
+            --text-brown: #8b7d6b;
+            --border: #d1cfc8;
+            --red-maroon: #800000;
+            --green-dark: #008000;
         }
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background-color: var(--bg-color); color: var(--text-main);
+            margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+        }
+
         #app { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .view { display: none; flex: 1; flex-direction: column; overflow-y: auto; padding: 15px; padding-bottom: 90px; }
         .view.active { display: flex; }
 
-        /* --- UNIT GRID (กลับมาเป็นกล่องจตุรัส 4 คอลัมน์) --- */
-        .unit-grid-container { 
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; 
-            margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; 
-        }
+        .header-title { text-align: center; font-weight: bold; color: var(--text-brown); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- UNIT GRID --- */
+        .unit-grid-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
         .unit-btn { 
-            background: var(--card-bg); border: 1px solid var(--border); aspect-ratio: 1/1;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 0.75em; cursor: pointer; border-radius: 12px; color: var(--text-gray); transition: 0.2s;
+            background: var(--card-bg); border: 1px solid var(--border); padding: 6px 8px; 
+            font-size: 0.75em; cursor: pointer; text-align: center; min-width: 45px;
+            color: var(--text-gray); line-height: 1.2; border-radius: 8px;
         }
         .unit-btn.active { background: var(--text-brown); color: white; border-color: var(--text-brown); font-weight: bold; }
+        .unit-btn span { display: block; font-weight: normal; font-size: 0.85em; margin-top: 2px; }
+
+        /* --- UNIT INFO & STATS --- */
+        .unit-full-title { font-weight: bold; font-size: 0.85em; text-align: center; color: var(--text-brown); margin-bottom: 10px; text-transform: uppercase; }
+        .root-desc-box { background: var(--card-bg); border: 1px solid var(--border); padding: 10px; font-size: 0.8em; color: var(--text-main); line-height: 1.5; margin-bottom: 15px; text-align: center; border-radius: 8px; }
+        
+        .stats-row { display: flex; justify-content: space-between; text-align: center; margin-bottom: 15px; max-width: 300px; margin-left: auto; margin-right: auto; width: 100%; }
+        .stat-box { flex: 1; font-size: 0.7em; color: var(--text-gray); text-transform: uppercase; }
+        .stat-val { display: block; font-size: 1.4em; color: var(--text-main); margin-bottom: 2px; font-weight: bold; }
 
         /* --- FLASHCARDS --- */
+        .card-container { width: 100%; max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; }
         .card { 
-            background: var(--card-bg); border: 1px solid var(--border); padding: 40px 20px;
-            text-align: center; cursor: pointer; min-height: 360px; display: flex; flex-direction: column; 
-            justify-content: center; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border-radius: 24px; 
+            background: var(--card-bg); border: 1px solid var(--border); padding: 30px 20px;
+            text-align: center; cursor: pointer; min-height: 320px; display: flex; flex-direction: column; justify-content: center; position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); border-radius: 16px;
         }
-        .word-title { font-size: 2.8em; font-weight: bold; margin: 0; }
-        .phonetic { color: var(--text-gray); font-style: italic; margin-bottom: 20px; }
-        .meaning-th { font-size: 1.6em; font-weight: bold; color: #1d8348; margin-bottom: 25px; }
+        
+        .card-counter { position: absolute; top: 15px; right: 15px; font-size: 0.75em; color: var(--text-gray); font-weight: bold; }
+        .word-title { font-size: 2.2em; font-weight: bold; margin-bottom: 5px; }
+        .phonetic { color: var(--text-gray); font-style: italic; margin-bottom: 20px; font-size: 0.95em; }
+        .root-badge { font-size: 0.9em; font-weight: bold; color: var(--text-brown); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .play-btn { background: transparent; border: 1px solid var(--border); padding: 8px 16px; font-size: 0.75em; font-weight: bold; color: var(--text-brown); display: inline-flex; align-items: center; gap: 8px; margin: 0 auto; border-radius: 20px; }
+        .play-icon { width: 0; height: 0; border-top: 5px solid transparent; border-left: 8px solid var(--text-brown); border-bottom: 5px solid transparent; }
+        .tap-hint { position: absolute; bottom: 15px; left: 0; width: 100%; font-size: 0.75em; color: var(--text-gray); }
 
-        /* --- MINIMALIST ARROWS (‹ ›) --- */
-        .nav-arrows { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; padding: 0 10px; }
-        .nav-arrow { 
-            background: transparent !important; border: none !important; color: var(--text-brown); 
-            cursor: pointer; font-size: 3.5em; font-weight: 100; opacity: 0.3; transition: 0.2s;
-        }
-        .nav-arrow:hover { opacity: 1; }
+        /* CARD BACK */
+        .card-back { display: none; text-align: left; margin-top: 10px; width: 100%; }
+        .meaning-th { font-size: 1.2em; font-weight: bold; color: var(--green-dark); text-align: center; margin-bottom: 20px; }
+        .info-label { font-size: 0.65em; font-weight: bold; color: var(--text-brown); text-transform: uppercase; margin-bottom: 4px; }
+        .info-txt { font-size: 0.85em; line-height: 1.5; margin-bottom: 12px; }
+        .syn-text { color: var(--text-brown); font-weight: 500; }
+        .example-box { background: #f9f9f9; padding: 12px; border-left: 2px solid var(--border); font-style: italic; color: var(--text-gray); font-size: 0.8em; border-radius: 0 8px 8px 0; }
 
-        /* --- QUIZ STYLES --- */
-        .quiz-choice-btn { 
-            padding: 16px; font-size: 1em; background-color: #ffffff; border: 1px solid var(--border); 
-            border-radius: 15px; cursor: pointer; text-align: left; width: 100%; margin-bottom: 10px; 
-        }
-        .quiz-choice-btn.correct { background-color: var(--green-pastel) !important; color: #1d8348 !important; border-color: #82e0aa !important; }
-        .quiz-choice-btn.wrong { background-color: var(--red-pastel) !important; color: white !important; }
+        /* ARROWS & BUTTONS */
+        .nav-arrows { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+        .nav-arrow { background: var(--card-bg); border: 1px solid var(--border); padding: 10px 25px; font-weight: bold; color: var(--text-brown); cursor: pointer; font-size: 1.1em; border-radius: 8px; }
+        .nav-arrow:disabled { opacity: 0.3; cursor: default; }
+        
+        .btn-group { display: none; gap: 10px; margin-top: 20px; }
+        .btn-status { flex: 1; background: transparent; padding: 14px 0; font-weight: bold; cursor: pointer; font-size: 0.8em; text-transform: uppercase; border-radius: 8px; }
+        .btn-learning { border: 1.5px solid var(--red-maroon); color: var(--red-maroon); }
+        .btn-knew { border: 1.5px solid var(--green-dark); color: var(--green-dark); }
 
-        /* --- NAVIGATION --- */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; }
-        .nav-item { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-gray); font-size: 0.8em; font-weight: bold; text-transform: uppercase; cursor: pointer; }
-        .nav-item.active { color: var(--text-brown); border-top: 4px solid var(--text-brown); }
+        /* --- BROWSE --- */
+        .browse-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .word-block { background: var(--card-bg); border: 1px solid var(--border); padding: 10px 14px; font-size: 0.8em; font-weight: 500; cursor: pointer; color: var(--text-main); border-radius: 8px; }
+
+        /* --- QUIZ --- */
+        .quiz-container { width: 100%; max-width: 500px; margin: 0 auto; }
+        .quiz-root-filter { display: flex; overflow-x: auto; gap: 6px; padding-bottom: 10px; margin-bottom: 20px; scrollbar-width: none; }
+        .quiz-root-filter::-webkit-scrollbar { display: none; }
+        .root-filter-btn { background: var(--card-bg); border: 1px solid var(--border); padding: 6px 12px; font-size: 0.75em; border-radius: 20px; color: var(--text-gray); cursor: pointer; font-weight: bold; flex-shrink: 0; }
+        .root-filter-btn.active { background: var(--text-brown); color: white; border-color: var(--text-brown); }
+        
+        .quiz-question-box { font-size: 1.1em; line-height: 1.5; margin-bottom: 25px; color: var(--text-main); text-align: center; font-weight: bold; }
+        .quiz-opt { width: 100%; text-align: left; padding: 15px 18px; border: 1px solid var(--border); background: var(--card-bg); margin-bottom: 10px; cursor: pointer; color: var(--text-main); font-size: 0.85em; border-radius: 12px; line-height: 1.4; word-wrap: break-word; }
+        .quiz-opt.selected { border-color: var(--text-brown); border-width: 2px; font-weight: bold; background: #fcfbf9; }
+        
+        .btn-submit-quiz { background: var(--text-brown); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 0.9em; text-transform: uppercase; margin-top: 10px; }
+
+        /* --- NAV --- */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; }
+        .nav-item { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-gray); font-size: 0.75em; font-weight: bold; text-transform: uppercase; cursor: pointer; }
+        .nav-item.active { color: var(--text-brown); background: #fcfbf9; }
+
+        
+    .quiz-choice-btn {
+    padding: 15px;
+    font-size: 16px;
+    background-color: #ffffff;
+    border: 2px solid #bdc3c7;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+.quiz-choice-btn:hover {
+    background-color: #ecf0f1;
+    border-color: #95a5a6;
+}
+.quiz-choice-btn.correct {
+    background-color: #2ecc71 !important;
+    color: white;
+    border-color: #27ae60;
+}
+.quiz-choice-btn.wrong {
+    background-color: #e74c3c !important;
+    color: white;
+    border-color: #c0392b;
+}
+
     </style>
 </head>
 <body>
 
 <div id="app">
+
     <div id="view-cards" class="view active">
         <div class="unit-grid-container" id="card-unit-grid"></div>
-        <div id="u-full-title" style="text-align:center; font-weight:bold; color:var(--text-brown); margin-bottom:10px; text-transform:uppercase;">UNIT 1</div>
-        <div class="card" onclick="flipCard()">
-            <div id="card-front">
-                <div id="c-counter" style="color:gray; font-size:0.85em; margin-bottom:15px;"></div>
-                <h1 class="word-title" id="c-word">Word</h1>
-                <p class="phonetic" id="c-phonetic">/phonetic/</p>
-                <div id="c-root" style="color:var(--text-brown); font-weight:bold;">ROOT</div>
-            </div>
-            <div id="card-back" style="display:none; text-align:left;">
-                <div class="meaning-th" id="c-th"></div>
-                <div style="font-size:0.7em; color:var(--text-brown); font-weight:bold;">SYNONYMS</div>
-                <p id="c-syn" style="margin-bottom:15px;"></p>
-                <div style="font-size:0.7em; color:var(--text-brown); font-weight:bold;">EXAMPLE</div>
-                <p id="c-ex" style="font-style:italic; color:var(--text-gray);"></p>
-            </div>
+        <div class="unit-full-title" id="u-full-title">UNIT 1</div>
+        <div class="root-desc-box" id="u-root-desc">Select a word to see its root description.</div>
+        
+        <div class="stats-row">
+            <div class="stat-box"><span class="stat-val" id="st-tot">0</span>total</div>
+            <div class="stat-box"><span class="stat-val" id="st-kno">0</span>know</div>
+            <div class="stat-box"><span class="stat-val" id="st-rev">0</span>review</div>
+            <div class="stat-box"><span class="stat-val" id="st-lft">0</span>left</div>
         </div>
-        <div class="nav-arrows">
-            <button class="nav-arrow" onclick="event.stopPropagation(); prevCard()">‹</button>
-            <button class="nav-arrow" onclick="event.stopPropagation(); nextCard()">›</button>
+
+        <div class="card-container" id="main-card-container">
+            <div class="card" id="card-element">
+                <div id="c-front" onclick="flipToBack()">
+                    <div class="card-counter" id="c-counter">1/0</div>
+                    <div class="word-title" id="c-word">Word</div>
+                    <div class="phonetic" id="c-phonetic">/phonetic/</div>
+                    <div class="root-badge" id="c-root">ROOT</div>
+                    <div class="play-btn" onclick="event.stopPropagation(); playAudio();">
+                        <span class="play-icon"></span> Pronounce
+                    </div>
+                    <div class="tap-hint">Tap card to reveal</div>
+                </div>
+                
+                <div class="card-back" id="c-back" onclick="flipToFront()">
+                    <div class="card-counter" id="c-counter-back">1/0</div>
+                    <div class="word-title" id="c-word-back" style="text-align: center; margin-bottom: 20px;">Word</div>
+                    <div class="meaning-th" id="c-th">ความหมาย</div>
+                    <div class="info-label">Synonyms</div>
+                    <div class="info-txt syn-text" id="c-syn">synonyms</div>
+                    <div class="info-label">Etymology & Context</div>
+                    <div class="info-txt" id="c-ety">ที่มาข้อมูล</div>
+                    <div class="info-label">Example Sentence</div>
+                    <div class="example-box" id="c-ex">ประโยคตัวอย่าง</div>
+                </div>
+            </div>
+            
+            <div class="nav-arrows">
+                <button class="nav-arrow" onclick="prevCard()">&#8592;</button>
+                <button class="nav-arrow" onclick="nextCard()">&#8594;</button>
+            </div>
+
+            <div class="btn-group" id="c-btns">
+                <button class="btn-status btn-learning" onclick="mark('learning')">still learning</button>
+                <button class="btn-status btn-knew" onclick="mark('know')">knew it</button>
+            </div>
         </div>
     </div>
 
     <div id="view-browse" class="view">
         <div class="unit-grid-container" id="browse-unit-grid"></div>
-        <div id="browse-content" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+        <div class="unit-full-title" id="browse-u-title">UNIT 1</div>
+        <div id="browse-content"></div>
     </div>
 
     <div id="view-quiz" class="view">
         <div class="unit-grid-container" id="quiz-unit-grid"></div>
-        <div id="quiz-area"></div>
+        
+        <div class="quiz-container" id="quiz-area">
+            <div style="text-align: center; color: var(--text-gray); font-size: 0.85em;">Select a unit above to start Quiz.</div>
+        </div>
     </div>
 
     <nav class="bottom-nav">
@@ -414,6 +516,45 @@
         "MYTH": "These words are derived from characters and stories in Greek and Roman Mythology and History.",
     };
 
+    // 2. ฟังก์ชันแสดงผลหน้า Flashcards
+    function renderFlashcardView() {
+        renderUnitGrids();
+        updateStats();
+
+        const words = vocabData[curUnit].words;
+        const rootsStr = vocabData[curUnit].rootsStr;
+        
+        document.getElementById('u-full-title').innerText = `${curUnit.toUpperCase()}${rootsStr ? ' - ' + rootsStr : ''}`;
+        
+        if(!words.length) { 
+            document.getElementById('u-root-desc').innerText = "No data available for this unit.";
+            document.getElementById('main-card-container').style.display = 'none'; 
+            return; 
+        }
+        document.getElementById('main-card-container').style.display = 'flex';
+        
+        const d = words[curIdx];
+        
+        // ดึง Description ภาษาอังกฤษยาวๆ มาโชว์
+        const fullDescription = rootDescriptions[d.root] || d.root;
+        document.getElementById('u-root-desc').innerText = fullDescription;
+
+        // ข้อมูลหน้าการ์ด (Front)
+        document.getElementById('c-counter').innerText = `${curIdx + 1}/${words.length}`;
+        document.getElementById('c-word').innerText = d.word;
+        document.getElementById('c-phonetic').innerText = d.phonetic || "";
+        document.getElementById('c-root').innerText = d.root;
+        
+        // ข้อมูลหลังการ์ด (Back)
+        document.getElementById('c-counter-back').innerText = `${curIdx + 1}/${words.length}`;
+        document.getElementById('c-word-back').innerText = d.word;
+        document.getElementById('c-th').innerText = d.meaning;
+        document.getElementById('c-syn').innerText = d.syn || "-";
+        document.getElementById('c-ety').innerText = d.ety;
+        document.getElementById('c-ex').innerText = d.ex;
+        
+        flipToFront(); 
+    }
     const vocabData = {
         "Unit 1": {
             roots: ["BENE", "AM", "BELL", "PAC", "CRIM", "PROB", "GRAV", "LEV"],
@@ -1681,148 +1822,352 @@
         }
     };   
 
-// --- 2. Logic การทำงาน (ห้ามแก้ถ้าไม่มั่นใจครับ) ---
-let curUnit = "Unit 1", curIdx = 0, progress = JSON.parse(localStorage.getItem('mw_v11')) || {};
-let quizPool = [], currentQuizWord = null, quizScore = 0, quizTotal = 0, quizLimit = 10, isQuizAnswered = false, currentQuizMode = 'ALL';
 
-function switchTab(tab) {
-    document.querySelectorAll('.view, .nav-item').forEach(e => e.classList.remove('active'));
-    document.getElementById('view-' + tab).classList.add('active');
-    const items = document.querySelectorAll('.nav-item');
-    if (tab === 'cards') items[0].classList.add('active');
-    if (tab === 'browse') items[1].classList.add('active');
-    if (tab === 'quiz') items[2].classList.add('active');
+  
     
-    if (tab === 'cards') renderFlashcardView();
-    if (tab === 'browse') renderBrowse();
-    if (tab === 'quiz') renderQuizInit();
-}
 
-function renderUnitGrids() {
-    ["card", "browse", "quiz"].forEach(prefix => {
-        const grid = document.getElementById(prefix + "-unit-grid");
-        if (!grid) return; grid.innerHTML = '';
-        if (prefix === 'quiz') {
-            const allBtn = document.createElement('div');
-            allBtn.className = 'unit-btn' + (currentQuizMode === 'ALL' ? ' active' : '');
-            allBtn.style.gridColumn = "span 2"; allBtn.style.aspectRatio = "auto"; allBtn.style.padding = "10px";
-            allBtn.innerHTML = "🔥 ALL UNITS";
-            allBtn.onclick = () => prepareQuiz('ALL');
-            grid.appendChild(allBtn);
-        }
-        for (let i = 1; i <= 30; i++) {
-            const u = "Unit " + i;
-            const btn = document.createElement('div');
-            btn.className = 'unit-btn' + (curUnit === u ? ' active' : '');
-            btn.innerText = "U" + i;
-            btn.onclick = () => { 
-                curUnit = u; curIdx = 0; 
-                if (prefix === 'quiz') prepareQuiz(u);
-                else { renderUnitGrids(); if(prefix==='card') renderFlashcardView(); if(prefix==='browse') renderBrowse(); }
-            };
-            grid.appendChild(btn);
-        }
-    });
-}
+    let curUnit = "Unit 1";
+    let curIdx = 0;
+    let progress = JSON.parse(localStorage.getItem('mw_v11')) || {};
 
-function renderFlashcardView() {
-    renderUnitGrids();
-    const unit = vocabData[curUnit];
-    if (!unit || !unit.words.length) return;
-    const d = unit.words[curIdx];
-    document.getElementById('u-full-title').innerText = curUnit;
-    document.getElementById('c-counter').innerText = (curIdx + 1) + " / " + unit.words.length;
-    document.getElementById('c-word').innerText = d.word;
-    document.getElementById('c-phonetic').innerText = d.phonetic || "";
-    document.getElementById('c-root').innerText = d.root;
-    document.getElementById('c-th').innerText = d.meaning;
-    document.getElementById('c-syn').innerText = d.syn || "-";
-    document.getElementById('c-ex').innerText = d.ex;
-    flipToFront();
-}
+    let quizPool = [];
+    let userAnswers = {};
+    let quizIdx = 0;
+    let quizFilter = 'ALL';
 
-function flipCard() {
-    const f = document.getElementById('card-front'), b = document.getElementById('card-back');
-    if (f.style.display === 'none') flipToFront(); else flipToBack();
-}
-function flipToBack() { document.getElementById('card-front').style.display='none'; document.getElementById('card-back').style.display='block'; }
-function flipToFront() { document.getElementById('card-back').style.display='none'; document.getElementById('card-front').style.display='block'; }
-function nextCard() { curIdx = (curIdx + 1) % vocabData[curUnit].words.length; renderFlashcardView(); }
-function prevCard() { curIdx = (curIdx - 1 + vocabData[curUnit].words.length) % vocabData[curUnit].words.length; renderFlashcardView(); }
-
-// --- QUIZ LOGIC ---
-function renderQuizInit() {
-    renderUnitGrids();
-    document.getElementById('quiz-area').innerHTML = `<div style="text-align:center; padding:40px; color:gray; border:2px dashed #ccc; border-radius:20px; margin-top:20px;">เลือก Unit เพื่อเริ่มควิซ (10 ข้อ)</div>`;
-}
-
-function prepareQuiz(mode) {
-    currentQuizMode = mode; quizPool = [];
-    if (mode === 'ALL') { for (let u in vocabData) quizPool = quizPool.concat(vocabData[u].words); }
-    else { quizPool = [...vocabData[mode].words]; }
-    quizPool.sort(() => Math.random() - 0.5);
-    quizLimit = Math.min(quizPool.length, 10);
-    quizScore = 0; quizTotal = 0;
-    renderUnitGrids();
-    startNewQuizQuestion();
-}
-
-function startNewQuizQuestion() {
-    if (quizTotal >= quizLimit) { showSummary(); return; }
-    isQuizAnswered = false; currentQuizWord = quizPool[quizTotal];
-    let choices = [currentQuizWord];
-    while (choices.length < 4) {
-        let r = quizPool[Math.floor(Math.random() * quizPool.length)];
-        if (!choices.find(c => c.id === r.id)) choices.push(r);
+    function switchTab(tab) {
+        document.querySelectorAll('.view, .nav-item').forEach(e => e.classList.remove('active'));
+        document.getElementById('view-'+tab).classList.add('active');
+        const idx = ["cards", "browse", "quiz"].indexOf(tab);
+        document.querySelectorAll('.nav-item')[idx].classList.add('active');
+        
+        if(tab === 'cards') renderFlashcardView();
+        if(tab === 'browse') renderBrowse();
+        if(tab === 'quiz') renderQuizInit();
     }
-    choices.sort(() => Math.random() - 0.5);
-    const area = document.getElementById('quiz-area');
-    area.innerHTML = `
-        <div style="background:white; padding:20px; border-radius:20px; margin-top:20px; border:1px solid var(--border);">
-            <div style="color:var(--text-brown); font-weight:bold; font-size:0.85em; margin-bottom:10px;">📍 ${currentQuizMode} | ข้อที่ ${quizTotal + 1}/${quizLimit}</div>
-            <h1 style="font-size:2.5em; text-align:center; margin-bottom:20px;">${currentQuizWord.word}</h1>
-            <div id="q-box"></div>
-            <button id="q-next" onclick="startNewQuizQuestion()" style="display:none; width:100%; margin-top:15px; padding:15px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight:bold;">NEXT ›</button>
-        </div>`;
-    choices.forEach(c => {
-        const btn = document.createElement('button'); btn.className = 'quiz-choice-btn'; btn.innerText = c.meaning;
-        btn.onclick = () => {
-            if (isQuizAnswered) return; isQuizAnswered = true; quizTotal++;
-            if (c.id === currentQuizWord.id) { quizScore++; btn.classList.add('correct'); }
-            else { 
-                btn.classList.add('wrong'); 
-                document.querySelectorAll('.quiz-choice-btn').forEach(b => { if(b.innerText === currentQuizWord.meaning) b.classList.add('correct'); });
+
+    function renderUnitGrids() {
+        ["card", "browse", "quiz"].forEach(prefix => {
+            const grid = document.getElementById(`${prefix}-unit-grid`);
+            if(!grid) return;
+            grid.innerHTML = '';
+            for(let i=1; i<=30; i++) {
+                const u = `Unit ${i}`;
+                const words = vocabData[u].words;
+                let pct = 0;
+                if(words.length > 0) {
+                    const known = words.filter(w => progress[w.id] === 'know').length;
+                    pct = Math.round((known / words.length) * 100);
+                }
+                const btn = document.createElement('div');
+                btn.className = 'unit-btn' + (curUnit === u ? ' active' : '');
+                btn.innerHTML = `U${i}<span>${pct}%</span>`;
+                btn.onclick = () => { curUnit = u; curIdx = 0; renderUnitGrids(); if(prefix==='card') renderFlashcardView(); if(prefix==='browse') renderBrowse(); if(prefix==='quiz') renderQuizInit(); };
+                grid.appendChild(btn);
             }
-            document.getElementById('q-next').style.display = 'block';
-        };
-        document.getElementById('q-box').appendChild(btn);
-    });
-}
+        });
+    }
 
-function showSummary() {
-    document.getElementById('quiz-area').innerHTML = `
-        <div style="text-align:center; padding:40px; background:white; border-radius:20px; border:1px solid var(--border); margin-top:20px;">
-            <h2 style="color:var(--text-brown);">สรุปคะแนน</h2>
-            <div style="font-size:4.5em; font-weight:bold;">${quizScore} / ${quizLimit}</div>
-            <button onclick="prepareQuiz('${currentQuizMode}')" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight:bold; margin-top:20px;">🔄 วนกลับมาทำใหม่</button>
-            <button onclick="renderQuizInit()" style="width:100%; padding:10px; background:none; color:gray; border:none;">Back to Menu</button>
-        </div>`;
-}
+    function updateStats() {
+        const words = vocabData[curUnit].words;
+        if(!words.length) {
+            document.getElementById('st-tot').innerText = "0"; document.getElementById('st-kno').innerText = "0";
+            document.getElementById('st-rev').innerText = "0"; document.getElementById('st-lft').innerText = "0";
+            return;
+        }
+        let know = 0, review = 0, learning = 0;
+        words.forEach(w => {
+            const st = progress[w.id];
+            if(st === 'know') know++;
+            else if(st === 'review') review++;
+            else learning++;
+        });
+        document.getElementById('st-tot').innerText = words.length;
+        document.getElementById('st-kno').innerText = know;
+        document.getElementById('st-rev').innerText = review;
+        document.getElementById('st-lft').innerText = learning;
+    }
 
-function renderBrowse() {
-    renderUnitGrids(); const c = document.getElementById('browse-content'); c.innerHTML = '';
-    vocabData[curUnit].words.forEach(w => {
-        const b = document.createElement('div');
-        b.style = "background:white; border:1px solid var(--border); padding:8px 12px; border-radius:8px; font-size:0.85em; cursor:pointer;";
-        b.innerText = w.word; b.onclick = () => { curIdx = vocabData[curUnit].words.indexOf(w); switchTab('cards'); };
-        c.appendChild(b);
-    });
-}
+    function renderFlashcardView() {
+        renderUnitGrids();
+        updateStats();
 
-window.onload = () => { renderFlashcardView(); };
+        const words = vocabData[curUnit].words;
+        const rootsStr = vocabData[curUnit].rootsStr;
+        
+        document.getElementById('u-full-title').innerText = `${curUnit.toUpperCase()}${rootsStr ? ' - ' + rootsStr : ''}`;
+        
+        if(!words.length) { 
+            document.getElementById('u-root-desc').innerText = "No data available for this unit.";
+            document.getElementById('main-card-container').style.display = 'none'; 
+            return; 
+        }
+        document.getElementById('main-card-container').style.display = 'flex';
+        
+        const d = words[curIdx];
+        document.getElementById('u-root-desc').innerText = rootDescriptions[d.root] || `${d.root}`;
+
+        // Front
+        document.getElementById('c-counter').innerText = `${curIdx + 1}/${words.length}`;
+        document.getElementById('c-word').innerText = d.word;
+        document.getElementById('c-phonetic').innerText = d.phonetic;
+        document.getElementById('c-root').innerText = d.root;
+        
+        // Back
+        document.getElementById('c-counter-back').innerText = `${curIdx + 1}/${words.length}`;
+        document.getElementById('c-word-back').innerText = d.word;
+        document.getElementById('c-th').innerText = d.meaning;
+        document.getElementById('c-syn').innerText = d.syn || "-";
+        document.getElementById('c-ety').innerText = d.ety;
+        document.getElementById('c-ex').innerText = d.ex;
+        
+        flipToFront(); 
+    }
+
+    function flipToBack() {
+        document.getElementById('c-front').style.display = 'none';
+        document.getElementById('c-back').style.display = 'block';
+        document.getElementById('c-btns').style.display = 'flex';
+        playAudio();
+    }
+
+    function flipToFront() {
+        document.getElementById('c-back').style.display = 'none';
+        document.getElementById('c-btns').style.display = 'none';
+        document.getElementById('c-front').style.display = 'block';
+    }
+
+    function playAudio() {
+        const words = vocabData[curUnit].words;
+        if(!words.length) return;
+        const s = new SpeechSynthesisUtterance(words[curIdx].word);
+        s.lang = 'en-US'; 
+        speechSynthesis.speak(s);
+    }
+
+    function prevCard() {
+        const words = vocabData[curUnit].words;
+        if(!words.length) return;
+        curIdx = (curIdx - 1 + words.length) % words.length;
+        renderFlashcardView();
+    }
+
+    function nextCard() {
+        const words = vocabData[curUnit].words;
+        if(!words.length) return;
+        curIdx = (curIdx + 1) % words.length;
+        renderFlashcardView();
+    }
+
+    function mark(st) {
+        const words = vocabData[curUnit].words;
+        progress[words[curIdx].id] = st;
+        localStorage.setItem('mw_v11', JSON.stringify(progress));
+        nextCard();
+    }
+
+    function renderBrowse() {
+        renderUnitGrids();
+        const c = document.getElementById('browse-content');
+        c.innerHTML = '';
+        
+        const words = vocabData[curUnit].words;
+        const rootsStr = vocabData[curUnit].rootsStr;
+        
+        document.getElementById('browse-u-title').innerText = `${curUnit.toUpperCase()}${rootsStr ? ' - ' + rootsStr : ''}`;
+        
+        if(!words.length) { c.innerHTML = '<div style="text-align:center; color:gray; font-size:0.85em;">No Data</div>'; return; }
+        
+        const grid = document.createElement('div');
+        grid.className = 'browse-grid';
+        
+        words.forEach(w => {
+            const b = document.createElement('div');
+            b.className = 'word-block';
+            b.innerText = w.word;
+            b.onclick = () => { curIdx = words.indexOf(w); switchTab('cards'); renderFlashcardView(); };
+            grid.appendChild(b);
+        });
+        c.appendChild(grid);
+    }
+
+    // === QUIZ SYSTEM (ใหม่: มีลิมิต 10 ข้อ) ===
+    let quizPool = [];
+    let currentQuizWord = null;
+    let quizScore = 0;
+    let quizTotal = 0;
+    let isQuizAnswered = false;
+    let quizLimit = 10;
+    let currentQuizMode = 'ALL';
+
+    function renderQuizInit() {
+        renderUnitGrids(); // ใช้ฟังก์ชันวาด Grid ของคุณ
+        const qa = document.getElementById('quiz-area');
+        const unitData = vocabData[curUnit];
+
+        if(!unitData || unitData.words.length === 0) {
+            qa.innerHTML = '<div style="text-align:center; color:gray; font-size:0.85em;">No data available for this unit.</div>';
+            return;
+        }
+
+        // --- สร้างปุ่มตัวเลือก (Quiz Filter) ---
+        let filterHtml = `<div class="quiz-root-filter">
+            <button class="root-filter-btn active" onclick="prepareQuizMode('ALL')">ALL WORDS (10 Qs)</button>`;
+        
+        if (unitData.roots) {
+            unitData.roots.forEach(r => {
+                filterHtml += `<button class="root-filter-btn" onclick="prepareQuizMode('${r}')">${r} (10 Qs)</button>`;
+            });
+        }
+        filterHtml += `</div>`;
+
+        // --- ปุ่มเข้าสู่โหมดควิซรวม 30 ยูนิต (ของคุณ) ---
+        filterHtml += `
+            <div style="text-align: center; margin: 20px;">
+                <button onclick="prepareQuizMode('GLOBAL')" style="padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    เข้าสู่โหมดควิซคำศัพท์รวม 30 ยูนิต (Quiz Mode)
+                </button>
+            </div>
+            <div id="quiz-question-box-container"></div>
+        `;
+        
+        qa.innerHTML = filterHtml;
+    }
+    // เตรียมข้อมูลและเริ่มควิซ
+    function prepareQuizMode(mode) {
+        currentQuizMode = mode;
+        quizPool = [];
+        
+        // ล้างสีปุ่ม Filter ด้านบน
+        document.querySelectorAll('.root-filter-btn').forEach(btn => btn.classList.remove('active'));
+
+        if (mode === 'GLOBAL') {
+            // ดึงหมด 30 ยูนิต
+            for (const unit in vocabData) {
+                if (vocabData[unit].words) quizPool = quizPool.concat(vocabData[unit].words);
+            }
+        } else if (mode === 'ALL') {
+            // ดึงหมดเฉพาะยูนิตที่เลือกอยู่
+            quizPool = [...vocabData[curUnit].words];
+        } else {
+            // ดึงเฉพาะ Root ที่เลือกในยูนิตปัจจุบัน
+            quizPool = vocabData[curUnit].words.filter(w => w.root === mode);
+        }
+
+        if(quizPool.length < 4) { 
+            alert('Need more words to run this mode (At least 4).'); 
+            return; 
+        }
+
+        // สลับคำศัพท์และตั้งค่าจำนวนข้อ (10 ข้อ หรือน้อยกว่าถ้าศัพท์ไม่ถึง)
+        quizPool.sort(() => Math.random() - 0.5);
+        quizLimit = Math.min(quizPool.length, 10);
+        quizScore = 0;
+        quizTotal = 0;
+        
+        startQuizQuestion();
+    }
+
+    // เริ่มถามทีละข้อ
+    function startQuizQuestion() {
+        const qContainer = document.getElementById('quiz-question-box-container');
+        
+        // ถ้าทำครบแล้ว ให้ไปหน้าสรุปคะแนน
+        if (quizTotal >= quizLimit) {
+            showQuizSummary(qContainer);
+            return;
+        }
+
+        isQuizAnswered = false;
+        currentQuizWord = quizPool[quizTotal];
+
+        // สุ่มตัวเลือก 4 ช้อยส์
+        let choices = [currentQuizWord];
+        let allWords = vocabData[curUnit].words;
+        if (currentQuizMode === 'GLOBAL') {
+             allWords = [];
+             for (const unit in vocabData) allWords = allWords.concat(vocabData[unit].words);
+        }
+
+        while (choices.length < 4) {
+            let r = allWords[Math.floor(Math.random() * allWords.length)];
+            if (!choices.find(c => c.id === r.id)) choices.push(r);
+        }
+        choices.sort(() => Math.random() - 0.5);
+
+        // วาดหน้าจอคำถาม (ตามดีไซน์เดิมของคุณ เพิ่มแค่ข้อที่เท่าไหร่)
+        let html = `
+            <div id="quiz-container" style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9; text-align: center;">
+                <h2>Quiz: ทดสอบความจำ</h2>
+                <div style="display: flex; justify-content: space-between; font-weight: bold; color: #333; margin-bottom: 10px;">
+                    <span>คะแนน: ${quizScore}</span>
+                    <span>📍 ${currentQuizMode === 'GLOBAL' ? 'รวม 30 ยูนิต' : curUnit} (ข้อที่ ${quizTotal + 1}/${quizLimit})</span>
+                </div>
+                
+                <div id="quiz-question-box" style="margin: 20px 0; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <h1 id="quiz-word" style="font-size: 32px; margin: 0; color: #2c3e50;">${currentQuizWord.word}</h1>
+                    <p id="quiz-phonetic" style="color: #7f8c8d; margin-top: 5px;">${currentQuizWord.phonetic || ''}</p>
+                </div>
+
+                <div id="quiz-choices" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+        `;
+
+        choices.forEach(opt => {
+            html += `<button class="quiz-choice-btn" onclick="checkQuizAnswer(this, '${opt.id}')">${opt.meaning} (${opt.syn || '-'})</button>`;
+        });
+
+        html += `
+                </div>
+                <button onclick="startQuizQuestion()" id="next-btn" style="display: none; margin-top: 20px; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%;">
+                    ข้อต่อไป ➔
+                </button>
+            </div>
+        `;
+        
+        qContainer.innerHTML = html;
+    }
+    // ตรวจคำตอบ (ดึง CSS จากไฟล์ของคุณ)
+    function checkQuizAnswer(btnElement, selectedId) {
+        if (isQuizAnswered) return;
+        isQuizAnswered = true;
+        quizTotal++;
+
+        const isCorrect = (selectedId === currentQuizWord.id);
+        const allBtns = document.querySelectorAll('.quiz-choice-btn');
+
+        if (isCorrect) {
+            quizScore++;
+            btnElement.classList.add('correct');
+        } else {
+            btnElement.classList.add('wrong');
+            // ไฮไลต์ข้อถูก
+            allBtns.forEach(b => {
+                if (b.innerText.includes(currentQuizWord.meaning)) {
+                    b.classList.add('correct');
+                }
+            });
+        }
+
+        // อัปเดตคะแนน
+        const scoreDisplay = document.querySelector('#quiz-container > div > span:first-child');
+        if (scoreDisplay) scoreDisplay.innerText = `คะแนน: ${quizScore}`;
+        
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    // หน้าสรุปคะแนน
+    function showQuizSummary(container) {
+        container.innerHTML = `
+            <div id="quiz-container" style="max-width: 600px; margin: 0 auto; padding: 40px 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9; text-align: center;">
+                <h2 style="color: var(--text-brown);">สรุปผลคะแนน (${currentQuizMode === 'GLOBAL' ? 'รวม 30 ยูนิต' : curUnit})</h2>
+                <div style="font-size: 4em; font-weight: bold; margin: 20px 0; color: var(--text-main);">${quizScore} / ${quizLimit}</div>
+                
+                <button onclick="prepareQuizMode('${currentQuizMode}')" style="padding: 15px; width: 100%; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px;">
+                    🔄 วนกลับมาทำซ้ำโหมดเดิม
+                </button>
+            </div>
+        `;
+    }
 </script>
 </body>
-</html>  
-    
-
-    
+</html>
