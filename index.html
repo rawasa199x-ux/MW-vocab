@@ -72,10 +72,37 @@
         .syn-text { color: var(--text-brown); font-weight: 500; }
         .example-box { background: #f9f9f9; padding: 12px; border-left: 2px solid var(--border); font-style: italic; color: var(--text-gray); font-size: 0.8em; border-radius: 0 8px 8px 0; }
 
-        /* ARROWS & BUTTONS */
-        .nav-arrows { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
-        .nav-arrow { background: var(--card-bg); border: 1px solid var(--border); padding: 10px 25px; font-weight: bold; color: var(--text-brown); cursor: pointer; font-size: 1.1em; border-radius: 8px; }
-        .nav-arrow:disabled { opacity: 0.3; cursor: default; }
+       /* --- ARROWS & BUTTONS (Minimalist Version) --- */
+.nav-arrows { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-top: 25px; 
+    padding: 0 20px; /* เพิ่มระยะห่างจากขอบการ์ดนิดนึง */
+}
+
+.nav-arrow { 
+    background: transparent; /* โปร่งใส ไม่ต้องมีพื้นหลังสี่เหลี่ยม */
+    border: none; /* เอาเส้นขอบออก */
+    padding: 10px; 
+    color: var(--text-brown); 
+    cursor: pointer; 
+    font-size: 2.5em; /* ขนาดใหญ่ขึ้นเพื่อให้กดง่าย */
+    font-weight: 100; /* เส้นบางลง (ถ้าฟอนต์รองรับ) */
+    line-height: 1;
+    transition: all 0.2s ease;
+    opacity: 0.6; /* จางลงนิดนึงให้ดูไม่หนักเกินไป */
+}
+
+.nav-arrow:hover { 
+    opacity: 1; 
+    transform: scale(1.1); /* ขยายขึ้นนิดนึงตอนชี้ */
+}
+
+.nav-arrow:disabled { 
+    opacity: 0.1; 
+    cursor: default; 
+}
         
         .btn-group { display: none; gap: 10px; margin-top: 20px; }
         .btn-status { flex: 1; background: transparent; padding: 14px 0; font-weight: bold; cursor: pointer; font-size: 0.8em; text-transform: uppercase; border-radius: 8px; }
@@ -178,8 +205,8 @@
             </div>
             
             <div class="nav-arrows">
-                <button class="nav-arrow" onclick="prevCard()">&#8592;</button>
-                <button class="nav-arrow" onclick="nextCard()">&#8594;</button>
+                <button class="nav-arrow" onclick="prevCard()">‹</button>
+                <button class="nav-arrow" onclick="nextCard()">›</button>
             </div>
 
             <div class="btn-group" id="c-btns">
@@ -1828,60 +1855,13 @@
 
   
     
-// ==========================================
-    // 1. ระบบจัดการสถานะและข้อมูลเบื้องต้น
-    // ==========================================
-    let curUnit = "Unit 1";
-    let curIdx = 0;
-    let progress = JSON.parse(localStorage.getItem('mw_v11')) || {};
+// 1. เพิ่มตัวแปรเก็บสถานะ (วางไว้ด้านบนสุดของโซน Quiz)
+    let quizLimit = 10; 
+    let currentQuizMode = 'ALL';
 
-    let quizPool = [];
-    let currentQuizWord = null;
-    let quizScore = 0;
-    let quizTotal = 0;
-    let isQuizAnswered = false;
-
-    // ฟังก์ชันสลับแท็บ
-    function switchTab(tab) {
-        document.querySelectorAll('.view, .nav-item').forEach(e => e.classList.remove('active'));
-        document.getElementById('view-' + tab).classList.add('active');
-        
-        const navItems = document.querySelectorAll('.nav-item');
-        if (tab === 'cards') navItems[0].classList.add('active');
-        if (tab === 'browse') navItems[1].classList.add('active');
-        if (tab === 'quiz') navItems[2].classList.add('active');
-        
-        if (tab === 'cards') renderFlashcardView();
-        if (tab === 'browse') renderBrowse();
-        if (tab === 'quiz') renderQuizInit();
-    }
-
-    // ==========================================
-    // 2. ระบบ Quiz (รองรับทั้งแยก Unit และรวม 30 Unit)
-    // ==========================================
-    function renderQuizInit() {
-        const gridContainer = document.getElementById('quiz-unit-grid');
-        if (gridContainer) {
-            let gridHTML = `<div class="unit-item unit-btn" onclick="prepareQuiz('ALL')" style="background: #2c3e50; color: white; border:none; grid-column: span 2; display: flex; align-items: center; justify-content: center;">🔥 รวม 30 Units</div>`;
-            for (let i = 1; i <= 30; i++) {
-                gridHTML += `<div class="unit-item unit-btn" onclick="prepareQuiz('Unit ${i}')" style="display: flex; align-items: center; justify-content: center;">Unit ${i}</div>`;
-            }
-            gridContainer.innerHTML = gridHTML;
-            gridContainer.style.display = "grid";
-            gridContainer.style.gridTemplateColumns = "repeat(4, 1fr)";
-            gridContainer.style.gap = "8px";
-        }
-
-        const quizArea = document.getElementById('quiz-area');
-        if (quizArea) {
-            quizArea.innerHTML = `<div style="text-align: center; color: var(--text-gray); padding: 40px; border: 2px dashed var(--border); border-radius:15px; margin-top:20px;">
-                <h3>พร้อมทดสอบหรือยัง?</h3>
-                <p>เลือก Unit ด้านบนเพื่อเริ่มทำ Quiz ครับ</p>
-            </div>`;
-        }
-    }
-
+    // 2. ปรับฟังก์ชันเตรียมตัว (เลือกว่าจะเอากี่ข้อ)
     function prepareQuiz(mode) {
+        currentQuizMode = mode;
         quizPool = [];
         if (mode === 'ALL') {
             for (const unit in vocabData) {
@@ -1891,22 +1871,32 @@
             if (vocabData[mode] && vocabData[mode].words) quizPool = vocabData[mode].words;
         }
         
+        // ผสมคำศัพท์ (Shuffle) ก่อนเริ่ม
+        quizPool.sort(() => Math.random() - 0.5);
+
+        // กำหนดจำนวนข้อ: ถ้าคำศัพท์น้อยกว่า 10 ให้เอาเท่าที่มี แต่ถ้าเยอะให้ตัดแค่ 10
+        quizLimit = Math.min(quizPool.length, 10); 
+        
         quizScore = 0;
         quizTotal = 0;
         startNewQuizQuestion();
     }
 
+    // 3. ปรับฟังก์ชันสร้างโจทย์ (เพิ่มชื่อ Unit และเช็กจุดจบ)
     function startNewQuizQuestion() {
         const quizArea = document.getElementById('quiz-area');
-        if (quizPool.length < 4) {
-            quizArea.innerHTML = `<div style="color: red; padding: 20px;">คำศัพท์ไม่พอทำควิซ (ต้องมี 4 คำขึ้นไป)</div>`;
+        
+        // --- ส่วนที่เช็กว่าทำครบจำนวนข้อหรือยัง ---
+        if (quizTotal >= quizLimit) {
+            showQuizSummary(); // ถ้าครบแล้ว ให้ไปหน้าสรุปคะแนน
             return;
         }
 
         isQuizAnswered = false;
-        const correctIdx = Math.floor(Math.random() * quizPool.length);
-        currentQuizWord = quizPool[correctIdx];
+        // เลือกคำศัพท์จาก Pool (หยิบตามลำดับ quizTotal เพราะเรา Shuffle pool ไว้แล้ว)
+        currentQuizWord = quizPool[quizTotal];
 
+        // สุ่มตัวเลือก
         let choices = [currentQuizWord];
         while (choices.length < 4) {
             let randomWord = quizPool[Math.floor(Math.random() * quizPool.length)];
@@ -1914,11 +1904,16 @@
         }
         choices.sort(() => Math.random() - 0.5);
 
+        // แสดงผลหน้าจอ (เพิ่มบรรทัดระบุ Unit)
         quizArea.innerHTML = `
-            <div style="background: white; border-radius: 15px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <span style="font-weight: bold; font-size: 1.1em; color: var(--text-brown);">คะแนนสะสม: ${quizScore} / ${quizTotal}</span>
-                    <button onclick="renderQuizInit()" style="font-size: 0.75em; padding: 5px 10px; border-radius: 5px; border: 1px solid var(--border); background: none; cursor:pointer;">เปลี่ยน Unit</button>
+            <div style="background: white; border-radius: 15px; padding: 20px; margin-top: 20px; border: 1px solid var(--border);">
+                <div style="text-align: left; color: var(--text-brown); font-weight: bold; font-size: 0.9em; margin-bottom: 10px;">
+                    📍 กำลังทำ: ${currentQuizMode === 'ALL' ? 'รวมทุก Unit' : currentQuizMode} 
+                    <span style="float: right;">ข้อที่ ${quizTotal + 1} / ${quizLimit}</span>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-top: 1px solid #eee; pt: 10px;">
+                    <span style="font-weight: bold; font-size: 1.1em; color: var(--text-main);">คะแนนปัจจุบัน: ${quizScore}</span>
                 </div>
                 
                 <div style="text-align: center; margin-bottom: 30px;">
@@ -1927,8 +1922,7 @@
                 </div>
 
                 <div id="quiz-choices-box" style="display: grid; gap: 12px;"></div>
-                
-                <button id="quiz-next-btn" onclick="startNewQuizQuestion()" style="display: none; width: 100%; margin-top: 20px; padding: 15px; background: #3498db; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1em;">ข้อต่อไป ➔</button>
+                <button id="quiz-next-btn" onclick="startNewQuizQuestion()" style="display: none; width: 100%; margin-top: 20px; padding: 15px; background: #3498db; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;">ข้อต่อไป ➔</button>
             </div>
         `;
 
@@ -1937,16 +1931,41 @@
             const btn = document.createElement('button');
             btn.className = 'quiz-choice-btn';
             btn.style.width = "100%";
-            btn.innerText = `${choice.meaning} (${choice.syn || '-'})`;
+            btn.innerText = `${choice.meaning}`;
             btn.onclick = () => handleQuizAnswer(btn, choice.id === currentQuizWord.id);
             box.appendChild(btn);
         });
     }
 
+    // 4. เพิ่มฟังก์ชันหน้าสรุปคะแนน (จบแล้วมีปุ่มเริ่มใหม่)
+    function showQuizSummary() {
+        const quizArea = document.getElementById('quiz-area');
+        const percent = Math.round((quizScore / quizLimit) * 100);
+        let feedback = percent >= 80 ? "ยอดเยี่ยมมาก! 🌟" : percent >= 50 ? "ทำดีแล้ว ฝึกอีกนิดนะ! 👍" : "ลองทบทวนดูอีกรอบนะ 📚";
+
+        quizArea.innerHTML = `
+            <div style="text-align: center; padding: 40px; background: white; border-radius: 15px; border: 2px solid var(--border); margin-top: 20px;">
+                <h2 style="color: var(--text-brown);">สรุปผลคะแนน</h2>
+                <div style="font-size: 4em; font-weight: bold; margin: 20px 0; color: var(--text-main);">${quizScore} / ${quizLimit}</div>
+                <p style="font-size: 1.2em; color: var(--text-gray); mb: 30px;">${feedback}</p>
+                
+                <div style="display: grid; gap: 10px; margin-top: 30px;">
+                    <button onclick="prepareQuiz('${currentQuizMode}')" style="padding: 15px; background: #2c3e50; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
+                        🔄 วนกลับมาทำซ้ำ (Restart)
+                    </button>
+                    <button onclick="renderQuizInit()" style="padding: 12px; background: none; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--text-gray);">
+                        ⬅️ กลับไปหน้าเลือก Unit
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // อย่าลืมอัปเดตฟังก์ชัน handleQuizAnswer ให้ใช้ตัวแปร quizTotal++ ด้วย
     function handleQuizAnswer(selectedBtn, isCorrect) {
         if (isQuizAnswered) return;
         isQuizAnswered = true;
-        quizTotal++;
+        quizTotal++; // นับข้อที่ทำไป
 
         const allBtns = document.querySelectorAll('.quiz-choice-btn');
         if (isCorrect) {
@@ -1955,10 +1974,9 @@
         } else {
             selectedBtn.classList.add('wrong');
             allBtns.forEach(btn => {
-                if (btn.innerText.includes(currentQuizWord.meaning)) btn.classList.add('correct');
+                if (btn.innerText === currentQuizWord.meaning) btn.classList.add('correct');
             });
         }
-        document.querySelector('#quiz-area span').innerText = `คะแนนสะสม: ${quizScore} / ${quizTotal}`;
         document.getElementById('quiz-next-btn').style.display = 'block';
     }
 
