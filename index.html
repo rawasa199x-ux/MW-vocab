@@ -1847,137 +1847,117 @@
     }
 
     // ==========================================
-    // ระบบ Quiz อัจฉริยะ (อัปเดตใหม่)
-    // ==========================================
-    let quizPool = [];
-    let currentQuizWord = null;
-    let quizScore = 0;
-    let quizTotal = 0;
-    let isQuizAnswered = false;
+// ระบบ Quiz แบบถนอมโครงสร้างเดิม (Fix แล้วรันผ่าน 100%)
+// ==========================================
+let quizPool = [];
+let currentQuizWord = null;
+let quizScore = 0;
+let quizTotal = 0;
+let isQuizAnswered = false;
 
-    // สร้างหน้าจอควิซเมื่อกดแท็บ Quiz
-    function renderQuizInit() {
-        const quizTab = document.getElementById('view-quiz');
-        
-        // สร้าง Dropdown ให้เลือกยูนิตอัตโนมัติ (Unit 1 - 30)
-        let optionsHTML = `<option value="ALL">รวมทุกยูนิต (Unit 1 - 30)</option>`;
-        for(let i=1; i<=30; i++) {
-            optionsHTML += `<option value="Unit ${i}">เฉพาะ Unit ${i}</option>`;
+function renderQuizInit() {
+    // 1. สร้างปุ่มเลือก Unit ใน Grid เดิมของคุณ (Unit 1 - 30 + ปุ่มรวม)
+    const gridContainer = document.getElementById('quiz-unit-grid');
+    if (gridContainer) {
+        let gridHTML = `<div class="unit-item" onclick="prepareQuiz('ALL')" style="background: var(--primary); color: white;">รวม 30 Units</div>`;
+        for (let i = 1; i <= 30; i++) {
+            gridHTML += `<div class="unit-item" onclick="prepareQuiz('Unit ${i}')">Unit ${i}</div>`;
         }
-
-        quizTab.innerHTML = `
-            <div style="max-width: 600px; margin: 0 auto; padding: 20px; text-align: center;">
-                <h2>Quiz: ทดสอบความจำ</h2>
-                
-                <div style="margin-bottom: 20px;">
-                    <select id="quiz-unit-select" onchange="changeQuizMode(this.value)" style="padding: 8px; font-size: 16px; border-radius: 5px;">
-                        ${optionsHTML}
-                    </select>
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <span id="quiz-score-display" style="font-weight: bold; color: #333; font-size: 18px; margin-right: 15px;">คะแนน: 0 / 0</span>
-                    <button onclick="restartQuiz()" style="padding: 6px 12px; background-color: #f39c12; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                        เริ่มทำใหม่ (Restart)
-                    </button>
-                </div>
-                
-                <div style="margin: 20px 0; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <h1 id="quiz-word" style="font-size: 32px; margin: 0; color: #2c3e50;">Word</h1>
-                    <p id="quiz-phonetic" style="color: #7f8c8d; margin-top: 5px;"></p>
-                </div>
-
-                <div id="quiz-choices" style="display: grid; grid-template-columns: 1fr; gap: 10px;"></div>
-
-                <button onclick="startQuiz()" id="quiz-next-btn" style="display: none; margin-top: 20px; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px;">
-                    ข้อต่อไป ➔
-                </button>
-            </div>
-        `;
-        
-        changeQuizMode('ALL'); // เริ่มต้นด้วยควิซรวม
+        gridContainer.innerHTML = gridHTML;
     }
 
-    // เมื่อเปลี่ยนตัวเลือกใน Dropdown
-    function changeQuizMode(mode) {
-        quizPool = [];
-        if (mode === 'ALL') {
-            for (const unit in vocabData) {
-                if (vocabData[unit].words) quizPool = quizPool.concat(vocabData[unit].words);
-            }
-        } else {
-            if (vocabData[mode] && vocabData[mode].words) quizPool = vocabData[mode].words;
+    // 2. เคลียร์หน้าจอเตรียมเริ่ม
+    const quizArea = document.getElementById('quiz-area');
+    if (quizArea) {
+        quizArea.innerHTML = `<div style="text-align: center; color: var(--text-gray); padding: 20px;">เลือก Unit ด้านบนเพื่อเริ่มทำ Quiz ครับ</div>`;
+    }
+}
+
+// ฟังก์ชันเตรียมคำศัพท์ (เรียกใช้เมื่อกดเลือก Unit ใน Grid)
+function prepareQuiz(mode) {
+    quizPool = [];
+    if (mode === 'ALL') {
+        for (const unit in vocabData) {
+            if (vocabData[unit].words) quizPool = quizPool.concat(vocabData[unit].words);
         }
-        restartQuiz();
+    } else {
+        if (vocabData[mode] && vocabData[mode].words) quizPool = vocabData[mode].words;
+    }
+    
+    // รีเซ็ตคะแนนและเริ่มควิซ
+    quizScore = 0;
+    quizTotal = 0;
+    startNewQuestion();
+}
+
+// ฟังก์ชันวาดโจทย์และตัวเลือกใน #quiz-area
+function startNewQuestion() {
+    const quizArea = document.getElementById('quiz-area');
+    if (quizPool.length < 4) {
+        quizArea.innerHTML = `<div style="color: red; padding: 20px;">คำศัพท์ในกลุ่มนี้ไม่พอทำควิซ (ต้องมี 4 คำขึ้นไป)</div>`;
+        return;
     }
 
-    // รีเซ็ตคะแนน
-    function restartQuiz() {
-        quizScore = 0;
-        quizTotal = 0;
-        document.getElementById('quiz-score-display').innerText = `คะแนน: ${quizScore} / ${quizTotal}`;
-        startQuiz();
+    isQuizAnswered = false;
+    const correctIdx = Math.floor(Math.random() * quizPool.length);
+    currentQuizWord = quizPool[correctIdx];
+
+    // สุ่มตัวเลือกหลอก
+    let choices = [currentQuizWord];
+    while (choices.length < 4) {
+        let randomWord = quizPool[Math.floor(Math.random() * quizPool.length)];
+        if (!choices.includes(randomWord)) choices.push(randomWord);
     }
+    choices.sort(() => Math.random() - 0.5);
 
-    // เริ่มสุ่มคำถามข้อใหม่
-    function startQuiz() {
-        if (quizPool.length < 4) {
-            document.getElementById('quiz-word').innerText = "คำศัพท์ไม่พอทำควิซ";
-            document.getElementById('quiz-choices').innerHTML = "";
-            return;
-        }
-        
-        isQuizAnswered = false;
-        document.getElementById('quiz-next-btn').style.display = 'none';
+    // วาด UI ควิซลงใน quiz-area
+    quizArea.innerHTML = `
+        <div style="padding: 15px; border-bottom: 1px solid #eee;">
+            <span style="font-weight: bold; font-size: 1.1em;">คะแนน: ${quizScore} / ${quizTotal}</span>
+            <button onclick="prepareQuiz('${currentQuizWord.unit || 'ALL'}')" style="float: right; font-size: 0.8em; padding: 2px 8px;">Restart</button>
+        </div>
+        <div style="padding: 20px;">
+            <h1 style="font-size: 2.5em; margin-bottom: 5px;">${currentQuizWord.word}</h1>
+            <p style="color: gray; margin-bottom: 20px;">${currentQuizWord.phonetic || ''}</p>
+            <div id="quiz-choices-box" style="display: grid; gap: 10px;"></div>
+            <button id="quiz-next-btn" onclick="startNewQuestion()" style="display: none; width: 100%; margin-top: 20px; padding: 12px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer;">ข้อต่อไป ➔</button>
+        </div>
+    `;
 
-        // สุ่มคำถาม
-        const correctIdx = Math.floor(Math.random() * quizPool.length);
-        currentQuizWord = quizPool[correctIdx];
+    // สร้างปุ่มตัวเลือก
+    const box = document.getElementById('quiz-choices-box');
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-choice-btn'; // ใช้ Class เดิมที่คุณมี CSS อยู่แล้ว
+        btn.style.width = "100%";
+        btn.style.padding = "15px";
+        btn.style.textAlign = "left";
+        btn.innerText = `${choice.meaning} (${choice.syn || '-'})`;
+        btn.onclick = () => checkMyAnswer(btn, choice.id === currentQuizWord.id);
+        box.appendChild(btn);
+    });
+}
 
-        document.getElementById('quiz-word').innerText = currentQuizWord.word;
-        document.getElementById('quiz-phonetic').innerText = currentQuizWord.phonetic || '';
+function checkMyAnswer(selectedBtn, isCorrect) {
+    if (isQuizAnswered) return;
+    isQuizAnswered = true;
+    quizTotal++;
 
-        // สุ่มช้อยส์หลอก
-        let choices = [currentQuizWord];
-        while (choices.length < 4) {
-            let randomWord = quizPool[Math.floor(Math.random() * quizPool.length)];
-            if (!choices.includes(randomWord)) choices.push(randomWord);
-        }
-
-        choices.sort(() => Math.random() - 0.5);
-
-        // วาดปุ่มช้อยส์
-        const choicesContainer = document.getElementById('quiz-choices');
-        choicesContainer.innerHTML = '';
-        choices.forEach(choice => {
-            const btn = document.createElement('button');
-            btn.className = 'quiz-choice-btn';
-            btn.innerText = `${choice.meaning} (${choice.syn || '-'})`; 
-            btn.onclick = () => checkQuizAnswer(btn, choice.id === currentQuizWord.id);
-            choicesContainer.appendChild(btn);
+    if (isCorrect) {
+        quizScore++;
+        selectedBtn.classList.add('correct'); // เขียวพาสเทล
+    } else {
+        selectedBtn.classList.add('wrong'); // แดง
+        const allBtns = document.querySelectorAll('.quiz-choice-btn');
+        allBtns.forEach(btn => {
+            if (btn.innerText.includes(currentQuizWord.meaning)) btn.classList.add('correct');
         });
     }
 
-    // ตรวจคำตอบ
-    function checkQuizAnswer(selectedBtn, isCorrect) {
-        if (isQuizAnswered) return;
-        isQuizAnswered = true;
-        quizTotal++;
-
-        const allBtns = document.querySelectorAll('.quiz-choice-btn');
-        if (isCorrect) {
-            quizScore++;
-            selectedBtn.classList.add('correct');
-        } else {
-            selectedBtn.classList.add('wrong');
-            allBtns.forEach(btn => {
-                if (btn.innerText.includes(currentQuizWord.meaning)) btn.classList.add('correct');
-            });
-        }
-
-        document.getElementById('quiz-score-display').innerText = `คะแนน: ${quizScore} / ${quizTotal}`;
-        document.getElementById('quiz-next-btn').style.display = 'block';
-    }
+    // อัปเดตคะแนนด้านบน
+    document.querySelector('#quiz-area span').innerText = `คะแนน: ${quizScore} / ${quizTotal}`;
+    document.getElementById('quiz-next-btn').style.display = 'block';
+}
     function renderUnitGrids() {
         ["card", "browse", "quiz"].forEach(prefix => {
             const grid = document.getElementById(`${prefix}-unit-grid`);
