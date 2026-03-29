@@ -1989,7 +1989,9 @@
             grid.appendChild(b);
         });
         c.appendChild(grid);
-    }// === QUIZ SYSTEM ===
+    }
+    
+   // === QUIZ SYSTEM ===
     let quizPool = [];
     let currentQuizWord = null;
     let quizScore = 0;
@@ -1999,17 +2001,18 @@
     let quizFilter = 'ALL';
     let isGlobalMode = false;
 
+    // 1. หน้าเมนูควิซ
     function renderQuizInit() {
         renderUnitGrids();
         const qa = document.getElementById('quiz-area');
         const unitData = vocabData[curUnit];
 
         if(!unitData || unitData.words.length === 0) {
-            qa.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:0.85em;">No data available for this unit.</div>';
+            qa.innerHTML = '<div style="text-align:center; color:var(--text-gray); padding:20px;">ไม่มีข้อมูลคำศัพท์ใน Unit นี้</div>';
             return;
         }
 
-        // สร้างปุ่มกรอง Root ย่อยของยูนิตนั้น
+        // ปุ่มกรอง Root ของแต่ละยูนิต
         let filterHtml = `<div class="quiz-root-filter">
             <button class="root-filter-btn ${quizFilter === 'ALL' ? 'active' : ''}" onclick="setQuizFilter('ALL')">ALL WORDS</button>`;
         
@@ -2020,11 +2023,11 @@
         }
         filterHtml += `</div>`;
 
-        // ปุ่มเริ่มทำควิซ
+        // ปุ่มเริ่มเกม 2 โหมด
         filterHtml += `
-            <div style="text-align:center; margin-top:20px; display:flex; flex-direction:column; gap:10px;">
-                <button class="btn-submit-quiz" onclick="startQuizMode(false)">เริ่มทำควิซ (เฉพาะ ${curUnit} - ${quizFilter})</button>
-                <button class="btn-submit-quiz" style="background-color: #2c3e50;" onclick="startQuizMode(true)">🔥 เริ่มทำควิซรวม 30 ยูนิต</button>
+            <div style="text-align:center; margin-top:30px; display:flex; flex-direction:column; gap:15px;">
+                <button class="btn-submit-quiz" style="padding:15px;" onclick="startQuizMode(false)">เริ่มทำควิซ (${curUnit})</button>
+                <button class="btn-submit-quiz" style="background-color:#2c3e50; padding:15px;" onclick="startQuizMode(true)">🔥 เริ่มทำควิซรวม 30 ยูนิต</button>
             </div>
         `;
         qa.innerHTML = filterHtml;
@@ -2035,6 +2038,7 @@
         renderQuizInit();
     }
 
+    // 2. ฟังก์ชันเตรียมคำศัพท์ก่อนเริ่ม
     function startQuizMode(global) {
         isGlobalMode = global;
         quizPool = [];
@@ -2065,6 +2069,7 @@
         renderQuizQuestion();
     }
 
+    // 3. ฟังก์ชันแสดงคำถามและตัวเลือก
     function renderQuizQuestion() {
         const qa = document.getElementById('quiz-area');
         
@@ -2076,7 +2081,6 @@
         isQuizAnswered = false;
         currentQuizWord = quizPool[quizTotal];
 
-        // สุ่มช้อยส์
         let choices = [currentQuizWord];
         let allWords = isGlobalMode ? quizPool : vocabData[curUnit].words;
 
@@ -2088,19 +2092,19 @@
 
         let modeText = isGlobalMode ? "รวม 30 ยูนิต" : `${curUnit} (${quizFilter})`;
 
-        // วาดหน้าจอควิซ
         let html = `
-            <div style="margin-bottom: 10px; display: flex; justify-content: space-between; font-size: 0.85em; color: var(--text-gray); font-weight: bold;">
-                <span>📍 ${modeText}</span>
-                <span>ข้อที่ ${quizTotal + 1} / ${quizLimit}</span>
-            </div>
-            
-            <div class="quiz-question-box" style="background-color: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px;">
-                <h1 style="font-size: 2.2em; margin: 0 0 5px 0; color: var(--text-main);">${currentQuizWord.word}</h1>
-                <div style="color: var(--text-gray); font-style: italic;">${currentQuizWord.phonetic || ''}</div>
-            </div>
+            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+                <div style="margin-bottom: 15px; display: flex; justify-content: space-between; font-size: 0.85em; color: var(--text-gray); font-weight: bold;">
+                    <span>📍 ${modeText}</span>
+                    <span>ข้อที่ ${quizTotal + 1} / ${quizLimit}</span>
+                </div>
+                
+                <div class="quiz-question-box" style="margin-bottom: 25px;">
+                    <h1 style="font-size: 2.5em; margin: 0 0 5px 0; color: var(--text-main);">${currentQuizWord.word}</h1>
+                    <div style="color: var(--text-gray); font-style: italic;">${currentQuizWord.phonetic || ''}</div>
+                </div>
 
-            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; flex-direction: column; gap: 10px;">
         `;
 
         choices.forEach(opt => {
@@ -2108,16 +2112,17 @@
         });
 
         html += `
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
-                <span style="font-weight: bold; color: var(--green-dark);">คะแนน: ${quizScore} / ${quizLimit}</span>
-                <button onclick="renderQuizQuestion()" id="next-btn" style="display: none; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">ข้อต่อไป &#10095;</button>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                    <span style="font-weight: bold; color: var(--green-dark);">คะแนน: ${quizScore} / ${quizLimit}</span>
+                    <button onclick="renderQuizQuestion()" id="next-btn" style="display: none; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">ข้อต่อไป &#10095;</button>
+                </div>
             </div>
         `;
-        
         qa.innerHTML = html;
     }
 
+    // 4. ฟังก์ชันตรวจคำตอบ
     function checkQuizAnswer(btnElement, selectedId) {
         if (isQuizAnswered) return;
         isQuizAnswered = true;
@@ -2131,6 +2136,7 @@
             btnElement.classList.add('correct');
         } else {
             btnElement.classList.add('wrong');
+            // ไฮไลต์ข้อที่ถูกด้วย
             allBtns.forEach(b => {
                 if (b.innerText.includes(currentQuizWord.meaning)) {
                     b.classList.add('correct');
@@ -2144,24 +2150,26 @@
         document.getElementById('next-btn').style.display = 'block';
     }
 
+   // 5. ฟังก์ชันแสดงหน้าสรุปคะแนน
     function showQuizSummary() {
         const qa = document.getElementById('quiz-area');
         let modeText = isGlobalMode ? "รวม 30 ยูนิต" : `${curUnit} (${quizFilter})`;
         
         qa.innerHTML = `
-            <div style="text-align: center; padding: 40px 20px; background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;">
+            <div style="text-align: center; padding: 40px 20px; background-color: white; border: 1px solid var(--border); border-radius: 12px; margin-top: 20px;">
                 <h2 style="color: var(--text-brown); margin-top: 0;">สรุปผลคะแนน</h2>
                 <p style="color: var(--text-gray);">${modeText}</p>
-                <div style="font-size: 4em; font-weight: bold; color: var(--text-main); margin: 20px 0;">${quizScore} / ${quizLimit}</div>
+                <div style="font-size: 4.5em; font-weight: bold; color: var(--text-main); margin: 20px 0;">${quizScore} / ${quizLimit}</div>
                 
                 <button class="btn-submit-quiz" onclick="startQuizMode(${isGlobalMode})" style="margin-top: 20px;">&#8635; วนกลับมาทำซ้ำ</button>
-<button class="btn-submit-quiz" onclick="renderQuizInit()" style="background-color: var(--text-gray); margin-top: 10px;">&#10094; กลับไปหน้าเลือกควิซ</button>
+                <button class="btn-submit-quiz" onclick="renderQuizInit()" style="background-color: var(--text-gray); margin-top: 10px;">&#10094; กลับไปหน้าเลือกควิซ</button>
             </div>
         `;
     }
 
-    // Init
+    // เริ่มต้นระบบเมื่อเปิดหน้าเว็บ
     renderFlashcardView();
+    
 </script>
 </body>
 </html>
