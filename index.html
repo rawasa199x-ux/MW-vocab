@@ -103,6 +103,31 @@
         .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; }
         .nav-item { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-gray); font-size: 0.75em; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .nav-item.active { color: var(--text-brown); background: #fcfbf9; }
+
+    .quiz-choice-btn {
+    padding: 15px;
+    font-size: 16px;
+    background-color: #ffffff;
+    border: 2px solid #bdc3c7;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+.quiz-choice-btn:hover {
+    background-color: #ecf0f1;
+    border-color: #95a5a6;
+}
+.quiz-choice-btn.correct {
+    background-color: #2ecc71 !important;
+    color: white;
+    border-color: #27ae60;
+}
+.quiz-choice-btn.wrong {
+    background-color: #e74c3c !important;
+    color: white;
+    border-color: #c0392b;
+}
     </style>
 </head>
 <body>
@@ -2087,6 +2112,137 @@
 
     // Init
     renderFlashcardView();
+
+<div style="text-align: center; margin: 20px;">
+    <button onclick="toggleQuizMode()" style="padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        เข้าสู่โหมดควิซคำศัพท์รวม (Quiz Mode)
+    </button>
+</div>
+
+<div id="quiz-container" style="display: none; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9; text-align: center;">
+    <h2>Quiz: ทดสอบความจำ</h2>
+    <p id="quiz-score" style="font-weight: bold; color: #333;">คะแนน: 0 / 0</p>
+    
+    <div id="quiz-question-box" style="margin: 20px 0; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <h1 id="quiz-word" style="font-size: 32px; margin: 0; color: #2c3e50;">Word</h1>
+        <p id="quiz-phonetic" style="color: #7f8c8d; margin-top: 5px;"></p>
+    </div>
+
+    <div id="quiz-choices" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+        </div>
+
+    <button onclick="nextQuestion()" id="next-btn" style="display: none; margin-top: 20px; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%;">
+        ข้อต่อไป ➔
+    </button>
+</div>
+    // ตัวแปรสำหรับควิซ
+let allWordsPool = [];
+let currentQuizWord = null;
+let score = 0;
+let totalQuestions = 0;
+let isAnswered = false;
+
+// ฟังก์ชันสลับโหมดแสดงผลระหว่าง Flashcard กับ Quiz
+function toggleQuizMode() {
+    const flashcardView = document.getElementById('main-card-container'); // ปรับ id ให้ตรงกับกล่องแฟลชการ์ดของคุณ
+    const quizView = document.getElementById('quiz-container');
+    
+    if (quizView.style.display === 'none') {
+        if(flashcardView) flashcardView.style.display = 'none';
+        quizView.style.display = 'block';
+        prepareQuizPool();
+        startQuiz();
+    } else {
+        quizView.style.display = 'none';
+        if(flashcardView) flashcardView.style.display = 'flex';
+    }
+}
+
+// รวบรวมคำศัพท์ทั้งหมดจาก Unit 1-30 มาไว้ในตะกร้าเดียว
+function prepareQuizPool() {
+    allWordsPool = [];
+    for (const unit in vocabData) {
+        if (vocabData[unit].words && vocabData[unit].words.length > 0) {
+            allWordsPool = allWordsPool.concat(vocabData[unit].words);
+        }
+    }
+}
+
+// เริ่มข้อใหม่
+function startQuiz() {
+    if (allWordsPool.length < 4) {
+        alert("คำศัพท์ในระบบมีไม่พอทำควิซ (ต้องมีอย่างน้อย 4 คำ)");
+        return;
+    }
+    
+    isAnswered = false;
+    document.getElementById('next-btn').style.display = 'none';
+    document.getElementById('quiz-score').innerText = `คะแนน: ${score} / ${totalQuestions}`;
+
+    // สุ่มคำศัพท์ที่เป็นคำถาม 1 คำ
+    const correctIdx = Math.floor(Math.random() * allWordsPool.length);
+    currentQuizWord = allWordsPool[correctIdx];
+
+    // แสดงคำศัพท์
+    document.getElementById('quiz-word').innerText = currentQuizWord.word;
+    document.getElementById('quiz-phonetic').innerText = currentQuizWord.phonetic || '';
+
+    // สุ่มตัวเลือกหลอก 3 คำ (ต้องไม่ซ้ำกับคำตอบที่ถูก)
+    let choices = [currentQuizWord];
+    while (choices.length < 4) {
+        let randomIdx = Math.floor(Math.random() * allWordsPool.length);
+        let randomWord = allWordsPool[randomIdx];
+        if (!choices.includes(randomWord)) {
+            choices.push(randomWord);
+        }
+    }
+
+    // สลับตำแหน่งตัวเลือก (Shuffle)
+    choices.sort(() => Math.random() - 0.5);
+
+    // สร้างปุ่มตัวเลือก
+    const choicesContainer = document.getElementById('quiz-choices');
+    choicesContainer.innerHTML = ''; // ล้างของเก่า
+    
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-choice-btn';
+        // แสดงความหมายภาษาไทย + คำแปลภาษาอังกฤษสั้นๆ
+        btn.innerText = `${choice.meaning} (${choice.syn || '-'})`; 
+        btn.onclick = () => checkAnswer(btn, choice.id === currentQuizWord.id);
+        choicesContainer.appendChild(btn);
+    });
+}
+
+// ตรวจคำตอบ
+function checkAnswer(selectedBtn, isCorrect) {
+    if (isAnswered) return; // ตอบแล้วห้ามกดซ้ำ
+    isAnswered = true;
+    totalQuestions++;
+
+    const allBtns = document.querySelectorAll('.quiz-choice-btn');
+    
+    if (isCorrect) {
+        score++;
+        selectedBtn.classList.add('correct');
+    } else {
+        selectedBtn.classList.add('wrong');
+        // ไฮไลต์ข้อที่ถูกให้ดูด้วย
+        allBtns.forEach(btn => {
+            if (btn.innerText.includes(currentQuizWord.meaning)) {
+                btn.classList.add('correct');
+            }
+        });
+    }
+
+    document.getElementById('quiz-score').innerText = `คะแนน: ${score} / ${totalQuestions}`;
+    document.getElementById('next-btn').style.display = 'block'; // แสดงปุ่มไปข้อถัดไป
+}
+
+// ไปข้อถัดไป
+function nextQuestion() {
+    startQuiz();
+}
 </script>
 </body>
 </html>
