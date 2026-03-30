@@ -2517,7 +2517,7 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
         c.appendChild(grid);
     }
    
-  function renderQuizInit() {
+ function renderQuizInit() {
     renderUnitGrids();
     const qa = document.getElementById('quiz-area');
     const unitData = vocabData[curUnit];
@@ -2530,27 +2530,24 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
         <div class="quiz-root-filter">
             <button class="root-filter-btn ${quizFilter === 'ALL' ? 'active' : ''}" onclick="setQuizFilter('ALL')">ALL WORDS</button>
             ${(unitData.roots || []).map(r => `<button class="root-filter-btn ${quizFilter === r ? 'active' : ''}" onclick="setQuizFilter('${r}')">${r}</button>`).join('')}
-        </div>`;
-
-    if (wordCount > 40) {
-        html += `
+        </div>
+        
         <div style="text-align:center; margin:20px 0; padding:15px; background:#fff; border-radius:10px; border:1px solid var(--border);">
-            <p style="font-size:0.85em; color:var(--text-brown); margin-bottom:10px;">เลือกจำนวนข้อ (Unit นี้มี ${wordCount} คำ):</p>
+            <p style="font-size:0.85em; color:var(--text-brown); margin-bottom:10px; font-weight:bold;">📍 ตั้งค่าจำนวนข้อ (สำหรับสุ่มยูนิตใหญ่/สุ่มรวม):</p>
             <div style="display:flex; justify-content:center; gap:8px;">
                 <button class="unit-btn" style="min-width:60px;" onclick="setQuizLimit(20)">20</button>
                 <button class="unit-btn" style="min-width:60px;" onclick="setQuizLimit(50)">50</button>
                 <button class="unit-btn" style="min-width:60px;" onclick="setQuizLimit(999)">ทั้งหมด</button>
             </div>
-        </div>`;
-    } else {
-        userSelectedLimit = 999;
-    }
+        </div>
 
-    html += `
         <div style="text-align:center; display:flex; flex-direction:column; gap:12px; align-items:center;">
-            <button class="btn-submit-quiz" onclick="startQuizMode(false, false)">🎯 เริ่มควิซปกติ (สุ่มคำในยูนิต)</button>
+            <button class="btn-submit-quiz" onclick="startQuizMode(false, false)">🎯 เริ่มควิซย่อย (${curUnit})</button>
+            
+            <button class="btn-submit-quiz" style="background-color:#2c3e50;" onclick="startQuizMode(true, false)">🔥 สุ่มรวมทุกยูนิต (Mixed All)</button>
+            
             <button class="btn-submit-quiz" style="background-color:#d35400;" onclick="startSmartQuiz()">
-                 Smart Review (${unlearnedCount} คำที่ยังไม่แม่น)
+                 Smart Review (เหลือ ${unlearnedCount} คำ)
             </button>
         </div>
     `;
@@ -2586,24 +2583,31 @@ function startSmartQuiz() {
 }
 function startQuizMode(global, retrySame) {
     isGlobalMode = global;
+    let pool = [];
+
     if (retrySame && savedQuizPool.length > 0) {
         quizPool = [...savedQuizPool];
     } else {
-        let pool = [];
         if (global) {
+            // ดึงคำศัพท์จากทุก Unit มารวมกัน
             for (let u in vocabData) {
                 if (vocabData[u].words) pool = pool.concat(vocabData[u].words);
             }
-            pool.sort(() => Math.random() - 0.5);
-            quizPool = pool.slice(0, 34); 
         } else {
-            let ws = vocabData[curUnit].words;
-            if (quizFilter !== 'ALL') ws = ws.filter(w => w.root === quizFilter);
-            quizPool = [...ws].sort(() => Math.random() - 0.5);
+            // ดึงเฉพาะ Unit ปัจจุบัน
+            pool = vocabData[curUnit].words;
+            if (quizFilter !== 'ALL') pool = pool.filter(w => w.root === quizFilter);
         }
+
+        // Shuffle (สับไพ่)
+        pool.sort(() => Math.random() - 0.5);
+        
+        // ตัดเอาแค่ตามจำนวนที่เลือก (20, 50 หรือ ทั้งหมด)
+        quizPool = pool.slice(0, userSelectedLimit); 
         savedQuizPool = [...quizPool];
     }
-    if (quizPool.length === 0) { alert('ไม่มีคำศัพท์ในหมวดนี้ครับ'); return; }
+
+    if (quizPool.length === 0) { alert('ไม่พบคำศัพท์ที่ต้องการทดสอบ'); return; }
     quizLimit = quizPool.length;
     quizScore = 0;
     quizTotal = 0;
