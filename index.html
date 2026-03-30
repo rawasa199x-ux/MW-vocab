@@ -1818,15 +1818,16 @@ let curUnit = "Unit 1";
     let curIdx = 0;
     let progress = JSON.parse(localStorage.getItem('mw_v11')) || {};
 
-    let quizPool = [];
-    let currentQuizWord = null;
-    let quizScore = 0;
-    let quizTotal = 0;
-    let quizLimit = 10;
-    let isQuizAnswered = false;
-    let isGlobalMode = false;
-    let quizFilter = 'ALL'; 
-    let allVocabArray = []; 
+   let quizPool = [];
+let currentQuizWord = null;
+let quizScore = 0;
+let quizTotal = 0;
+let quizLimit = 10;
+let isQuizAnswered = false;
+let isGlobalMode = false;
+let quizFilter = 'ALL'; 
+let allVocabArray = [];
+let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
 
     // ==========================================
     // 1. ระบบนำทาง และ แฟลชการ์ด (ที่หายไป)
@@ -2002,16 +2003,7 @@ let curUnit = "Unit 1";
         c.appendChild(grid);
     }
 
-    // 2. ระบบควิซ (แก้ไขให้สมบูรณ์ มี 10 ข้อ + ทำซ้ำข้อเดิมได้)
-    let currentQuizWord = null;
-    let quizScore = 0;
-    let quizTotal = 0;
-    let quizLimit = 10;
-    let isQuizAnswered = false;
-    let isGlobalMode = false;
-    let quizFilter = 'ALL';
-    let savedQuizPool = []; // เพิ่มตัวแปรเพื่อเก็บข้อสอบ 10 ข้อเดิมไว้ทำซ้ำ
-
+   
     function renderQuizInit() {
         renderUnitGrids();
         const qa = document.getElementById('quiz-area');
