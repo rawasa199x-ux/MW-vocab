@@ -1831,7 +1831,7 @@
     let progress = JSON.parse(localStorage.getItem('mw_v11')) || {};
 
     let quizPool = [];
-    // 2. ระบบควิซ (แก้ไขให้สมบูรณ์ แบบไม่มีปุ่มข้อต่อไป)
+   // 2. ระบบควิซ (แก้ไขให้สมบูรณ์ แบบไม่มีปุ่มข้อต่อไป)
     let currentQuizWord = null;
     let quizScore = 0;
     let quizTotal = 0;
@@ -1938,7 +1938,58 @@
 
         let html = `
             <div style="background:white; padding:20px; border-radius:12px; border:1px solid var(--border);">
-                <div style="font-size
+                <div style="font-size:0.85em; color:var(--text-gray); margin-bottom:15px; display:flex; justify-content:space-between; font-weight:bold;">
+                    <span>📍 ${modeText}</span>
+                    <span>ข้อที่ ${quizTotal + 1} / ${quizLimit}</span>
+                </div>
+                <div class="quiz-question-box" style="margin-bottom:25px;">
+                    <h1 style="font-size:2.5em; margin:0 0 5px 0; color:var(--text-main);">${currentQuizWord.word}</h1>
+                    <div style="color:var(--text-gray); font-style:italic;">${currentQuizWord.phonetic || ''}</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px;">`;
+
+        choices.forEach(opt => {
+            html += `<button class="quiz-choice-btn" onclick="checkQuizAnswer(this, '${opt.id}')">${opt.meaning} <span style="font-size:0.85em; color:var(--text-gray);">(${opt.syn || '-'})</span></button>`;
+        });
+
+        html += `
+                </div>
+                <div style="display:flex; justify-content:center; align-items:center; margin-top:20px;">
+                    <span style="font-weight:bold; color:var(--green-dark);" id="score-display">คะแนน: ${quizScore} / ${quizLimit}</span>
+                </div>
+            </div>`;
+        qa.innerHTML = html;
+    }
+
+    function checkQuizAnswer(btnElement, selectedId) {
+        if (isQuizAnswered) return;
+        isQuizAnswered = true;
+        quizTotal++;
+
+        const isCorrect = (selectedId === currentQuizWord.id);
+        const allBtns = document.querySelectorAll('.quiz-choice-btn');
+
+        if (isCorrect) {
+            quizScore++;
+            btnElement.classList.add('correct');
+        } else {
+            btnElement.classList.add('wrong');
+            allBtns.forEach(b => {
+                if (b.innerText.includes(currentQuizWord.meaning)) {
+                    b.classList.add('correct');
+                }
+            });
+        }
+
+        const scoreDisplay = document.getElementById('score-display');
+        if (scoreDisplay) scoreDisplay.innerText = `คะแนน: ${quizScore} / ${quizLimit}`;
+        
+        // หน่วงเวลา 1.5 วินาที แล้วไปข้อต่อไปอัตโนมัติ
+        setTimeout(() => {
+            renderQuizQuestion();
+        }, 1500);
+    }
+window.onload = () => { renderFlashcardView(); };
 </script>
 </body>
 </html>
