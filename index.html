@@ -85,7 +85,11 @@
         /* --- BROWSE --- */
         .browse-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
         .word-block { background: var(--card-bg); border: 1px solid var(--border); padding: 10px 14px; font-size: 0.8em; font-weight: 500; cursor: pointer; color: var(--text-main); border-radius: 8px; }
-
+        
+        /* --- SEARCH BAR --- */
+        .search-box { width: 100%; padding: 12px 15px; font-size: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; outline: none; background: var(--card-bg); color: var(--text-main); }
+        .search-box:focus { border-color: var(--text-brown); }
+        
         /* --- QUIZ --- */
         .quiz-container { width: 100%; max-width: 500px; margin: 0 auto; }
         .quiz-root-filter { display: flex; overflow-x: auto; gap: 6px; padding-bottom: 10px; margin-bottom: 20px; scrollbar-width: none; }
@@ -185,6 +189,9 @@
 
     <div id="view-browse" class="view">
         <div class="unit-grid-container" id="browse-unit-grid"></div>
+        
+        <input type="text" id="search-input" class="search-box" placeholder="🔍 ค้นหาคำศัพท์ หรือ ความหมายไทย..." oninput="renderBrowse(this.value)">
+        
         <div class="unit-full-title" id="browse-u-title">UNIT 1</div>
         <div id="browse-content"></div>
     </div>
@@ -1977,29 +1984,60 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
         nextCard();
     }
 
-    function renderBrowse() {
+    function renderBrowse(searchQuery = "") {
         renderUnitGrids();
         const c = document.getElementById('browse-content');
+        const title = document.getElementById('browse-u-title');
         c.innerHTML = '';
         
-        const unitInfo = vocabData[curUnit];
-        if(!unitInfo || !unitInfo.words || unitInfo.words.length === 0) return;
+        let displayWords = [];
         
-        document.getElementById('browse-u-title').innerText = `${curUnit.toUpperCase()}${unitInfo.rootsStr ? ' - ' + unitInfo.rootsStr : ''}`;
-        
+        if (searchQuery.trim() !== "") {
+            // ถ้ามีการพิมพ์ค้นหา: หาจากทุก Unit
+            title.innerText = "🔍 ผลการค้นหา";
+            const query = searchQuery.toLowerCase().trim();
+            
+            for (let u in vocabData) {
+                if (vocabData[u].words) {
+                    const matched = vocabData[u].words.filter(w => 
+                        w.word.toLowerCase().includes(query) || 
+                        w.meaning.includes(query)
+                    );
+                    // จำไว้ด้วยว่าคำนี้มาจาก Unit ไหน
+                    matched.forEach(w => displayWords.push({...w, unitFound: u}));
+                }
+            }
+        } else {
+            // ถ้าช่องค้นหาว่างเปล่า: โชว์ศัพท์ตาม Unit ที่เลือกปกติ
+            const unitInfo = vocabData[curUnit];
+            if(!unitInfo || !unitInfo.words || unitInfo.words.length === 0) return;
+            title.innerText = `${curUnit.toUpperCase()}${unitInfo.rootsStr ? ' - ' + unitInfo.rootsStr : ''}`;
+            displayWords = unitInfo.words.map(w => ({...w, unitFound: curUnit}));
+        }
+
+        if (displayWords.length === 0) {
+            c.innerHTML = '<div style="text-align:center; color:gray; padding:20px;">ไม่พบคำศัพท์ที่ค้นหา</div>';
+            return;
+        }
+
         const grid = document.createElement('div');
         grid.className = 'browse-grid';
         
-        unitInfo.words.forEach(w => {
+        displayWords.forEach(w => {
             const b = document.createElement('div');
             b.className = 'word-block';
             b.innerText = w.word;
-            b.onclick = () => { curIdx = unitInfo.words.indexOf(w); switchTab('cards'); renderFlashcardView(); };
+            b.onclick = () => { 
+                // เวลากดที่คำศัพท์ ให้พาไปที่การ์ดและ Unit ที่ถูกต้อง
+                curUnit = w.unitFound; 
+                curIdx = vocabData[w.unitFound].words.findIndex(orig => orig.id === w.id); 
+                switchTab('cards'); 
+                renderFlashcardView(); 
+            };
             grid.appendChild(b);
         });
         c.appendChild(grid);
     }
-
    
     function renderQuizInit() {
         renderUnitGrids();
