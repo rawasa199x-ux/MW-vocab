@@ -115,14 +115,11 @@
     transition: all 0.2s;
     text-align: left;
 }
-.quiz-choice-btn:hover {
-    background-color: #ecf0f1;
-    border-color: #95a5a6;
-}
+
 .quiz-choice-btn.correct {
-    background-color: #2ecc71 !important;
-    color: white;
-    border-color: #27ae60;
+    background-color: #a8e6cf !important;
+    color: #1d8348 !important;
+    border-color: #82e0aa !important;
 }
 .quiz-choice-btn.wrong {
     background-color: #e74c3c !important;
@@ -2090,8 +2087,8 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
                     <h2 style="color:var(--text-brown); margin-top:0;">สรุปผลคะแนน</h2>
                     <p style="color:var(--text-gray);">${modeText}</p>
                     <div style="font-size:4.5em; font-weight:bold; color:var(--text-main); margin:20px 0;">${quizScore} / ${quizLimit}</div>
-                    <button class="btn-submit-quiz" onclick="startQuizMode(${isGlobalMode}, true)" style="margin-top:20px; background-color:#8e44ad;">&#8635; ทำซ้ำคำถามเดิม (แก้ตัว)</button>
-                    <button class="btn-submit-quiz" onclick="startQuizMode(${isGlobalMode}, false)" style="margin-top:10px;">&#128256; สุ่มคำถามชุดใหม่</button>
+                   <button class="btn-submit-quiz" onclick="startQuizMode(${isGlobalMode}, true)" style="margin-top:20px; background-color:#bca0dc;">🎯 ทำซ้ำคำถามเดิม (แก้ตัว)</button>
+                   <button class="btn-submit-quiz" onclick="startQuizMode(${isGlobalMode}, false)" style="margin-top:10px;">✨ สุ่มคำถามชุดใหม่</button>
                     <button class="btn-submit-quiz" onclick="renderQuizInit()" style="background-color:var(--text-gray); margin-top:10px;">&#10094; กลับไปหน้าเลือกควิซ</button>
                 </div>`;
             return;
