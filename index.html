@@ -2005,7 +2005,7 @@ let curUnit = "Unit 1";
     // ==========================================
     // 2. ระบบควิซ (ไม่มีข้อต่อไป + ดึงตัวหลอกจากทุกยูนิต)
     // ==========================================
-    function renderQuizInit() {
+   function renderQuizInit() {
         renderUnitGrids();
         const qa = document.getElementById('quiz-area');
         const unitData = vocabData[curUnit];
@@ -2154,7 +2154,6 @@ let curUnit = "Unit 1";
             renderQuizQuestion();
         }, 1500);
     }
-
     window.onload = () => { renderFlashcardView(); };
 </script>
 </body>
