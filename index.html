@@ -2002,10 +2002,17 @@ let curUnit = "Unit 1";
         c.appendChild(grid);
     }
 
-    // ==========================================
-    // 2. ระบบควิซ (ไม่มีข้อต่อไป + ดึงตัวหลอกจากทุกยูนิต)
-    // ==========================================
-   function renderQuizInit() {
+    // 2. ระบบควิซ (แก้ไขให้สมบูรณ์ มี 10 ข้อ + ทำซ้ำข้อเดิมได้)
+    let currentQuizWord = null;
+    let quizScore = 0;
+    let quizTotal = 0;
+    let quizLimit = 10;
+    let isQuizAnswered = false;
+    let isGlobalMode = false;
+    let quizFilter = 'ALL';
+    let savedQuizPool = []; // เพิ่มตัวแปรเพื่อเก็บข้อสอบ 10 ข้อเดิมไว้ทำซ้ำ
+
+    function renderQuizInit() {
         renderUnitGrids();
         const qa = document.getElementById('quiz-area');
         const unitData = vocabData[curUnit];
@@ -2027,8 +2034,8 @@ let curUnit = "Unit 1";
 
         filterHtml += `
             <div style="text-align:center; margin-top:30px; display:flex; flex-direction:column; gap:15px; align-items:center;">
-                <button class="btn-submit-quiz" style="padding:15px; max-width:350px;" onclick="startQuizMode(false)">เริ่มทำควิซย่อย (${curUnit})</button>
-                <button class="btn-submit-quiz" style="background-color:#2c3e50; padding:15px; max-width:350px;" onclick="startQuizMode(true)">🔥 เริ่มทำควิซรวม 30 ยูนิต</button>
+                <button class="btn-submit-quiz" style="padding:15px; max-width:350px;" onclick="startQuizMode(false, false)">เริ่มทำควิซย่อย (${curUnit})</button>
+                <button class="btn-submit-quiz" style="background-color:#2c3e50; padding:15px; max-width:350px;" onclick="startQuizMode(true, false)">🔥 เริ่มทำควิซรวม 30 ยูนิต</button>
             </div>
         `;
         qa.innerHTML = filterHtml;
@@ -2039,36 +2046,45 @@ let curUnit = "Unit 1";
         renderQuizInit();
     }
 
-    function startQuizMode(global) {
+    function startQuizMode(global, retrySame) {
         isGlobalMode = global;
-        quizPool = [];
-        allVocabArray = [];
+        let allVocabArray = [];
         
         for (let u in vocabData) {
             if (vocabData[u].words) allVocabArray = allVocabArray.concat(vocabData[u].words);
         }
+        window.currentAllVocabArray = allVocabArray; 
 
-        if (global) {
-            quizPool = [...allVocabArray];
+        if (retrySame && savedQuizPool.length > 0) {
+            // โหมดทำซ้ำข้อเดิม: โหลดข้อมูลจากที่เซฟไว้
+            quizPool = [...savedQuizPool];
         } else {
-            let ws = vocabData[curUnit].words;
-            if (quizFilter !== 'ALL') {
-                ws = ws.filter(w => w.root === quizFilter);
+            // โหมดเริ่มชุดใหม่
+            quizPool = [];
+            if (global) {
+                quizPool = [...allVocabArray];
+            } else {
+                let ws = vocabData[curUnit].words;
+                if (quizFilter !== 'ALL') {
+                    ws = ws.filter(w => w.root === quizFilter);
+                }
+                quizPool = [...ws];
             }
-            quizPool = [...ws];
+
+            if (quizPool.length === 0) { 
+                alert('ไม่มีคำศัพท์ในหมวดนี้ครับ'); 
+                return; 
+            }
+
+            quizPool.sort(() => Math.random() - 0.5); // สุ่มคำศัพท์
+            quizPool = quizPool.slice(0, 10); // ตัดให้เหลือแค่ 10 ข้อเป๊ะๆ
+            savedQuizPool = [...quizPool]; // เซฟชุดนี้เก็บไว้เผื่อผู้ใช้กดปุ่มทำซ้ำ
         }
 
-        if (quizPool.length === 0) { 
-            alert('ไม่มีคำศัพท์ในหมวดนี้ครับ'); 
-            return; 
-        }
-
-        quizPool.sort(() => Math.random() - 0.5);
-        quizLimit = Math.min(quizPool.length, 10);
+        quizLimit = quizPool.length;
         quizScore = 0;
         quizTotal = 0;
         
-        window.currentAllVocabArray = allVocabArray; 
         renderQuizQuestion();
     }
 
@@ -2082,7 +2098,8 @@ let curUnit = "Unit 1";
                     <h2 style="color:var(--text-brown); margin-top:0;">สรุปผลคะแนน</h2>
                     <p style="color:var(--text-gray);">${modeText}</p>
                     <div style="font-size:4.5em; font-weight:bold; color:var(--text-main); margin:20px 0;">${quizScore} / ${quizLimit}</div>
-                    <button class="btn-submit-quiz" onclick="startQuizMode(${isGlobalMode})" style="margin-top:20px;">&#8635; วนกลับมาทำซ้ำ</button>
+                    <button class="btn-submit-quiz" onclick="startQuizMode(${isGlobalMode}, true)" style="margin-top:20px; background-color:#8e44ad;">&#8635; ทำซ้ำคำถามเดิม (แก้ตัว)</button>
+                    <button class="btn-submit-quiz" onclick="startQuizMode(${isGlobalMode}, false)" style="margin-top:10px;">&#128256; สุ่มคำถามชุดใหม่</button>
                     <button class="btn-submit-quiz" onclick="renderQuizInit()" style="background-color:var(--text-gray); margin-top:10px;">&#10094; กลับไปหน้าเลือกควิซ</button>
                 </div>`;
             return;
@@ -2152,7 +2169,7 @@ let curUnit = "Unit 1";
         
         setTimeout(() => {
             renderQuizQuestion();
-        }, 1500);
+        }, 1000);
     }
     window.onload = () => { renderFlashcardView(); };
 </script>
