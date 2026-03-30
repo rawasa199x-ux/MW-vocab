@@ -2295,8 +2295,8 @@ function prepareGlobalVocab() {
 }
 
   
-    
-let curUnit = "Unit 1";
+    let alphabetFilter = 'ALL'; // เพิ่มตัวแปรสำหรับเก็บตัวอักษรที่เลือก
+    let curUnit = "Unit 1";
     let curIdx = 0;
     let progress = JSON.parse(localStorage.getItem('mw_v11')) || {};
     let userSelectedLimit = 20; // ค่าเริ่มต้น 20 ข้อ สำหรับ Unit ใหญ่
@@ -2528,36 +2528,53 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
 
     let html = `
         <div class="quiz-root-filter">
-            <button class="root-filter-btn ${quizFilter === 'ALL' ? 'active' : ''}" onclick="setQuizFilter('ALL')">ALL WORDS</button>
+            <button class="root-filter-btn ${quizFilter === 'ALL' && alphabetFilter === 'ALL' ? 'active' : ''}" onclick="setQuizFilter('ALL')">ALL WORDS</button>
             ${(unitData.roots || []).map(r => `<button class="root-filter-btn ${quizFilter === r ? 'active' : ''}" onclick="setQuizFilter('${r}')">${r}</button>`).join('')}
-        </div>
+        </div>`;
+
+    // --- เพิ่มแผงปุ่ม A-Z เฉพาะ Unit ที่คำเยอะ (เช่น Unit 34) ---
+    if (wordCount > 40) {
+        // หาตัวอักษรที่มีคำศัพท์จริงๆ ใน Unit นี้
+        const availableLetters = [...new Set(unitData.words.map(w => w.word[0].toUpperCase()))].sort();
         
-        <div style="text-align:center; margin:20px 0; padding:15px; background:#fff; border-radius:10px; border:1px solid var(--border);">
-            <p style="font-size:0.85em; color:var(--text-brown); margin-bottom:10px; font-weight:bold;">📍 ตั้งค่าจำนวนข้อ (สำหรับสุ่มยูนิตใหญ่/สุ่มรวม):</p>
+        html += `
+        <p style="font-size:0.8em; color:var(--text-gray); margin:10px 0 5px 0; font-weight:bold; text-align:center;">กรองตามตัวอักษร (A-Z):</p>
+        <div class="quiz-root-filter" style="flex-wrap: wrap; justify-content: center;">
+            ${availableLetters.map(l => `
+                <button class="root-filter-btn ${alphabetFilter === l ? 'active' : ''}" 
+                        style="min-width:35px; margin-bottom:5px;" 
+                        onclick="setAlphabetFilter('${l}')">${l}</button>
+            `).join('')}
+        </div>`;
+    }
+
+    html += `
+        <div style="text-align:center; margin:15px 0; padding:15px; background:#fff; border-radius:10px; border:1px solid var(--border);">
+            <p style="font-size:0.85em; color:var(--text-brown); margin-bottom:10px; font-weight:bold;">📍 ตั้งค่าจำนวนข้อ:</p>
             <div style="display:flex; justify-content:center; gap:8px;">
-                <button class="unit-btn" style="min-width:60px;" onclick="setQuizLimit(20)">20</button>
-                <button class="unit-btn" style="min-width:60px;" onclick="setQuizLimit(50)">50</button>
-                <button class="unit-btn" style="min-width:60px;" onclick="setQuizLimit(999)">ทั้งหมด</button>
+                <button class="unit-btn ${userSelectedLimit === 20 ? 'active' : ''}" onclick="setQuizLimit(20)">20</button>
+                <button class="unit-btn ${userSelectedLimit === 50 ? 'active' : ''}" onclick="setQuizLimit(50)">50</button>
+                <button class="unit-btn ${userSelectedLimit === 999 ? 'active' : ''}" onclick="setQuizLimit(999)">ทั้งหมด</button>
             </div>
         </div>
 
         <div style="text-align:center; display:flex; flex-direction:column; gap:12px; align-items:center;">
-            <button class="btn-submit-quiz" onclick="startQuizMode(false, false)">🎯 เริ่มควิซย่อย (${curUnit})</button>
-            
-            <button class="btn-submit-quiz" style="background-color:#2c3e50;" onclick="startQuizMode(true, false)">🔥 สุ่มรวมทุกยูนิต (Mixed All)</button>
-            
+            <button class="btn-submit-quiz" onclick="startQuizMode(false, false)">
+                🎯 เริ่มควิซย่อย ${alphabetFilter !== 'ALL' ? '(ตัว '+alphabetFilter+')' : ''}
+            </button>
+            <button class="btn-submit-quiz" style="background-color:#2c3e50;" onclick="startQuizMode(true, false)">🔥 Mixed All (สุ่มรวมทุกยูนิต)</button>
             <button class="btn-submit-quiz" style="background-color:#d35400;" onclick="startSmartQuiz()">
-                 Smart Review (เหลือ ${unlearnedCount} คำ)
+                🧠 Smart Review (เหลือ ${unlearnedCount} คำ)
             </button>
         </div>
     `;
     qa.innerHTML = html;
 }
-
     function setQuizFilter(f) {
-        quizFilter = f;
-        renderQuizInit();
-    }
+    quizFilter = f;
+    alphabetFilter = 'ALL'; // รีเซ็ตตัวอักษรเวลาเลือกรากศัพท์
+    renderQuizInit();
+}
     function setQuizLimit(num) {
     userSelectedLimit = num;
     alert(`ตั้งค่าควิซไว้ที่ ${num === 999 ? 'ทั้งหมด' : num + ' ข้อ'} ครับ`);
@@ -2589,25 +2606,25 @@ function startQuizMode(global, retrySame) {
         quizPool = [...savedQuizPool];
     } else {
         if (global) {
-            // ดึงคำศัพท์จากทุก Unit มารวมกัน
             for (let u in vocabData) {
                 if (vocabData[u].words) pool = pool.concat(vocabData[u].words);
             }
         } else {
-            // ดึงเฉพาะ Unit ปัจจุบัน
             pool = vocabData[curUnit].words;
+            // กรองตามรากศัพท์ (ถ้ามี)
             if (quizFilter !== 'ALL') pool = pool.filter(w => w.root === quizFilter);
+            // กรองตามตัวอักษรตัวแรก (ถ้ามี)
+            if (alphabetFilter !== 'ALL') {
+                pool = pool.filter(w => w.word.toLowerCase().startsWith(alphabetFilter.toLowerCase()));
+            }
         }
 
-        // Shuffle (สับไพ่)
         pool.sort(() => Math.random() - 0.5);
-        
-        // ตัดเอาแค่ตามจำนวนที่เลือก (20, 50 หรือ ทั้งหมด)
         quizPool = pool.slice(0, userSelectedLimit); 
         savedQuizPool = [...quizPool];
     }
 
-    if (quizPool.length === 0) { alert('ไม่พบคำศัพท์ที่ต้องการทดสอบ'); return; }
+    if (quizPool.length === 0) { alert('ไม่พบคำศัพท์ที่ขึ้นต้นด้วยตัวอักษรนี้ในยูนิตครับ'); return; }
     quizLimit = quizPool.length;
     quizScore = 0;
     quizTotal = 0;
@@ -2713,10 +2730,16 @@ function renderQuizQuestion() {
             renderQuizQuestion();
         }, 1000);
     }
+    function setAlphabetFilter(letter) {
+    alphabetFilter = letter;
+    quizFilter = 'ALL'; // รีเซ็ตรากศัพท์เวลาเลือกตัวอักษร
+    renderQuizInit();
+}
     window.onload = () => { 
     prepareGlobalVocab(); // ต้องสั่งเตรียมข้อมูลก่อน
     renderFlashcardView(); 
 };
+    
 </script>
 </body>
 </html>
