@@ -2078,7 +2078,61 @@ function startQuizMode(global, retrySame) {
         
         renderQuizQuestion();
     }
+function renderQuizQuestion() {
+    const qa = document.getElementById('quiz-area');
+    
+    if (quizTotal >= quizLimit) {
+        let modeText = isGlobalMode ? "ควิซรวม 30 ยูนิต" : `${curUnit} (${quizFilter})`;
+        qa.innerHTML = `
+            <div style="text-align:center; padding:40px; background:white; border-radius:12px; border:1px solid var(--border);">
+                <h2 style="color:var(--text-brown); margin-top:0;">สรุปผลคะแนน</h2>
+                <p style="color:var(--text-gray);">${modeText}</p>
+                <div style="font-size:4.5em; font-weight:bold; color:var(--text-main); margin:20px 0;">${quizScore} / ${quizLimit}</div>
+                <button class="btn-submit-quiz" onclick="startQuizMode(${isGlobalMode}, true)" style="margin-top:20px; background-color:#8e44ad;">&#8635; ทำซ้ำคำถามเดิม (แก้ตัว)</button>
+                <button class="btn-submit-quiz" onclick="startQuizMode(${isGlobalMode}, false)" style="margin-top:10px;">&#128256; สุ่มคำถามชุดใหม่</button>
+                <button class="btn-submit-quiz" onclick="renderQuizInit()" style="background-color:var(--text-gray); margin-top:10px;">&#10094; กลับไปหน้าเลือกควิซ</button>
+            </div>`;
+        return;
+    }
 
+    isQuizAnswered = false;
+    currentQuizWord = quizPool[quizTotal];
+
+    let choices = [currentQuizWord];
+    let allWords = window.currentAllVocabArray; 
+
+    while (choices.length < 4) {
+        let r = allWords[Math.floor(Math.random() * allWords.length)];
+        if (!choices.find(c => c.id === r.id)) choices.push(r);
+    }
+    choices.sort(() => Math.random() - 0.5);
+
+    let modeText = isGlobalMode ? "รวม 30 ยูนิต" : `${curUnit} (${quizFilter})`;
+
+    let html = `
+        <div style="background:white; padding:20px; border-radius:12px; border:1px solid var(--border);">
+            <div style="font-size:0.85em; color:var(--text-gray); margin-bottom:15px; display:flex; justify-content:space-between; font-weight:bold;">
+                <span>📍 ${modeText}</span>
+                <span>ข้อที่ ${quizTotal + 1} / ${quizLimit}</span>
+            </div>
+            <div class="quiz-question-box" style="margin-bottom:25px;">
+                <h1 style="font-size:2.5em; margin:0 0 5px 0; color:var(--text-main);">${currentQuizWord.word}</h1>
+                <div style="color:var(--text-gray); font-style:italic;">${currentQuizWord.phonetic || ''}</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px;">`;
+
+    choices.forEach(opt => {
+        html += `<button class="quiz-choice-btn" onclick="checkQuizAnswer(this, '${opt.id}')">${opt.meaning} <span style="font-size:0.85em; color:var(--text-gray);">(${opt.syn || '-'})</span></button>`;
+    });
+
+    html += `
+            </div>
+            <div style="display:flex; justify-content:center; align-items:center; margin-top:20px;">
+                <span style="font-weight:bold; color:var(--green-dark);" id="score-display">คะแนน: ${quizScore} / ${quizLimit}</span>
+            </div>
+        </div>`;
+    qa.innerHTML = html;
+}
     function checkQuizAnswer(btnElement, selectedId) {
         if (isQuizAnswered) return;
         isQuizAnswered = true;
