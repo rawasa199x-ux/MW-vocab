@@ -1818,184 +1818,15 @@ let curUnit = "Unit 1";
     let curIdx = 0;
     let progress = JSON.parse(localStorage.getItem('mw_v11')) || {};
 
-    // --- Variables for Quiz ---
     let quizPool = [];
+    // 2. ระบบควิซ (แก้ไขให้สมบูรณ์ แบบไม่มีปุ่มข้อต่อไป)
     let currentQuizWord = null;
     let quizScore = 0;
     let quizTotal = 0;
     let quizLimit = 10;
     let isQuizAnswered = false;
     let isGlobalMode = false;
-    let quizFilter = 'ALL';
-    let allVocabArray = [];
-
-    // ==========================================
-    // 1. CORE NAVIGATION & UI
-    // ==========================================
-    function switchTab(tab) {
-        document.querySelectorAll('.view, .nav-item').forEach(e => e.classList.remove('active'));
-        document.getElementById('view-' + tab).classList.add('active');
-        const items = document.querySelectorAll('.nav-item');
-        if (tab === 'cards') items[0].classList.add('active');
-        if (tab === 'browse') items[1].classList.add('active');
-        if (tab === 'quiz') items[2].classList.add('active');
-        
-        if (tab === 'cards') renderFlashcardView();
-        if (tab === 'browse') renderBrowse();
-        if (tab === 'quiz') renderQuizInit();
-    }
-
-    function renderUnitGrids() {
-        ["card", "browse", "quiz"].forEach(prefix => {
-            const grid = document.getElementById(prefix + "-unit-grid");
-            if (!grid) return; 
-            grid.innerHTML = '';
-            for (let i = 1; i <= 30; i++) {
-                const u = "Unit " + i;
-                const words = vocabData[u] ? vocabData[u].words : [];
-                let pct = 0;
-                if(words && words.length > 0) {
-                    const known = words.filter(w => progress[w.id] === 'know').length;
-                    pct = Math.round((known / words.length) * 100);
-                }
-                const btn = document.createElement('div');
-                btn.className = 'unit-btn' + (curUnit === u ? ' active' : '');
-                btn.innerHTML = `U${i}<span>${pct}%</span>`;
-                btn.onclick = () => { 
-                    curUnit = u; curIdx = 0; 
-                    if(prefix === 'quiz') {
-                        quizFilter = 'ALL'; 
-                        renderQuizInit();
-                    } else {
-                        renderUnitGrids(); 
-                        if(prefix === 'card') renderFlashcardView(); 
-                        if(prefix === 'browse') renderBrowse();
-                    }
-                };
-                grid.appendChild(btn);
-            }
-        });
-    }
-
-    // ==========================================
-    // 2. FLASHCARDS SYSTEM
-    // ==========================================
-    function updateStats() {
-        const words = vocabData[curUnit].words;
-        if(!words || words.length === 0) return;
-        let know = 0, review = 0, learning = 0;
-        words.forEach(w => {
-            const st = progress[w.id];
-            if(st === 'know') know++;
-            else if(st === 'review') review++;
-            else learning++;
-        });
-        document.getElementById('st-tot').innerText = words.length;
-        document.getElementById('st-kno').innerText = know;
-        document.getElementById('st-rev').innerText = review;
-        document.getElementById('st-lft').innerText = learning;
-    }
-
-    function renderFlashcardView() {
-        renderUnitGrids();
-        updateStats();
-        const unit = vocabData[curUnit];
-        if (!unit || !unit.words || unit.words.length === 0) return;
-        const d = unit.words[curIdx];
-        
-        document.getElementById('u-full-title').innerText = `${curUnit.toUpperCase()}${unit.rootsStr ? ' - ' + unit.rootsStr : ''}`;
-        document.getElementById('u-root-desc').innerText = rootDescriptions[d.root] || d.root;
-
-        document.getElementById('c-counter').innerText = (curIdx + 1) + "/" + unit.words.length;
-        document.getElementById('c-word').innerText = d.word;
-        document.getElementById('c-phonetic').innerText = d.phonetic || "";
-        document.getElementById('c-root').innerText = d.root;
-        
-        document.getElementById('c-counter-back').innerText = (curIdx + 1) + "/" + unit.words.length;
-        document.getElementById('c-word-back').innerText = d.word;
-        document.getElementById('c-th').innerText = d.meaning;
-        document.getElementById('c-syn').innerText = d.syn || "-";
-        document.getElementById('c-ety').innerText = d.ety || "-"; 
-        document.getElementById('c-ex').innerText = d.ex || "-";
-
-        flipToFront();
-    }
-
-    function flipToBack() {
-        document.getElementById('c-front').style.display = 'none';
-        document.getElementById('c-back').style.display = 'block';
-        document.getElementById('c-btns').style.display = 'flex';
-        playAudio();
-    }
-
-    function flipToFront() {
-        document.getElementById('c-back').style.display = 'none';
-        document.getElementById('c-btns').style.display = 'none';
-        document.getElementById('c-front').style.display = 'block';
-    }
-
-    function playAudio() {
-        const words = vocabData[curUnit].words;
-        if(!words.length) return;
-        const s = new SpeechSynthesisUtterance(words[curIdx].word);
-        s.lang = 'en-US';
-        speechSynthesis.speak(s);
-    }
-
-    function prevCard() {
-        const words = vocabData[curUnit].words;
-        if(!words.length) return;
-        curIdx = (curIdx - 1 + words.length) % words.length;
-        renderFlashcardView();
-    }
-
-    function nextCard() {
-        const words = vocabData[curUnit].words;
-        if(!words.length) return;
-        curIdx = (curIdx + 1) % words.length;
-        renderFlashcardView();
-    }
-
-       function mark(st) {
-        const words = vocabData[curUnit].words;
-        progress[words[curIdx].id] = st;
-        localStorage.setItem('mw_v11', JSON.stringify(progress));
-        
-        updateStats();
-        renderUnitGrids(); // <--- บรรทัดนี้แหละครับที่ผมลืมใส่ เพื่อให้เปอร์เซ็นต์มันอัปเดตเรียลไทม์
-        
-        nextCard();
-    }
-
-
-    // ==========================================
-    // 3. BROWSE SYSTEM
-    // ==========================================
-    function renderBrowse() {
-        renderUnitGrids();
-        const c = document.getElementById('browse-content');
-        c.innerHTML = '';
-        const unitInfo = vocabData[curUnit];
-        if(!unitInfo || !unitInfo.words || unitInfo.words.length === 0) return;
-        
-        document.getElementById('browse-u-title').innerText = `${curUnit.toUpperCase()}${unitInfo.rootsStr ? ' - ' + unitInfo.rootsStr : ''}`;
-        
-        const grid = document.createElement('div');
-        grid.className = 'browse-grid';
-        unitInfo.words.forEach(w => {
-            const b = document.createElement('div');
-            b.className = 'word-block'; 
-            b.innerText = w.word;
-            b.onclick = () => { curIdx = unitInfo.words.indexOf(w); switchTab('cards'); renderFlashcardView(); };
-            grid.appendChild(b);
-        });
-        c.appendChild(grid);
-    }
-
-    // ==========================================
-    // 4. QUIZ SYSTEM (อัปเกรดโหมดเติมคำในประโยค)
-    // ==========================================
-    let currentQuizType = 'vocab'; // 'vocab' (แปลไทย) หรือ 'sentence' (เติมคำ)
+    let quizFilter = 'ALL'; // <--- จุดที่เพิ่มเพื่อแก้ปัญหา
 
     function renderQuizInit() {
         renderUnitGrids();
@@ -2017,26 +1848,10 @@ let curUnit = "Unit 1";
         }
         filterHtml += `</div>`;
 
-        // เพิ่มปุ่มแยก 2 รูปแบบ: ควิซคำศัพท์ และ ควิซประโยค
         filterHtml += `
-            <div style="text-align:center; margin-top:20px; display:flex; flex-direction:column; gap:12px; align-items:center;">
-                <p style="color:var(--text-gray); font-size:0.9em; margin-bottom:5px;">เลือกรูปแบบควิซที่คุณต้องการ:</p>
-                
-                <button class="btn-submit-quiz" style="padding:15px; max-width:350px;" onclick="startQuizMode(false, 'vocab')">
-                    🇹🇭 ควิซแปลความหมาย (${curUnit})
-                </button>
-                <button class="btn-submit-quiz" style="background-color:#d35400; padding:15px; max-width:350px;" onclick="startQuizMode(false, 'sentence')">
-                    📝 ควิซเติมคำในประโยค (${curUnit})
-                </button>
-                
-                <hr style="border:0; border-top:1px dashed var(--border); width:80%; margin:10px 0;">
-                
-                <button class="btn-submit-quiz" style="background-color:#2c3e50; padding:15px; max-width:350px;" onclick="startQuizMode(true, 'vocab')">
-                    🔥 ควิซรวม 30 ยูนิต (แปลความหมาย)
-                </button>
-                <button class="btn-submit-quiz" style="background-color:#8e44ad; padding:15px; max-width:350px;" onclick="startQuizMode(true, 'sentence')">
-                    🏆 ควิซรวม 30 ยูนิต (เติมคำในประโยค)
-                </button>
+            <div style="text-align:center; margin-top:30px; display:flex; flex-direction:column; gap:15px; align-items:center;">
+                <button class="btn-submit-quiz" style="padding:15px; max-width:350px;" onclick="startQuizMode(false)">เริ่มทำควิซย่อย (${curUnit})</button>
+                <button class="btn-submit-quiz" style="background-color:#2c3e50; padding:15px; max-width:350px;" onclick="startQuizMode(true)">🔥 เริ่มทำควิซรวม 30 ยูนิต</button>
             </div>
         `;
         qa.innerHTML = filterHtml;
@@ -2047,12 +1862,11 @@ let curUnit = "Unit 1";
         renderQuizInit();
     }
 
-    function startQuizMode(global, type) {
+    function startQuizMode(global) {
         isGlobalMode = global;
-        currentQuizType = type;
         quizPool = [];
-        allVocabArray = [];
         
+        let allVocabArray = [];
         for (let u in vocabData) {
             if (vocabData[u].words) allVocabArray = allVocabArray.concat(vocabData[u].words);
         }
@@ -2067,13 +1881,8 @@ let curUnit = "Unit 1";
             quizPool = [...ws];
         }
 
-        // กรองเฉพาะคำที่มีประโยคตัวอย่าง ถ้าเลือกโหมดประโยค
-        if (currentQuizType === 'sentence') {
-            quizPool = quizPool.filter(w => w.ex && w.ex.length > 5);
-        }
-
         if (quizPool.length === 0) { 
-            alert('คำศัพท์หรือประโยคตัวอย่างในหมวดนี้มีไม่พอครับ'); 
+            alert('ไม่มีคำศัพท์ในหมวดนี้ครับ'); 
             return; 
         }
 
@@ -2090,7 +1899,15 @@ let curUnit = "Unit 1";
         const qa = document.getElementById('quiz-area');
         
         if (quizTotal >= quizLimit) {
-            showQuizSummary();
+            let modeText = isGlobalMode ? "ควิซรวม 30 ยูนิต" : `${curUnit} (${quizFilter})`;
+            qa.innerHTML = `
+                <div style="text-align:center; padding:40px; background:white; border-radius:12px; border:1px solid var(--border);">
+                    <h2 style="color:var(--text-brown); margin-top:0;">สรุปผลคะแนน</h2>
+                    <p style="color:var(--text-gray);">${modeText}</p>
+                    <div style="font-size:4.5em; font-weight:bold; color:var(--text-main); margin:20px 0;">${quizScore} / ${quizLimit}</div>
+                    <button class="btn-submit-quiz" onclick="startQuizMode(${isGlobalMode})" style="margin-top:20px;">&#8635; วนกลับมาทำซ้ำ</button>
+                    <button class="btn-submit-quiz" onclick="renderQuizInit()" style="background-color:var(--text-gray); margin-top:10px;">&#10094; กลับไปหน้าเลือกควิซ</button>
+                </div>`;
             return;
         }
 
@@ -2106,50 +1923,22 @@ let curUnit = "Unit 1";
         }
         choices.sort(() => Math.random() - 0.5);
 
-        let modeText = isGlobalMode ? "รวม 30 ยูนิต" : curUnit;
-        let typeText = currentQuizType === 'sentence' ? "เติมคำในประโยค" : "แปลความหมาย";
+        let modeText = isGlobalMode ? "รวม 30 ยูนิต" : `${curUnit} (${quizFilter})`;
 
         let html = `
-            <div style="background:var(--card-bg); padding:20px; border-radius:12px; border:1px solid var(--border);">
-                <div style="display:flex; justify-content:space-between; font-size:0.85em; font-weight:bold; color:var(--text-gray); margin-bottom:15px;">
-                    <span>📍 ${modeText} (${typeText})</span>
+            <div style="background:white; padding:20px; border-radius:12px; border:1px solid var(--border);">
+                <div style="font-size:0.85em; color:var(--text-gray); margin-bottom:15px; display:flex; justify-content:space-between; font-weight:bold;">
+                    <span>📍 ${modeText}</span>
                     <span>ข้อที่ ${quizTotal + 1} / ${quizLimit}</span>
                 </div>
-                
-                <div class="quiz-question-box" style="margin-bottom:25px; padding:15px; background:#fcfbf9; border-radius:8px; border-left:4px solid var(--text-brown);">
-        `;
-
-        if (currentQuizType === 'sentence') {
-            // โหมดประโยค: ตัดคำศัพท์ออกจากประโยคให้กลายเป็นช่องว่าง
-            // ใช้ Regex ตัด 2 ตัวอักษรท้ายออก เพื่อจับคำที่เปลี่ยนรูป (เช่น ed, s, ing)
-            let baseWord = currentQuizWord.word.length > 4 ? currentQuizWord.word.slice(0, -2) : currentQuizWord.word;
-            let regex = new RegExp('\\b' + baseWord + '[a-z]*\\b', 'gi');
-            let blankedSentence = currentQuizWord.ex.replace(regex, "_________");
-            
-            // กรณีหาคำไม่เจอ (เผื่อไว้) ให้พยายามเซ็นเซอร์คำที่เหมือนเป๊ะๆ
-            if (blankedSentence === currentQuizWord.ex) {
-                blankedSentence = currentQuizWord.ex.replace(new RegExp(currentQuizWord.word, 'gi'), "_________");
-            }
-
-            html += `<div style="font-size:1.15em; color:var(--text-main); font-style:italic; line-height:1.6;">"${blankedSentence}"</div>`;
-        } else {
-            // โหมดแปลความหมายปกติ
-            html += `
+                <div class="quiz-question-box" style="margin-bottom:25px;">
                     <h1 style="font-size:2.5em; margin:0 0 5px 0; color:var(--text-main);">${currentQuizWord.word}</h1>
-                    <div style="color:var(--text-gray); font-style:italic; margin-top:5px;">${currentQuizWord.phonetic || ''}</div>
-            `;
-        }
-
-        html += `</div><div style="display:flex; flex-direction:column; gap:10px;">`;
+                    <div style="color:var(--text-gray); font-style:italic;">${currentQuizWord.phonetic || ''}</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px;">`;
 
         choices.forEach(opt => {
-            if (currentQuizType === 'sentence') {
-                // ถ้าเป็นโหมดประโยค ช้อยส์จะเป็นคำศัพท์ภาษาอังกฤษ
-                html += `<button class="quiz-choice-btn" style="text-align:center; font-size:1.2em; font-weight:bold; padding:12px;" onclick="checkQuizAnswer(this, '${opt.id}')">${opt.word}</button>`;
-            } else {
-                // ถ้าเป็นโหมดแปล ช้อยส์จะเป็นภาษาไทย
-                html += `<button class="quiz-choice-btn" onclick="checkQuizAnswer(this, '${opt.id}')">${opt.meaning} <span style="font-size:0.85em; color:var(--text-gray);">(${opt.syn || '-'})</span></button>`;
-            }
+            html += `<button class="quiz-choice-btn" onclick="checkQuizAnswer(this, '${opt.id}')">${opt.meaning} <span style="font-size:0.85em; color:var(--text-gray);">(${opt.syn || '-'})</span></button>`;
         });
 
         html += `
@@ -2157,9 +1946,7 @@ let curUnit = "Unit 1";
                 <div style="display:flex; justify-content:center; align-items:center; margin-top:20px;">
                     <span style="font-weight:bold; color:var(--green-dark);" id="score-display">คะแนน: ${quizScore} / ${quizLimit}</span>
                 </div>
-            </div>
-        `;
-        
+            </div>`;
         qa.innerHTML = html;
     }
 
@@ -2176,10 +1963,8 @@ let curUnit = "Unit 1";
             btnElement.classList.add('correct');
         } else {
             btnElement.classList.add('wrong');
-            // ไฮไลต์ข้อที่ถูกให้ดู
             allBtns.forEach(b => {
-                let targetText = currentQuizType === 'sentence' ? currentQuizWord.word : currentQuizWord.meaning;
-                if (b.innerText.includes(targetText)) {
+                if (b.innerText.includes(currentQuizWord.meaning)) {
                     b.classList.add('correct');
                 }
             });
@@ -2188,10 +1973,13 @@ let curUnit = "Unit 1";
         const scoreDisplay = document.getElementById('score-display');
         if (scoreDisplay) scoreDisplay.innerText = `คะแนน: ${quizScore} / ${quizLimit}`;
         
+        // หน่วงเวลา 1.5 วินาที แล้วไปข้อต่อไปอัตโนมัติ
         setTimeout(() => {
             renderQuizQuestion();
         }, 1500);
     }
+
+    window.onload = () => { renderFlashcardView(); };
 </script>
 </body>
 </html>
