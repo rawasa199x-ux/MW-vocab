@@ -517,44 +517,33 @@
     };
 
     // 2. ฟังก์ชันแสดงผลหน้า Flashcards
-    function renderFlashcardView() {
+        function renderFlashcardView() {
         renderUnitGrids();
         updateStats();
+        const unit = vocabData[curUnit];
+        if (!unit || !unit.words || unit.words.length === 0) return;
+        const d = unit.words[curIdx];
+        
+        document.getElementById('u-full-title').innerText = `${curUnit.toUpperCase()}${unit.rootsStr ? ' - ' + unit.rootsStr : ''}`;
+        document.getElementById('u-root-desc').innerText = rootDescriptions[d.root] || d.root;
 
-        const words = vocabData[curUnit].words;
-        const rootsStr = vocabData[curUnit].rootsStr;
-        
-        document.getElementById('u-full-title').innerText = `${curUnit.toUpperCase()}${rootsStr ? ' - ' + rootsStr : ''}`;
-        
-        if(!words.length) { 
-            document.getElementById('u-root-desc').innerText = "No data available for this unit.";
-            document.getElementById('main-card-container').style.display = 'none'; 
-            return; 
-        }
-        document.getElementById('main-card-container').style.display = 'flex';
-        
-        const d = words[curIdx];
-        
-        // ดึง Description ภาษาอังกฤษยาวๆ มาโชว์
-        const fullDescription = rootDescriptions[d.root] || d.root;
-        document.getElementById('u-root-desc').innerText = fullDescription;
-
-        // ข้อมูลหน้าการ์ด (Front)
-        document.getElementById('c-counter').innerText = `${curIdx + 1}/${words.length}`;
+        document.getElementById('c-counter').innerText = (curIdx + 1) + "/" + unit.words.length;
         document.getElementById('c-word').innerText = d.word;
         document.getElementById('c-phonetic').innerText = d.phonetic || "";
         document.getElementById('c-root').innerText = d.root;
         
-        // ข้อมูลหลังการ์ด (Back)
-        document.getElementById('c-counter-back').innerText = `${curIdx + 1}/${words.length}`;
+        document.getElementById('c-counter-back').innerText = (curIdx + 1) + "/" + unit.words.length;
         document.getElementById('c-word-back').innerText = d.word;
         document.getElementById('c-th').innerText = d.meaning;
         document.getElementById('c-syn').innerText = d.syn || "-";
-        document.getElementById('c-ety').innerText = d.ety;
-        document.getElementById('c-ex').innerText = d.ex;
         
-        flipToFront(); 
+        // เติมคำสั่ง 2 บรรทัดนี้เพื่อดึงข้อมูลที่มาข้อมูล (Etymology) และประโยคตัวอย่างกลับมา
+        document.getElementById('c-ety').innerText = d.ety || "-";
+        document.getElementById('c-ex').innerText = d.ex || "-";
+        
+        flipToFront();
     }
+
     const vocabData = {
         "Unit 1": {
             roots: ["BENE", "AM", "BELL", "PAC", "CRIM", "PROB", "GRAV", "LEV"],
@@ -1965,13 +1954,17 @@ let curUnit = "Unit 1";
         renderFlashcardView();
     }
 
-    function mark(st) {
+       function mark(st) {
         const words = vocabData[curUnit].words;
         progress[words[curIdx].id] = st;
         localStorage.setItem('mw_v11', JSON.stringify(progress));
+        
         updateStats();
+        renderUnitGrids(); // <--- บรรทัดนี้แหละครับที่ผมลืมใส่ เพื่อให้เปอร์เซ็นต์มันอัปเดตเรียลไทม์
+        
         nextCard();
     }
+
 
     // ==========================================
     // 3. BROWSE SYSTEM
