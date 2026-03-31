@@ -2633,7 +2633,7 @@
 { id: "u34_923", root: "A_LEVEL_VOCAB", word: "idle", phonetic: "/ˈaɪ.ดəl/", meaning: "ปล่อยให้ว่าง / เกียจคร้าน", syn: "inactive, lazy, unused", ety: "Usage: เครื่องจักรที่ไม่ได้ใช้งาน หรือคนที่อยู่เฉยๆ โดยไม่ทำอะไร<br>| Idle talk = การคุยไร้สาระ", ex: "The factory machines have been idle for weeks." },
 { id: "u34_924", root: "A_LEVEL_VOCAB", word: "ignorant", phonetic: "/ˈɪɡ.nər.ənt/", meaning: "ที่ไม่รู้ / ที่ขาดความรู้", syn: "unaware, uninformed, uneducated", ety: "Usage: การขาดความรู้ในเรื่องใดเรื่องหนึ่ง (ไม่ใช่คำด่าว่าโง่เสมอไป)<br>| Ignorance (n.) = ความไม่รู้", ex: "He is completely ignorant of modern technology." },
 { id: "u34_925", root: "A_LEVEL_VOCAB", word: "illegal", phonetic: "/ɪˈliː.ɡəl/", meaning: "ผิดกฎหมาย", syn: "unlawful, illicit, banned", ety: "Usage: การกระทำที่ฝ่าฝืนกฎหมายของบ้านเมือง<br>| Illegal drugs = ยาเสพติดให้โทษ", ex: "It is illegal to drive without a license." },
-{ id: "u34_926", root: "A_LEVEL_VOCAB", word: "illegible", phonetic: "/ɪˈledʒ.ə.bəl/", meaning: "อ่านไม่ออก (ลายมือ)", syn: "unreadable, faint", ety: "Usage: มักใช้กับลายมือหรือตัวหนังสือที่หวัดหรือจางจนอ่านไม่ได้<br>| Illegible handwriting = ลายมือที่อ่านไม่ออก", ex: "His handwriting is totally illegible." },
+{ id: "u34_926", root: "A_LEVEL_VOCAB", word: "illegible", phonetic: "/ɪˈledʒ.ə.bəl/", meaning: "อ่านไม่ออก (ลายมือ)", syn: "unreadable, faint", ety: "Usage: มักใช้กับลายมือหรือตัวหนังสือที่หวัดหรือจางจนอ่านไม่ได้<br>| Illegible handwriting = ลายมือที่อ่านไม่ออก", ex: "His handwriting is totally illegible." }
             
             
             
@@ -2702,7 +2702,7 @@ function prepareGlobalVocab() {
 
   
     let alphabetFilter = 'ALL'; // เพิ่มตัวแปรสำหรับเก็บตัวอักษรที่เลือก
-    let curUnit = "Unit 1";
+    let curUnit = "Unit 34.0"; // เปลี่ยนจาก Unit 1 หรือ Unit 34 เป็นตัวนี้แทน
     let curIdx = 0;
     let progress = JSON.parse(localStorage.getItem('mw_v11')) || {};
     let userSelectedLimit = 20; // ค่าเริ่มต้น 20 ข้อ สำหรับ Unit ใหญ่
@@ -2736,14 +2736,13 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
         const grid = document.getElementById(`${prefix}-unit-grid`);
         if (!grid) return;
         grid.innerHTML = '';
-
-        // 1. สร้างปุ่ม Unit 1 - 33
+        
+        // 1. สร้าง Unit 1-33
         for (let i = 1; i <= 33; i++) {
             createUnitButton(i.toString(), prefix, grid);
         }
-
-        // 2. ค้นหายูนิตย่อยของ 34 (เช่น 34.0, 34.1, ...)
-        // ใช้ Object.keys เพื่อดึงชื่อยูนิตที่มีอยู่จริงในข้อมูลปัจจุบัน
+        
+        // 2. ค้นหายูนิตที่ขึ้นต้นด้วย "Unit 34." ทั้งหมด (จะเจอ 34.0, 34.1, 34.2... เองอัตโนมัติ)
         const allKeys = Object.keys(vocabData);
         const subUnits34 = allKeys
             .filter(key => key.startsWith("Unit 34."))
