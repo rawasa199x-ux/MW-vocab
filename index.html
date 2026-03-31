@@ -2441,47 +2441,67 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
         document.getElementById('c-front').style.display = 'block';
     }
 
- let availableVoices = [];
+let availableVoices = [];
+
 function loadVoices() {
     let allVoices = window.speechSynthesis.getVoices();
-    
-    // Whitelist: เลือกเฉพาะชื่อที่ออกเสียงชัดและเป็นธรรมชาติ
+    if (allVoices.length === 0) return;
+
+    // เลือกเฉพาะตัวท็อปที่ iOS เสียงชัด (Whitelist)
     const goodNames = ['Samantha', 'Karen', 'Daniel', 'Moira', 'Alex'];
 
     availableVoices = allVoices.filter(v => {
-        const isEnglish = v.lang.startsWith('en');
-        // เอาเฉพาะตัวที่มีชื่ออยู่ใน List ด้านบนเท่านั้น
-        const isGood = goodNames.some(name => v.name.includes(name));
-        return isEnglish && isGood;
+        return v.lang.startsWith('en') && goodNames.some(name => v.name.includes(name));
     });
 
-    // เรียงให้ Samantha อยู่บนสุด
-    availableVoices.sort((a, b) => b.name.includes('Samantha') ? 1 : -1);
+    // เรียงให้ Samantha อยู่ลำดับ 0 เสมอเพื่อกันพลาด
+    availableVoices.sort((a, b) => {
+        if (a.name.includes('Samantha')) return -1;
+        if (b.name.includes('Samantha')) return 1;
+        return 0;
+    });
 
     const voiceSelect = document.getElementById('voice-select');
     if (!voiceSelect) return;
-    
-    voiceSelect.innerHTML = availableVoices
-        .map((v, i) => `<option value="${i}">${v.name.replace(' (Enhanced)', ' ✨')}</option>`)
-        .join('');
+
+    // ล้างรายการเก่าทิ้งก่อนสร้างใหม่เพื่อความชัวร์
+    voiceSelect.innerHTML = '';
+    availableVoices.forEach((v, i) => {
+        const option = document.createElement('option');
+        option.value = i;
+        // ปรับชื่อให้ดูง่ายในมือถือ
+        let displayName = v.name.includes('Enhanced') ? v.name.replace(' (Enhanced)', ' ✨') : v.name;
+        option.textContent = displayName;
+        voiceSelect.appendChild(option);
+    });
 }
+
 function playAudio() {
     const words = vocabData[curUnit].words;
-    if(!words.length) return;
+    if (!words.length) return;
 
-    // ถ้ากดแล้วลิสต์ยังว่าง (เคส iOS บางรุ่น) ให้สั่งโหลดซ้ำตรงนี้
-    if (availableVoices.length === 0) loadVoices();
+    // สั่งหยุดเสียงเก่าทันทีเพื่อป้องกันอาการเสียงค้าง (พบบ่อยใน iOS)
+    window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(words[curIdx].word);
-    const voiceIndex = document.getElementById('voice-select').value;
+    const voiceSelect = document.getElementById('voice-select');
     
-    if (availableVoices[voiceIndex]) {
-        utterance.voice = availableVoices[voiceIndex];
+    // ดึงเสียงที่เลือกตาม Index จริงในขณะนั้น
+    if (availableVoices[voiceSelect.value]) {
+        utterance.voice = availableVoices[voiceSelect.value];
     }
-    
+
     utterance.rate = document.getElementById('voice-rate').value || 0.9;
-    window.speechSynthesis.cancel();
+    utterance.pitch = 1.0;
+
     window.speechSynthesis.speak(utterance);
+}
+
+// ระบบปลุก Engine สำหรับ iOS
+if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    // ลองโหลดทันที
+    loadVoices();
 }
     function prevCard() {
         const words = vocabData[curUnit].words;
