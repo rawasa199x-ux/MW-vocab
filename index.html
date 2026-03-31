@@ -2442,66 +2442,29 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
     }
 
  let availableVoices = [];
-
 function loadVoices() {
     let allVoices = window.speechSynthesis.getVoices();
     
-    // ถ้ายังไม่ได้เสียงเลย (iOS มักจะเป็น 0 ในตอนแรก) ให้ข้ามไปก่อน
-    if (allVoices.length === 0) return;
-
-    const junkNames = ['Bells', 'Boing', 'Bubbles', 'Cellos', 'Good News', 'Organ', 'Superstar', 'Trinoids', 'Whisper', 'Zarvox', 'Novelty', 'Bad News', 'Pipe Organ', 'Hysterical'];
+    // Whitelist: เลือกเฉพาะชื่อที่ออกเสียงชัดและเป็นธรรมชาติ
+    const goodNames = ['Samantha', 'Karen', 'Daniel', 'Moira', 'Alex'];
 
     availableVoices = allVoices.filter(v => {
         const isEnglish = v.lang.startsWith('en');
-        const isJunk = junkNames.some(junk => v.name.includes(junk));
-        return isEnglish && !isJunk;
+        // เอาเฉพาะตัวที่มีชื่ออยู่ใน List ด้านบนเท่านั้น
+        const isGood = goodNames.some(name => v.name.includes(name));
+        return isEnglish && isGood;
     });
 
-    // เรียงลำดับความชัด (Siri > Samantha > Enhanced)
-    availableVoices.sort((a, b) => {
-        const priority = (name) => {
-            if (name.includes('Siri')) return 3;
-            if (name.includes('Samantha')) return 2;
-            if (name.includes('Enhanced')) return 1;
-            return 0;
-        };
-        return priority(b.name) - priority(a.name);
-    });
+    // เรียงให้ Samantha อยู่บนสุด
+    availableVoices.sort((a, b) => b.name.includes('Samantha') ? 1 : -1);
 
     const voiceSelect = document.getElementById('voice-select');
     if (!voiceSelect) return;
-
-    // เก็บค่าที่เคยเลือกไว้ (ถ้ามี)
-    const currentSelection = voiceSelect.value;
     
     voiceSelect.innerHTML = availableVoices
-        .map((v, i) => {
-            let name = v.name.replace('English (United States)', 'US').replace('English (United Kingdom)', 'UK');
-            if (v.name.includes('Samantha')) name += ' ✨';
-            return `<option value="${i}">${name}</option>`;
-        })
+        .map((v, i) => `<option value="${i}">${v.name.replace(' (Enhanced)', ' ✨')}</option>`)
         .join('');
-    
-    // ถ้าเคยเลือกไว้แล้วให้รักษาค่านั้นไว้
-    if (currentSelection) voiceSelect.value = currentSelection;
 }
-
-// --- จุดสำคัญสำหรับ iOS: ระบบ Polling (ตื้อจนกว่าจะขึ้น) ---
-if ('speechSynthesis' in window) {
-    // ลองโหลดทันที
-    loadVoices();
-    
-    // ตั้งเวลาลองใหม่ทุก 0.5 วินาที (ทำแค่ 10 รอบพอถ้ายังไม่มา)
-    let retryCount = 0;
-    const voiceTimer = setInterval(() => {
-        loadVoices();
-        retryCount++;
-        if (availableVoices.length > 0 || retryCount > 10) clearInterval(voiceTimer);
-    }, 500);
-
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-}
-
 function playAudio() {
     const words = vocabData[curUnit].words;
     if(!words.length) return;
