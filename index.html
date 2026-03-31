@@ -2441,19 +2441,28 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
         document.getElementById('c-front').style.display = 'block';
     }
 
-    // ฟังก์ชันสำหรับโหลดรายการเสียงที่เครื่องรองรับ
-let availableVoices = [];
-function loadVoices() {
-    availableVoices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
+   function loadVoices() {
+    let allVoices = window.speechSynthesis.getVoices();
+    
+    // กรองเอาเฉพาะเสียงภาษาอังกฤษ และตัดเสียงเอฟเฟกต์ (เช่น Jester, Whisper) ทิ้ง
+    availableVoices = allVoices.filter(v => 
+        v.lang.startsWith('en') && 
+        !v.name.includes('Novelty') && 
+        !v.name.includes('Decor')
+    );
+
+    // เรียงลำดับ: ถ้าเจอ Siri หรือ Enhanced ให้เอาขึ้นก่อน
+    availableVoices.sort((a, b) => {
+        const priority = (name) => (name.includes('Siri') || name.includes('Enhanced')) ? 1 : 0;
+        return priority(b.name) - priority(a.name);
+    });
+
     const voiceSelect = document.getElementById('voice-select');
     if (!voiceSelect) return;
     
     voiceSelect.innerHTML = availableVoices
-        .map((v, i) => `<option value="${i}">${v.name} (${v.lang})</option>`)
+        .map((v, i) => `<option value="${i}">${v.name.replace(' (Enhanced)', ' ✨')}</option>`)
         .join('');
-    
-    // เลือกเสียงแรกเป็นค่าเริ่มต้น (ถ้ามี)
-    if (availableVoices.length > 0) voiceSelect.value = 0;
 }
 
 // ผูกเหตุการณ์เมื่อเสียงในระบบเปลี่ยนไป (Chrome มักจะโหลดเสียงช้ากว่า UI)
