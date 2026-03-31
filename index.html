@@ -2441,24 +2441,23 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
         document.getElementById('c-front').style.display = 'block';
     }
 
-  function loadVoices() {
+ let availableVoices = [];
+
+function loadVoices() {
     let allVoices = window.speechSynthesis.getVoices();
     
-    // 1. รายชื่อเสียง "ขยะ" บน iOS ที่เราไม่ต้องการ
-    const junkNames = [
-        'Bells', 'Boing', 'Bubbles', 'Cellos', 'Good News', 
-        'Organ', 'Superstar', 'Trinoids', 'Whisper', 'Zarvox', 
-        'Novelty', 'Bad News', 'Pipe Organ', 'Hysterical'
-    ];
+    // ถ้ายังไม่ได้เสียงเลย (iOS มักจะเป็น 0 ในตอนแรก) ให้ข้ามไปก่อน
+    if (allVoices.length === 0) return;
 
-    // 2. กรองเฉพาะภาษาอังกฤษ และไม่อยู่ในรายชื่อขยะ
+    const junkNames = ['Bells', 'Boing', 'Bubbles', 'Cellos', 'Good News', 'Organ', 'Superstar', 'Trinoids', 'Whisper', 'Zarvox', 'Novelty', 'Bad News', 'Pipe Organ', 'Hysterical'];
+
     availableVoices = allVoices.filter(v => {
         const isEnglish = v.lang.startsWith('en');
         const isJunk = junkNames.some(junk => v.name.includes(junk));
         return isEnglish && !isJunk;
     });
 
-    // 3. เรียงลำดับใหม่: เอา Samantha หรือ Enhanced ขึ้นก่อน (ถ้า Siri ไม่มา Samantha คือที่หนึ่ง)
+    // เรียงลำดับความชัด (Siri > Samantha > Enhanced)
     availableVoices.sort((a, b) => {
         const priority = (name) => {
             if (name.includes('Siri')) return 3;
@@ -2471,43 +2470,56 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
 
     const voiceSelect = document.getElementById('voice-select');
     if (!voiceSelect) return;
+
+    // เก็บค่าที่เคยเลือกไว้ (ถ้ามี)
+    const currentSelection = voiceSelect.value;
     
-    // 4. แสดงผลใน Dropdown (ตัดคำว่า "English" ออกให้สั้นลงดูง่าย)
     voiceSelect.innerHTML = availableVoices
         .map((v, i) => {
-            let displayName = v.name.replace('English (United States)', 'US').replace('English (United Kingdom)', 'UK');
-            if (v.name.includes('Samantha')) displayName += ' ✨ (Recommended)';
-            return `<option value="${i}">${displayName}</option>`;
+            let name = v.name.replace('English (United States)', 'US').replace('English (United Kingdom)', 'UK');
+            if (v.name.includes('Samantha')) name += ' ✨';
+            return `<option value="${i}">${name}</option>`;
         })
         .join('');
-        
-    // ตั้งค่าเริ่มต้นให้เป็นตัวบนสุด (ซึ่งมักจะเป็นตัวที่ชัดที่สุดที่เราเรียงไว้)
-    if (availableVoices.length > 0) voiceSelect.selectedIndex = 0;
+    
+    // ถ้าเคยเลือกไว้แล้วให้รักษาค่านั้นไว้
+    if (currentSelection) voiceSelect.value = currentSelection;
 }
 
-// ผูกเหตุการณ์เมื่อเสียงในระบบเปลี่ยนไป (Chrome มักจะโหลดเสียงช้ากว่า UI)
-window.speechSynthesis.onvoiceschanged = loadVoices;
+// --- จุดสำคัญสำหรับ iOS: ระบบ Polling (ตื้อจนกว่าจะขึ้น) ---
+if ('speechSynthesis' in window) {
+    // ลองโหลดทันที
+    loadVoices();
+    
+    // ตั้งเวลาลองใหม่ทุก 0.5 วินาที (ทำแค่ 10 รอบพอถ้ายังไม่มา)
+    let retryCount = 0;
+    const voiceTimer = setInterval(() => {
+        loadVoices();
+        retryCount++;
+        if (availableVoices.length > 0 || retryCount > 10) clearInterval(voiceTimer);
+    }, 500);
+
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+}
 
 function playAudio() {
     const words = vocabData[curUnit].words;
     if(!words.length) return;
 
+    // ถ้ากดแล้วลิสต์ยังว่าง (เคส iOS บางรุ่น) ให้สั่งโหลดซ้ำตรงนี้
+    if (availableVoices.length === 0) loadVoices();
+
     const utterance = new SpeechSynthesisUtterance(words[curIdx].word);
-    
-    // ดึงค่าเสียงจากที่เลือกในหน้าจอ
     const voiceIndex = document.getElementById('voice-select').value;
+    
     if (availableVoices[voiceIndex]) {
         utterance.voice = availableVoices[voiceIndex];
     }
     
-    // ดึงค่าความเร็วจาก Slider (แนะนำ 0.8 - 0.9 จะฟังชัดกว่า 1.0)
-    utterance.rate = document.getElementById('voice-rate').value;
-    utterance.pitch = 1;
-
-    window.speechSynthesis.cancel(); // สั่งหยุดเสียงเดิมก่อนเล่นใหม่
+    utterance.rate = document.getElementById('voice-rate').value || 0.9;
+    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
 }
-
     function prevCard() {
         const words = vocabData[curUnit].words;
         if(!words.length) return;
