@@ -141,6 +141,16 @@
     <div id="view-cards" class="view active">
         <div class="unit-grid-container" id="card-unit-grid"></div>
         <div class="unit-full-title" id="u-full-title">UNIT 1</div>
+        <div style="background: white; padding: 10px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.8em; display: flex; flex-direction: column; gap: 8px;">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <label>เลือกเสียงอ่าน:</label>
+        <select id="voice-select" style="padding: 4px; border-radius: 4px; border: 1px solid var(--border); width: 150px;"></select>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <label>ความเร็ว (Speed):</label>
+        <input type="range" id="voice-rate" min="0.5" max="1.5" step="0.1" value="0.9" style="width: 150px;">
+    </div>
+</div>
         <div class="root-desc-box" id="u-root-desc">Select a word to see its root description.</div>
         
         <div class="stats-row">
@@ -2431,13 +2441,43 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
         document.getElementById('c-front').style.display = 'block';
     }
 
-    function playAudio() {
-        const words = vocabData[curUnit].words;
-        if(!words.length) return;
-        const s = new SpeechSynthesisUtterance(words[curIdx].word);
-        s.lang = 'en-US'; 
-        speechSynthesis.speak(s);
+    // ฟังก์ชันสำหรับโหลดรายการเสียงที่เครื่องรองรับ
+let availableVoices = [];
+function loadVoices() {
+    availableVoices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
+    const voiceSelect = document.getElementById('voice-select');
+    if (!voiceSelect) return;
+    
+    voiceSelect.innerHTML = availableVoices
+        .map((v, i) => `<option value="${i}">${v.name} (${v.lang})</option>`)
+        .join('');
+    
+    // เลือกเสียงแรกเป็นค่าเริ่มต้น (ถ้ามี)
+    if (availableVoices.length > 0) voiceSelect.value = 0;
+}
+
+// ผูกเหตุการณ์เมื่อเสียงในระบบเปลี่ยนไป (Chrome มักจะโหลดเสียงช้ากว่า UI)
+window.speechSynthesis.onvoiceschanged = loadVoices;
+
+function playAudio() {
+    const words = vocabData[curUnit].words;
+    if(!words.length) return;
+
+    const utterance = new SpeechSynthesisUtterance(words[curIdx].word);
+    
+    // ดึงค่าเสียงจากที่เลือกในหน้าจอ
+    const voiceIndex = document.getElementById('voice-select').value;
+    if (availableVoices[voiceIndex]) {
+        utterance.voice = availableVoices[voiceIndex];
     }
+    
+    // ดึงค่าความเร็วจาก Slider (แนะนำ 0.8 - 0.9 จะฟังชัดกว่า 1.0)
+    utterance.rate = document.getElementById('voice-rate').value;
+    utterance.pitch = 1;
+
+    window.speechSynthesis.cancel(); // สั่งหยุดเสียงเดิมก่อนเล่นใหม่
+    window.speechSynthesis.speak(utterance);
+}
 
     function prevCard() {
         const words = vocabData[curUnit].words;
@@ -2736,7 +2776,8 @@ function renderQuizQuestion() {
     renderQuizInit();
 }
     window.onload = () => { 
-    prepareGlobalVocab(); // ต้องสั่งเตรียมข้อมูลก่อน
+    if (typeof prepareGlobalVocab === "function") prepareGlobalVocab(); // ถ้ามีฟังก์ชันเตรียมศัพท์รวม
+    loadVoices(); // โหลดรายการเสียง
     renderFlashcardView(); 
 };
     
