@@ -2441,28 +2441,48 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
         document.getElementById('c-front').style.display = 'block';
     }
 
-   function loadVoices() {
+  function loadVoices() {
     let allVoices = window.speechSynthesis.getVoices();
     
-    // กรองเอาเฉพาะเสียงภาษาอังกฤษ และตัดเสียงเอฟเฟกต์ (เช่น Jester, Whisper) ทิ้ง
-    availableVoices = allVoices.filter(v => 
-        v.lang.startsWith('en') && 
-        !v.name.includes('Novelty') && 
-        !v.name.includes('Decor')
-    );
+    // 1. รายชื่อเสียง "ขยะ" บน iOS ที่เราไม่ต้องการ
+    const junkNames = [
+        'Bells', 'Boing', 'Bubbles', 'Cellos', 'Good News', 
+        'Organ', 'Superstar', 'Trinoids', 'Whisper', 'Zarvox', 
+        'Novelty', 'Bad News', 'Pipe Organ', 'Hysterical'
+    ];
 
-    // เรียงลำดับ: ถ้าเจอ Siri หรือ Enhanced ให้เอาขึ้นก่อน
+    // 2. กรองเฉพาะภาษาอังกฤษ และไม่อยู่ในรายชื่อขยะ
+    availableVoices = allVoices.filter(v => {
+        const isEnglish = v.lang.startsWith('en');
+        const isJunk = junkNames.some(junk => v.name.includes(junk));
+        return isEnglish && !isJunk;
+    });
+
+    // 3. เรียงลำดับใหม่: เอา Samantha หรือ Enhanced ขึ้นก่อน (ถ้า Siri ไม่มา Samantha คือที่หนึ่ง)
     availableVoices.sort((a, b) => {
-        const priority = (name) => (name.includes('Siri') || name.includes('Enhanced')) ? 1 : 0;
+        const priority = (name) => {
+            if (name.includes('Siri')) return 3;
+            if (name.includes('Samantha')) return 2;
+            if (name.includes('Enhanced')) return 1;
+            return 0;
+        };
         return priority(b.name) - priority(a.name);
     });
 
     const voiceSelect = document.getElementById('voice-select');
     if (!voiceSelect) return;
     
+    // 4. แสดงผลใน Dropdown (ตัดคำว่า "English" ออกให้สั้นลงดูง่าย)
     voiceSelect.innerHTML = availableVoices
-        .map((v, i) => `<option value="${i}">${v.name.replace(' (Enhanced)', ' ✨')}</option>`)
+        .map((v, i) => {
+            let displayName = v.name.replace('English (United States)', 'US').replace('English (United Kingdom)', 'UK');
+            if (v.name.includes('Samantha')) displayName += ' ✨ (Recommended)';
+            return `<option value="${i}">${displayName}</option>`;
+        })
         .join('');
+        
+    // ตั้งค่าเริ่มต้นให้เป็นตัวบนสุด (ซึ่งมักจะเป็นตัวที่ชัดที่สุดที่เราเรียงไว้)
+    if (availableVoices.length > 0) voiceSelect.selectedIndex = 0;
 }
 
 // ผูกเหตุการณ์เมื่อเสียงในระบบเปลี่ยนไป (Chrome มักจะโหลดเสียงช้ากว่า UI)
