@@ -2520,8 +2520,8 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
         document.getElementById('c-word-back').innerText = d.word;
         document.getElementById('c-th').innerText = d.meaning;
         document.getElementById('c-syn').innerText = d.syn || "-";
-        document.getElementById('c-ety').innerText = d.ety || "-";
-        document.getElementById('c-ex').innerText = d.ex || "-";
+       document.getElementById('c-ety').innerHTML = d.ety || "-";
+        document.getElementById('c-ex').innerHTML = d.ex || "-";
         
         flipToFront(); 
     }
