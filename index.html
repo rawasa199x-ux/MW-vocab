@@ -2742,39 +2742,17 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
             createUnitButton(i.toString(), prefix, grid);
         }
         
-        // 2. สร้างปุ่มย่อยสำหรับ Unit 34 (แบ่งเป็น 3 ส่วนเพื่อไม่ให้เครื่องค้าง)
-        // ส่วนที่ 1: 34.1 (Core A-Level), 34.2 (High Freq), 34.3 (Extra)
-        ["34.1", "34.2", "34.3"].forEach(subId => {
+        // 2. ค้นหายูนิตย่อยของ 34 ทั้งหมดที่มีอยู่ใน vocabData (เช่น 34.0, 34.1, 34.2, ...)
+        // วิธีนี้จะทำให้ปุ่มงอกเองอัตโนมัติ ไม่ต้องมานั่งเติมเลขครับ
+        const subUnits34 = Object.keys(vocabData)
+            .filter(key => key.startsWith("Unit 34.")) // หาเฉพาะ Unit 34.x
+            .map(key => key.replace("Unit ", ""))      // ตัดคำว่า Unit ออกเหลือแค่เลข
+            .sort((a, b) => parseFloat(a) - parseFloat(b)); // เรียงลำดับจากน้อยไปมาก (0.0 -> 0.1)
+
+        subUnits34.forEach(subId => {
             createUnitButton(subId, prefix, grid);
         });
     });
-}
-
-// ฟังก์ชันช่วยสร้างปุ่ม เพื่อลดความซ้ำซ้อนและรองรับ Unit ย่อย
-function createUnitButton(id, prefix, grid) {
-    const u = `Unit ${id}`;
-    const words = vocabData[u] ? vocabData[u].words : [];
-    let pct = 0;
-    if(words && words.length > 0) {
-        const known = words.filter(w => progress[w.id] === 'know').length;
-        pct = Math.round((known / words.length) * 100);
-    }
-    const btn = document.createElement('div');
-    btn.className = 'unit-btn' + (curUnit === u ? ' active' : '');
-    btn.innerHTML = `U${id}<span>${pct}%</span>`;
-    btn.onclick = () => { 
-        curUnit = u; 
-        curIdx = 0; 
-        renderUnitGrids(); 
-        if(prefix==='card') renderFlashcardView(); 
-        if(prefix==='browse') renderBrowse(); 
-        if(prefix==='quiz') { 
-            quizFilter = 'ALL'; 
-            alphabetFilter = 'ALL';
-            renderQuizInit(); 
-        }
-    };
-    grid.appendChild(btn);
 }
 
     function updateStats() {
