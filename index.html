@@ -2527,59 +2527,67 @@ if ('speechSynthesis' in window) {
     }
 
     function renderBrowse(searchQuery = "") {
-        renderUnitGrids();
-        const c = document.getElementById('browse-content');
-        const title = document.getElementById('browse-u-title');
-        c.innerHTML = '';
+    renderUnitGrids();
+    const c = document.getElementById('browse-content');
+    const title = document.getElementById('browse-u-title');
+    c.innerHTML = '';
+    
+    let displayWords = [];
+    
+    if (searchQuery.trim() !== "") {
+        title.innerText = "🔍 ผลการค้นหา";
+        const query = searchQuery.toLowerCase().trim();
+        // ดึง 4 ตัวแรกของคำที่ค้นหามาทำเป็น "รากคำ" สำหรับช่วยหาคำใกล้เคียง
+        const queryStem = query.substring(0, 4); 
         
-        let displayWords = [];
-        
-        if (searchQuery.trim() !== "") {
-            // ถ้ามีการพิมพ์ค้นหา: หาจากทุก Unit
-            title.innerText = "🔍 ผลการค้นหา";
-            const query = searchQuery.toLowerCase().trim();
-            
-            for (let u in vocabData) {
-                if (vocabData[u].words) {
-                    const matched = vocabData[u].words.filter(w => 
-                        w.word.toLowerCase().includes(query) || 
-                        w.meaning.includes(query)
-                    );
-                    // จำไว้ด้วยว่าคำนี้มาจาก Unit ไหน
-                    matched.forEach(w => displayWords.push({...w, unitFound: u}));
-                }
+        for (let u in vocabData) {
+            if (vocabData[u].words) {
+                const matched = vocabData[u].words.filter(w => {
+                    const word = w.word.toLowerCase();
+                    const meaning = w.meaning.toLowerCase();
+                    const def = (w.def || "").toLowerCase();
+                    const syn = (w.syn || "").toLowerCase();
+                    
+                    return word.includes(query) || 
+                           meaning.includes(query) || 
+                           def.includes(query) || 
+                           syn.includes(query) ||
+                           // ถ้าคำค้นหายาวกว่า 4 ตัว ให้ลองเช็กว่าขึ้นต้นเหมือนกันไหม
+                           (query.length >= 4 && word.startsWith(queryStem));
+                });
+                
+                matched.forEach(w => displayWords.push({...w, unitFound: u}));
             }
-        } else {
-            // ถ้าช่องค้นหาว่างเปล่า: โชว์ศัพท์ตาม Unit ที่เลือกปกติ
-            const unitInfo = vocabData[curUnit];
-            if(!unitInfo || !unitInfo.words || unitInfo.words.length === 0) return;
-            title.innerText = `${curUnit.toUpperCase()}${unitInfo.rootsStr ? ' - ' + unitInfo.rootsStr : ''}`;
-            displayWords = unitInfo.words.map(w => ({...w, unitFound: curUnit}));
         }
-
-        if (displayWords.length === 0) {
-            c.innerHTML = '<div style="text-align:center; color:gray; padding:20px;">ไม่พบคำศัพท์ที่ค้นหา</div>';
-            return;
-        }
-
-        const grid = document.createElement('div');
-        grid.className = 'browse-grid';
-        
-        displayWords.forEach(w => {
-            const b = document.createElement('div');
-            b.className = 'word-block';
-            b.innerText = w.word;
-            b.onclick = () => { 
-                // เวลากดที่คำศัพท์ ให้พาไปที่การ์ดและ Unit ที่ถูกต้อง
-                curUnit = w.unitFound; 
-                curIdx = vocabData[w.unitFound].words.findIndex(orig => orig.id === w.id); 
-                switchTab('cards'); 
-                renderFlashcardView(); 
-            };
-            grid.appendChild(b);
-        });
-        c.appendChild(grid);
+    } else {
+        const unitInfo = vocabData[curUnit];
+        if(!unitInfo || !unitInfo.words || unitInfo.words.length === 0) return;
+        title.innerText = `${curUnit.toUpperCase()}${unitInfo.rootsStr ? ' - ' + unitInfo.rootsStr : ''}`;
+        displayWords = unitInfo.words.map(w => ({...w, unitFound: curUnit}));
     }
+
+    if (displayWords.length === 0) {
+        c.innerHTML = '<div style="text-align:center; color:gray; padding:20px;">ไม่พบคำศัพท์ที่ใกล้เคียง</div>';
+        return;
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'browse-grid';
+    
+    displayWords.forEach(w => {
+        const b = document.createElement('div');
+        b.className = 'word-block';
+        b.innerText = w.word;
+        b.onclick = () => { 
+            curUnit = w.unitFound; 
+            curIdx = vocabData[w.unitFound].words.findIndex(orig => orig.id === w.id); 
+            switchTab('cards'); 
+            renderFlashcardView(); 
+        };
+        grid.appendChild(b);
+    });
+    c.appendChild(grid);
+}
    
  function renderQuizInit() {
     renderUnitGrids();
