@@ -3493,15 +3493,23 @@ function renderQuizQuestion() {
 function saveUserNote() {
     const unit = vocabData[curUnit];
     const d = unit.words[curIdx];
-    const noteVal = document.getElementById('note-input').value;
+    const noteVal = document.getElementById('note-input').value.trim(); // ตัดช่องว่างหัวท้าย
     
     let userNotes = JSON.parse(localStorage.getItem('user_notes_v1')) || {};
-    userNotes[d.id] = noteVal;
     
-    localStorage.setItem('user_notes_v1', JSON.stringify(userNotes));
-    
-    document.getElementById('c-user-notes').innerText = noteVal || "- ไม่มีบันทึกเพิ่มเติม -";
-    alert("บันทึกประโยคส่วนตัวเรียบร้อยครับ");
+    if (noteVal === "") {
+        // ถ้าช่องพิมพ์ว่าง ให้ลบ ID นี้ออกจากบันทึก
+        delete userNotes[d.id];
+        document.getElementById('c-user-notes').innerText = "- ไม่มีบันทึกเพิ่มเติม -";
+        localStorage.setItem('user_notes_v1', JSON.stringify(userNotes));
+        alert("ลบบันทึกเรียบร้อยแล้วครับ");
+    } else {
+        // ถ้ามีข้อความ ให้บันทึกตามปกติ
+        userNotes[d.id] = noteVal;
+        localStorage.setItem('user_notes_v1', JSON.stringify(userNotes));
+        document.getElementById('c-user-notes').innerText = noteVal;
+        alert("บันทึกประโยคส่วนตัวเรียบร้อยครับ");
+    }
 }
     
 </script>
