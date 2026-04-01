@@ -185,19 +185,20 @@
                  
                     <div class="example-box" id="c-ex">ประโยคตัวอย่าง</div>
 
-<div id="user-notes-area" style="margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 10px;">
-    <div class="info-label" style="color: #2D9A72; font-weight: bold;">My Custom Sentences</div>
-    <div id="c-user-notes" class="example-box" style="background: #eef9f5; border-left-color: #2D9A72; margin-bottom: 10px; color: #2c3e50;">- ไม่มีบันทึกเพิ่มเติม -</div>
+<div id="user-notes-area" style="margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 10px; text-align: left;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span class="info-label" style="color: #2D9A72; font-weight: bold; margin: 0;">My Custom Sentences</span>
+        <button onclick="event.stopPropagation(); showAddNote();" style="background: #2D9A72; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75em;">+ Add New</button>
+    </div>
+
+    <div id="notes-list-display" style="margin-bottom: 10px;"></div>
     
-    <div id="note-input-group" style="display: flex; gap: 5px;">
-        <input type="text" id="note-input" 
-               onclick="event.stopPropagation();" 
-               onfocus="event.stopPropagation();"
-               placeholder="เพิ่มประโยคสวยๆ ที่เจอ..." 
-               style="flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 5px; font-size: 0.8em;">
-        
-        <button onclick="event.stopPropagation(); saveUserNote();" 
-                style="background: #2D9A72; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;">Save</button>
+    <div id="note-edit-box" style="display: none; background: #f9f9f9; padding: 8px; border-radius: 8px; border: 1px solid #ddd; margin-top: 5px;">
+        <input type="text" id="note-input" onclick="event.stopPropagation();" placeholder="พิมพ์ประโยคที่นี่..." style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85em; margin-bottom: 5px; box-sizing: border-box;">
+        <div style="display: flex; gap: 5px; justify-content: flex-end;">
+            <button onclick="event.stopPropagation(); hideEditBox();" style="background: #ccc; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75em;">Cancel</button>
+            <button id="save-note-btn" onclick="event.stopPropagation();" style="background: #2D9A72; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75em; font-weight: bold;">Save</button>
+        </div>
     </div>
 </div>
                 </div>
@@ -380,47 +381,41 @@
         "MYTH": "These words are derived from characters and stories in Greek and Roman Mythology and History."
     };
 
-    // 2. ฟังก์ชันแสดงผลหน้า Flashcards
-        function renderFlashcardView() {
-        renderUnitGrids();
-        updateStats();
-        const unit = vocabData[curUnit];
-        if (!unit || !unit.words || unit.words.length === 0) return;
-        const d = unit.words[curIdx];
-        
-        document.getElementById('u-full-title').innerText = `${curUnit.toUpperCase()}${unit.rootsStr ? ' - ' + unit.rootsStr : ''}`;
-        document.getElementById('u-root-desc').innerText = rootDescriptions[d.root] || d.root;
+    // 2. ฟังก์ชันแสดงผลหน้า Flashcards (ฉบับแก้ไขสมบูรณ์)
+function renderFlashcardView() {
+    renderUnitGrids();
+    updateStats();
+    const unit = vocabData[curUnit];
+    if (!unit || !unit.words || unit.words.length === 0) return;
+    const d = unit.words[curIdx];
+    
+    document.getElementById('u-full-title').innerText = `${curUnit.toUpperCase()}${unit.rootsStr ? ' - ' + unit.rootsStr : ''}`;
+    document.getElementById('u-root-desc').innerText = rootDescriptions[d.root] || d.root;
 
-        document.getElementById('c-counter').innerText = (curIdx + 1) + "/" + unit.words.length;
-        document.getElementById('c-word').innerText = d.word;
-        document.getElementById('c-phonetic').innerText = d.phonetic || "";
-        document.getElementById('c-root').innerText = d.root;
-        
-        document.getElementById('c-counter-back').innerText = (curIdx + 1) + "/" + unit.words.length;
-        document.getElementById('c-word-back').innerText = d.word;
-        document.getElementById('c-th').innerText = d.meaning;
-        document.getElementById('c-syn').innerText = d.syn || "-";
-        
-        // เติมคำสั่ง 2 บรรทัดนี้เพื่อดึงข้อมูลที่มาข้อมูล (Etymology) และประโยคตัวอย่างกลับมา
-        document.getElementById('c-ety').innerText = d.ety || "-";
-        document.getElementById('c-ex').innerText = d.ex || "-";
+    document.getElementById('c-counter').innerText = (curIdx + 1) + "/" + unit.words.length;
+    document.getElementById('c-word').innerText = d.word;
+    document.getElementById('c-phonetic').innerText = d.phonetic || "";
+    document.getElementById('c-root').innerText = d.root;
+    
+    document.getElementById('c-counter-back').innerText = (curIdx + 1) + "/" + unit.words.length;
+    document.getElementById('c-word-back').innerText = d.word;
+    document.getElementById('c-th').innerText = d.meaning;
+    document.getElementById('c-syn').innerText = d.syn || "-";
+    
+    // เปลี่ยนจาก innerText เป็น innerHTML เพื่อให้ <br> ทำงาน
+    document.getElementById('c-ety').innerHTML = d.ety || "-";
+    document.getElementById('c-ex').innerHTML = d.ex || "-";
 
+    // --- ส่วนจัดการประโยคหลายรายการ (ที่คุณเพิ่มใหม่) ---
+    renderUserNotesList(d.id); 
+    hideEditBox(); 
+    // ------------------------------------------
 
-            // ... หาบรรทัดพวกนี้ ...
-document.getElementById('c-ety').innerHTML = d.ety || "-";
-document.getElementById('c-ex').innerHTML = d.ex || "-";
-
-// --- แล้ววาง 4 บรรทัดนี้เพิ่มเข้าไป ---
-const userNotes = JSON.parse(localStorage.getItem('user_notes_v1')) || {};
-const myNote = userNotes[d.id] || "- ไม่มีบันทึกเพิ่มเติม -";
-document.getElementById('c-user-notes').innerText = myNote;
-document.getElementById('note-input').value = userNotes[d.id] || "";
-// -----------------------------
-
-flipToFront();
+    flipToFront();
+} // <--- อย่าลืมปีกกาปิดตรงนี้ครับ
         
         
-    }
+    
 
     const vocabData = {
         "Unit 1": {
@@ -3490,26 +3485,80 @@ function renderQuizQuestion() {
     // 3. แสดงหน้าจอ
     renderFlashcardView(); 
 };
-function saveUserNote() {
-    const unit = vocabData[curUnit];
-    const d = unit.words[curIdx];
-    const noteVal = document.getElementById('note-input').value.trim(); // ตัดช่องว่างหัวท้าย
-    
-    let userNotes = JSON.parse(localStorage.getItem('user_notes_v1')) || {};
-    
-    if (noteVal === "") {
-        // ถ้าช่องพิมพ์ว่าง ให้ลบ ID นี้ออกจากบันทึก
-        delete userNotes[d.id];
-        document.getElementById('c-user-notes').innerText = "- ไม่มีบันทึกเพิ่มเติม -";
-        localStorage.setItem('user_notes_v1', JSON.stringify(userNotes));
-        alert("ลบบันทึกเรียบร้อยแล้วครับ");
-    } else {
-        // ถ้ามีข้อความ ให้บันทึกตามปกติ
-        userNotes[d.id] = noteVal;
-        localStorage.setItem('user_notes_v1', JSON.stringify(userNotes));
-        document.getElementById('c-user-notes').innerText = noteVal;
-        alert("บันทึกประโยคส่วนตัวเรียบร้อยครับ");
+let editingNoteIndex = -1; // -1 คือเพิ่มใหม่, >=0 คือแก้ไข index นั้นๆ
+
+function renderUserNotesList(wordId) {
+    const display = document.getElementById('notes-list-display');
+    const userNotes = JSON.parse(localStorage.getItem('user_notes_v2')) || {};
+    const notes = userNotes[wordId] || [];
+
+    if (notes.length === 0) {
+        display.innerHTML = '<div style="color: #999; font-size: 0.8em; font-style: italic;">- ไม่มีบันทึกเพิ่มเติม -</div>';
+        return;
     }
+
+    let html = '<ul style="list-style: none; padding: 0; margin: 0;">';
+    notes.forEach((note, index) => {
+        html += `
+        <li style="background: #eef9f5; border-left: 3px solid #2D9A72; padding: 6px 10px; margin-bottom: 5px; border-radius: 0 4px 4px 0; display: flex; justify-content: space-between; align-items: flex-start;">
+            <span style="font-size: 0.85em; color: #2c3e50; line-height: 1.4; flex: 1;">${note}</span>
+            <div style="display: flex; gap: 8px; margin-left: 10px;">
+                <span onclick="event.stopPropagation(); prepareEditNote(${index}, '${note.replace(/'/g, "\\'")}');" style="cursor: pointer; color: #2D9A72; font-size: 0.8em;">✏️</span>
+                <span onclick="event.stopPropagation(); deleteNote(${index});" style="cursor: pointer; color: #e74c3c; font-size: 0.8em;">🗑️</span>
+            </div>
+        </li>`;
+    });
+    html += '</ul>';
+    display.innerHTML = html;
+}
+
+function showAddNote() {
+    editingNoteIndex = -1;
+    document.getElementById('note-input').value = "";
+    document.getElementById('note-edit-box').style.display = 'block';
+    document.getElementById('save-note-btn').onclick = (e) => { e.stopPropagation(); saveCurrentNote(); };
+    document.getElementById('note-input').focus();
+}
+
+function prepareEditNote(index, text) {
+    editingNoteIndex = index;
+    document.getElementById('note-input').value = text;
+    document.getElementById('note-edit-box').style.display = 'block';
+    document.getElementById('save-note-btn').onclick = (e) => { e.stopPropagation(); saveCurrentNote(); };
+    document.getElementById('note-input').focus();
+}
+
+function hideEditBox() {
+    document.getElementById('note-edit-box').style.display = 'none';
+}
+
+function saveCurrentNote() {
+    const wordId = vocabData[curUnit].words[curIdx].id;
+    const noteVal = document.getElementById('note-input').value.trim();
+    if (!noteVal) return;
+
+    let userNotes = JSON.parse(localStorage.getItem('user_notes_v2')) || {};
+    if (!userNotes[wordId]) userNotes[wordId] = [];
+
+    if (editingNoteIndex > -1) {
+        userNotes[wordId][editingNoteIndex] = noteVal;
+    } else {
+        userNotes[wordId].push(noteVal);
+    }
+
+    localStorage.setItem('user_notes_v2', JSON.stringify(userNotes));
+    renderUserNotesList(wordId);
+    hideEditBox();
+}
+
+function deleteNote(index) {
+    if (!confirm("ต้องการลบประโยคนี้ใช่ไหมครับ?")) return;
+    const wordId = vocabData[curUnit].words[curIdx].id;
+    let userNotes = JSON.parse(localStorage.getItem('user_notes_v2')) || {};
+    
+    userNotes[wordId].splice(index, 1);
+    localStorage.setItem('user_notes_v2', JSON.stringify(userNotes));
+    renderUserNotesList(wordId);
 }
     
 </script>
