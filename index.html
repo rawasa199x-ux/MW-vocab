@@ -182,7 +182,18 @@
                     <div class="info-label">GRAMMAR & USAGE</div>
                     <div class="info-txt" id="c-ety">ที่มาข้อมูล</div>
                     <div class="info-label">Example Sentence</div>
+                 
                     <div class="example-box" id="c-ex">ประโยคตัวอย่าง</div>
+
+<div id="user-notes-area" style="margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 10px;">
+    <div class="info-label" style="color: #2D9A72; font-weight: bold;">My Custom Sentences</div>
+    <div id="c-user-notes" class="example-box" style="background: #eef9f5; border-left-color: #2D9A72; margin-bottom: 10px; color: #2c3e50;">- ไม่มีบันทึกเพิ่มเติม -</div>
+    
+    <div id="note-input-group" style="display: flex; gap: 5px;">
+        <input type="text" id="note-input" placeholder="เพิ่มประโยคสวยๆ ที่เจอ..." style="flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 5px; font-size: 0.8em;">
+        <button onclick="event.stopPropagation(); saveUserNote();" style="background: #2D9A72; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;">Save</button>
+    </div>
+</div>
                 </div>
             </div>
             
@@ -387,8 +398,22 @@
         // เติมคำสั่ง 2 บรรทัดนี้เพื่อดึงข้อมูลที่มาข้อมูล (Etymology) และประโยคตัวอย่างกลับมา
         document.getElementById('c-ety').innerText = d.ety || "-";
         document.getElementById('c-ex').innerText = d.ex || "-";
+
+
+            // ... หาบรรทัดพวกนี้ ...
+document.getElementById('c-ety').innerHTML = d.ety || "-";
+document.getElementById('c-ex').innerHTML = d.ex || "-";
+
+// --- แล้ววาง 4 บรรทัดนี้เพิ่มเข้าไป ---
+const userNotes = JSON.parse(localStorage.getItem('user_notes_v1')) || {};
+const myNote = userNotes[d.id] || "- ไม่มีบันทึกเพิ่มเติม -";
+document.getElementById('c-user-notes').innerText = myNote;
+document.getElementById('note-input').value = userNotes[d.id] || "";
+// -----------------------------
+
+flipToFront();
         
-        flipToFront();
+        
     }
 
     const vocabData = {
@@ -3459,7 +3484,19 @@ function renderQuizQuestion() {
     // 3. แสดงหน้าจอ
     renderFlashcardView(); 
 };
-
+function saveUserNote() {
+    const unit = vocabData[curUnit];
+    const d = unit.words[curIdx];
+    const noteVal = document.getElementById('note-input').value;
+    
+    let userNotes = JSON.parse(localStorage.getItem('user_notes_v1')) || {};
+    userNotes[d.id] = noteVal;
+    
+    localStorage.setItem('user_notes_v1', JSON.stringify(userNotes));
+    
+    document.getElementById('c-user-notes').innerText = noteVal || "- ไม่มีบันทึกเพิ่มเติม -";
+    alert("บันทึกประโยคส่วนตัวเรียบร้อยครับ");
+}
     
 </script>
 </body>
