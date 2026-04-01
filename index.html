@@ -190,8 +190,14 @@
     <div id="c-user-notes" class="example-box" style="background: #eef9f5; border-left-color: #2D9A72; margin-bottom: 10px; color: #2c3e50;">- ไม่มีบันทึกเพิ่มเติม -</div>
     
     <div id="note-input-group" style="display: flex; gap: 5px;">
-        <input type="text" id="note-input" placeholder="เพิ่มประโยคสวยๆ ที่เจอ..." style="flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 5px; font-size: 0.8em;">
-        <button onclick="event.stopPropagation(); saveUserNote();" style="background: #2D9A72; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;">Save</button>
+        <input type="text" id="note-input" 
+               onclick="event.stopPropagation();" 
+               onfocus="event.stopPropagation();"
+               placeholder="เพิ่มประโยคสวยๆ ที่เจอ..." 
+               style="flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 5px; font-size: 0.8em;">
+        
+        <button onclick="event.stopPropagation(); saveUserNote();" 
+                style="background: #2D9A72; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;">Save</button>
     </div>
 </div>
                 </div>
