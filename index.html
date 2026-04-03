@@ -381,8 +381,7 @@
         "MYTH": "These words are derived from characters and stories in Greek and Roman Mythology and History."
     };
 
-    // 2. ฟังก์ชันแสดงผลหน้า Flashcards (ฉบับแก้ไขสมบูรณ์)
-function renderFlashcardView() {
+   function renderFlashcardView() {
     renderUnitGrids();
     updateStats();
     const unit = vocabData[curUnit];
@@ -402,17 +401,17 @@ function renderFlashcardView() {
     document.getElementById('c-th').innerText = d.meaning;
     document.getElementById('c-syn').innerText = d.syn || "-";
     
+    // ใช้ innerHTML เพื่อให้ <br> ใน ety และ ex ทำงาน
     document.getElementById('c-ety').innerHTML = d.ety || "-";
     document.getElementById('c-ex').innerHTML = d.ex || "-";
 
-    // --- ส่วนจัดการประโยคหลายรายการ (แยกบรรทัดออกมาเพื่อให้ทำงาน) ---
+    // --- ส่วนที่ต้องแยกบรรทัดออกมาเพื่อให้ทำงานได้ (ห้ามมี // นำหน้าบรรทัดคำสั่ง) ---
     renderUserNotesList(d.id); 
     hideEditBox(); 
-    // -------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     flipToFront();
 }
-        
     
 
     const vocabData = {
@@ -3763,39 +3762,7 @@ function createUnitButton(id, prefix, grid) {
         document.getElementById('st-lft').innerText = learning;
     }
 
-    function renderFlashcardView() {
-        renderUnitGrids();
-        updateStats();
-
-        const unitInfo = vocabData[curUnit];
-        if(!unitInfo || !unitInfo.words || unitInfo.words.length === 0) { 
-            document.getElementById('main-card-container').style.display = 'none'; 
-            return; 
-        }
-        
-        const words = unitInfo.words;
-        const rootsStr = unitInfo.rootsStr;
-        
-        document.getElementById('u-full-title').innerText = `${curUnit.toUpperCase()}${rootsStr ? ' - ' + rootsStr : ''}`;
-        document.getElementById('main-card-container').style.display = 'flex';
-        
-        const d = words[curIdx];
-        document.getElementById('u-root-desc').innerText = rootDescriptions[d.root] || d.root;
-
-        document.getElementById('c-counter').innerText = `${curIdx + 1}/${words.length}`;
-        document.getElementById('c-word').innerText = d.word;
-        document.getElementById('c-phonetic').innerText = d.phonetic || "";
-        document.getElementById('c-root').innerText = d.root;
-        
-        document.getElementById('c-counter-back').innerText = `${curIdx + 1}/${words.length}`;
-        document.getElementById('c-word-back').innerText = d.word;
-        document.getElementById('c-th').innerText = d.meaning;
-        document.getElementById('c-syn').innerText = d.syn || "-";
-       document.getElementById('c-ety').innerHTML = d.ety || "-";
-        document.getElementById('c-ex').innerHTML = d.ex || "-";
-        
-        flipToFront(); 
-    }
+  
 
     function flipCard() {
         const f = document.getElementById('c-front');
