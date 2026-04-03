@@ -3493,7 +3493,12 @@ let savedQuizPool = []; // <-- เพิ่มบรรทัดนี้
         const subUnits34 = Object.keys(vocabData)
             .filter(key => key.startsWith("Unit 34."))
             .map(key => key.replace("Unit ", ""))
-            .sort((a, b) => parseFloat(a) - parseFloat(b));
+            // แก้ไขการเรียงลำดับตรงนี้ เพื่อไม่ให้ 34.10 ไปอยู่หน้า 34.2
+            .sort((a, b) => {
+                const numA = parseInt(a.split('.')[1] || 0);
+                const numB = parseInt(b.split('.')[1] || 0);
+                return numA - numB;
+            });
 
         subUnits34.forEach(subId => {
             createUnitButton(subId, prefix, grid);
